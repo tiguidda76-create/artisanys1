@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Marrakech Craft Conduit — All-in-one autonomous B2B export engine for authentic Moroccan artisan crafts. Lead intelligence, quotation system, and legal/billing hub.">
+  <title>MARRAKECH CRAFT CONDUIT — Artisan Export Engine</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- ═══════════ HEADER ═══════════ -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">🏛️</div>
+      <div class="brand-text">
+        <h1>MARRAKECH CRAFT CONDUIT</h1>
+        <div class="brand-sub">Artisan Export Engine — B2B Intelligence Platform</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <div class="header-status">
+        <div class="status-dot"></div>
+        <span>All Systems Operational</span>
+      </div>
+      <div class="header-time" id="headerTime">18:32 GMT+1</div>
+      <div class="header-user">
+        <div class="user-avatar">HT</div>
+        <span class="user-name">Hassan Tiguidda</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════ TAB NAVIGATION ═══════════ -->
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="leads">
+      <span class="tab-icon">🌐</span>
+      <span class="tab-text">Global Lead Radar</span>
+      <span class="tab-badge">18.4K</span>
+    </button>
+    <button class="tab-btn" data-tab="agents">
+      <span class="tab-icon">🤖</span>
+      <span class="tab-text">Agent Orchestration</span>
+    </button>
+    <button class="tab-btn" data-tab="outreach">
+      <span class="tab-icon">✉️</span>
+      <span class="tab-text">Outreach & Lookbook</span>
+    </button>
+    <button class="tab-btn" data-tab="catalog">
+      <span class="tab-icon">📦</span>
+      <span class="tab-text">Product Catalog</span>
+      <span class="tab-badge">6</span>
+    </button>
+    <button class="tab-btn" data-tab="legal">
+      <span class="tab-icon">📑</span>
+      <span class="tab-text">Facturation & Legal</span>
+    </button>
+  </nav>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <main class="main-content">
+
+    <!-- ──────── TAB 1: GLOBAL LEAD RADAR ──────── -->
+    <section class="tab-panel active" id="panel-leads">
+      <h2 class="section-title">🌐 Global Lead Radar & <span>Buyer Directory</span></h2>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🏪</div>
+            <div class="kpi-change up">▲ 12.3%</div>
+          </div>
+          <div class="kpi-value" data-count="18450">18,450</div>
+          <div class="kpi-label">Verified Global Buyers</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📡</div>
+            <div class="kpi-change up">▲ 8.7%</div>
+          </div>
+          <div class="kpi-value" data-count="342">342</div>
+          <div class="kpi-label">Active Outreach Sequences</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-change down">▼ 2.1%</div>
+          </div>
+          <div class="kpi-value" data-count="28">28</div>
+          <div class="kpi-label">Pending Sample / RFQ</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-change up">▲ 24.5%</div>
+          </div>
+          <div class="kpi-value">$1.47M</div>
+          <div class="kpi-label">Estimated Pipeline Value</div>
+        </div>
+      </div>
+
+      <!-- Lead Table -->
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">📊 B2B Buyer Intelligence Database</div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline" onclick="showToast('Database synced successfully', 'success')">↻ Sync</button>
+            <button class="btn btn-sm btn-primary">+ Add Lead</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Country</span>
+            <select class="filter-select" id="filterCountry" onchange="filterLeads()">
+              <option value="all">All Markets</option>
+              <option value="FR">🇫🇷 France</option>
+              <option value="UK">🇬🇧 United Kingdom</option>
+              <option value="ES">🇪🇸 Spain</option>
+              <option value="US">🇺🇸 United States</option>
+              <option value="AU">🇦🇺 Australia</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Business Type</span>
+            <select class="filter-select" id="filterBizType" onchange="filterLeads()">
+              <option value="all">All Types</option>
+              <option value="concept">Concept Store</option>
+              <option value="boutique">Online Boutique</option>
+              <option value="wholesale">Wholesale Importer</option>
+              <option value="interior">Interior Design Studio</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Craft Focus</span>
+            <select class="filter-select" id="filterCraft" onchange="filterLeads()">
+              <option value="all">All Crafts</option>
+              <option value="rugs">Rugs & Kilims</option>
+              <option value="ceramics">Ceramics & Pottery</option>
+              <option value="leather">Leather Goods</option>
+              <option value="brass">Brassware & Lighting</option>
+              <option value="wicker">Wicker & Basketry</option>
+              <option value="wood">Woodwork & Cedar</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <input type="text" class="filter-input" placeholder="🔍 Search buyers..." id="filterSearch" oninput="filterLeads()">
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table" id="leadsTable">
+            <thead>
+              <tr>
+                <th>Store / Buyer</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Craft Focus</th>
+                <th>Channel</th>
+                <th>Est. Volume</th>
+                <th>MOQ Fit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leadsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── TAB 2: AGENT ORCHESTRATION ──────── -->
+    <section class="tab-panel" id="panel-agents">
+      <h2 class="section-title">🤖 Autonomous Multi-Agent <span>Hierarchy</span></h2>
+
+      <!-- Master Orchestrator -->
+      <div class="flow-container">
+        <div class="flow-master">
+          <div class="flow-master-node">
+            <div class="flow-master-icon">👑</div>
+            <div class="flow-master-text">
+              <h3>Master Orchestrator & Strategy Manager</h3>
+              <p>CrewAI + LangGraph | Supervising 7 Sub-Agents | Task Queue: 14 Active</p>
+            </div>
+            <div class="agent-status">
+              <div class="agent-status-dot active"></div>
+              <span style="color: var(--success);">LIVE</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-lines"><div class="flow-line-center"></div></div>
+      </div>
+
+      <!-- Agent Grid -->
+      <div class="agent-grid" id="agentGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Orchestration Visualizer -->
+      <div class="orch-visualizer mt-2">
+        <div class="orch-title">⚡ Live Orchestration Feed — LangGraph State Flow</div>
+        <div class="orch-log" id="orchLog">
+          <!-- Populated by JS -->
+        </div>
+        <div class="token-metrics">
+          <div class="metric-bar">
+            <div class="metric-val" id="tokensProcessed">847,293</div>
+            <div class="metric-label">Tokens Processed</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-val" id="tasksCompleted">1,247</div>
+            <div class="metric-label">Tasks Completed</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-val" id="avgLatency">1.2s</div>
+            <div class="metric-label">Avg Latency</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-val" id="hitlApprovals">98.4%</div>
+            <div class="metric-label">HITL Approval Rate</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── TAB 3: OUTREACH & LOOKBOOK ──────── -->
+    <section class="tab-panel" id="panel-outreach">
+      <h2 class="section-title">✉️ Multilingual Outreach & <span>Lookbook Studio</span></h2>
+
+      <div class="outreach-studio">
+        <div class="studio-controls">
+          <div class="control-group">
+            <label class="control-label">🎯 Target Market</label>
+            <select class="control-select" id="targetMarket" onchange="generatePitch()">
+              <option value="FR">🇫🇷 France</option>
+              <option value="UK">🇬🇧 United Kingdom</option>
+              <option value="ES">🇪🇸 Spain</option>
+              <option value="US">🇺🇸 United States</option>
+              <option value="AU">🇦🇺 Australia</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">🏪 Buyer Persona</label>
+            <select class="control-select" id="buyerPersona" onchange="generatePitch()">
+              <option value="marais">Trendy Marais Concept Store</option>
+              <option value="coastal">Australian Coastal Living Boutique</option>
+              <option value="soho">Soho NY Interior Agency</option>
+              <option value="madrid">Madrid Bohemian Decor Studio</option>
+              <option value="shoreditch">Shoreditch Ethical Home Store</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">🎨 Craft Highlight</label>
+            <select class="control-select" id="craftHighlight" onchange="generatePitch()">
+              <option value="mixed">Full Artisan Collection</option>
+              <option value="rugs">Beni Ourain & Kilim Rugs</option>
+              <option value="ceramics">Tamegroute & Safi Pottery</option>
+              <option value="brass">Hand-Hammered Brass Lighting</option>
+              <option value="leather">Marrakech Leather Collection</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">🌐 Language</label>
+            <select class="control-select" id="pitchLang" onchange="generatePitch()">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
+          <button class="btn btn-gold btn-lg" style="width:100%;" onclick="generatePitch()">✨ Generate Dynamic Pitch</button>
+          <button class="btn btn-outline btn-lg" style="width:100%;" onclick="showToast('Lookbook PDF dispatched to buyer', 'success')">📁 Dispatch Digital Lookbook</button>
+        </div>
+
+        <div class="pitch-preview">
+          <div class="pitch-header">
+            <div class="pitch-title">📨 Dynamic B2B Pitch Preview</div>
+            <div class="btn-group">
+              <button class="btn btn-sm btn-outline" onclick="copyPitch()">📋 Copy</button>
+              <button class="btn btn-sm btn-primary" onclick="showToast('Email dispatched via SMTP agent', 'success')">🚀 Send</button>
+            </div>
+          </div>
+          <div class="pitch-body" id="pitchBody">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Lookbook Grid -->
+      <h3 class="section-title mt-2">🎨 Digital Lookbook & <span>Catalog</span></h3>
+      <div class="lookbook-grid" id="lookbookGrid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ──────── TAB 4: PRODUCT CATALOG ──────── -->
+    <section class="tab-panel" id="panel-catalog">
+      <h2 class="section-title">📦 Product Catalog & <span>Volume Pricing Matrix</span></h2>
+
+      <!-- Category Tabs -->
+      <div class="category-tabs" id="categoryTabs">
+        <button class="cat-tab active" data-cat="rugs" onclick="switchCategory(this)">🧶 Rugs & Kilims</button>
+        <button class="cat-tab" data-cat="ceramics" onclick="switchCategory(this)">🏺 Ceramic Tableware</button>
+        <button class="cat-tab" data-cat="brass" onclick="switchCategory(this)">🪔 Brass Lamps</button>
+        <button class="cat-tab" data-cat="leather" onclick="switchCategory(this)">👝 Leather Poufs & Bags</button>
+        <button class="cat-tab" data-cat="wicker" onclick="switchCategory(this)">🧺 Palm Wicker</button>
+        <button class="cat-tab" data-cat="wood" onclick="switchCategory(this)">🪵 Cedar Woodwork</button>
+      </div>
+
+      <!-- Pricing Tiers -->
+      <div class="pricing-tiers">
+        <div class="tier-card zellige-accent">
+          <div class="tier-name">Sample / Concept Tier</div>
+          <div class="tier-range">0 MOQ — 1 to 5 units</div>
+          <div class="tier-desc">Ideal for small online curators and independent physical boutiques. Fast air dispatch via DHL/FedEx.</div>
+          <ul class="tier-features">
+            <li>Zero minimum order requirement</li>
+            <li>Individual piece selection</li>
+            <li>Express air freight (3-5 days)</li>
+            <li>Full authenticity certification</li>
+            <li>Photography-ready packaging</li>
+          </ul>
+          <div class="tier-price">
+            <div class="tier-price-label">Starting from</div>
+            <div class="tier-price-val" id="tierPrice1">$85 <span class="tier-price-unit">/ piece</span></div>
+          </div>
+        </div>
+
+        <div class="tier-card featured zellige-accent">
+          <div class="tier-name">Boutique Stock Tier</div>
+          <div class="tier-range">6 to 50 units — 15% Discount</div>
+          <div class="tier-desc">Curated store displays, mixed assortment packs. Perfect for physical concept stores and established online retailers.</div>
+          <ul class="tier-features">
+            <li>15% volume discount</li>
+            <li>Mixed craft assortment packs</li>
+            <li>Custom color/size options</li>
+            <li>Branded hang tags available</li>
+            <li>Sea or air freight options</li>
+          </ul>
+          <div class="tier-price">
+            <div class="tier-price-label">Starting from</div>
+            <div class="tier-price-val" id="tierPrice2">$72 <span class="tier-price-unit">/ piece</span></div>
+          </div>
+        </div>
+
+        <div class="tier-card zellige-accent">
+          <div class="tier-name">Wholesale Container Tier</div>
+          <div class="tier-range">Bulk — 50+ units — 35% Discount</div>
+          <div class="tier-desc">Direct importer rates, custom branded tags/stamps, ocean freight optimization via Casablanca or Tanger Med ports.</div>
+          <ul class="tier-features">
+            <li>35% wholesale discount</li>
+            <li>Custom branded tags & stamps</li>
+            <li>Full container load (FCL) options</li>
+            <li>Dedicated production coordinator</li>
+            <li>Ocean freight from Casablanca/Tanger Med</li>
+          </ul>
+          <div class="tier-price">
+            <div class="tier-price-label">Starting from</div>
+            <div class="tier-price-val" id="tierPrice3">$55 <span class="tier-price-unit">/ piece</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Pricing Simulator -->
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">📐 Interactive Volume Pricing Simulator</div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline" onclick="resetSimulator()">↻ Reset</button>
+            <button class="btn btn-sm btn-gold" onclick="showToast('Quote exported as PDF', 'success')">📄 Export Quote</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="sim-row header">
+            <div>Product</div>
+            <div>Unit Price (USD)</div>
+            <div>Quantity</div>
+            <div>Subtotal</div>
+          </div>
+          <div id="simRows">
+            <!-- Populated by JS -->
+          </div>
+          <div class="sim-row" style="border-top: 2px solid var(--saffron-gold); margin-top: 0.5rem; padding-top: 0.8rem;">
+            <div class="sim-product" style="color: var(--saffron-light);">TOTAL ESTIMATE</div>
+            <div></div>
+            <div id="simTotalQty" style="font-weight:700; color: white;">0</div>
+            <div id="simTotal" class="sim-total" style="font-size: 1.1rem;">$0.00</div>
+          </div>
+          <div style="margin-top: 0.6rem; font-size: 0.68rem; color: var(--slate-600);">
+            💡 Discount auto-applied: 15% for 6-50 units, 35% for 50+ units per line item.
+          </div>
+        </div>
+      </div>
+
+      <!-- Packaging & Certification -->
+      <div class="glass-card mt-2">
+        <div class="card-header">
+          <div class="card-title">📦 Packaging & Ethical Certification Suite</div>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🛡️ Certifications</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="pill pill-gold">✦ Moroccan Handmade Authenticity Seal</span>
+                <span class="pill pill-green">✦ Fair Trade Direct Artisan</span>
+                <span class="pill pill-blue">✦ Origin Documentation (Certificate)</span>
+                <span class="pill pill-terra">✦ Export Quality Inspection Pass</span>
+              </div>
+            </div>
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">📦 Export Packaging</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="pill pill-slate">✦ Double-boxed protective packaging</span>
+                <span class="pill pill-slate">✦ Eco-friendly kraft paper cushioning</span>
+                <span class="pill pill-slate">✦ Custom pallet wrapping (FCL)</span>
+                <span class="pill pill-slate">✦ Photography-ready retail displays</span>
+              </div>
+            </div>
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🚢 Shipping Methods</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="ship-tag ship-air">✈️ DHL Express (3-5 days)</span>
+                <span class="ship-tag ship-air">✈️ FedEx International (4-7 days)</span>
+                <span class="ship-tag ship-sea">🚢 LCL Sea Freight (25-35 days)</span>
+                <span class="ship-tag ship-sea">🚢 FCL Container (20-30 days)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── TAB 5: FACTURATION & LEGAL ──────── -->
+    <section class="tab-panel" id="panel-legal">
+      <h2 class="section-title">📑 Studio Facturation & <span>Legal Operations</span></h2>
+
+      <!-- Enterprise Info Cards -->
+      <div class="legal-grid">
+        <div class="legal-card">
+          <h3>🏢 Enterprise Legal Entity</h3>
+          <div class="info-row">
+            <div class="info-label">Legal Entity</div>
+            <div class="info-value"><strong>AUTO-ENTREPRENEUR HASSAN TIGUIDDA</strong></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Address</div>
+            <div class="info-value">Les portes de Marrakech Zone 16 imm 118 app 03, Marrakech, Morocco</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">ICE</div>
+            <div class="info-value mono">1161674000043</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Contact / WhatsApp</div>
+            <div class="info-value"><a href="https://wa.me/212632155430">+212 632 155 430</a></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Email</div>
+            <div class="info-value"><a href="mailto:tiguidda76@gmail.com">tiguidda76@gmail.com</a></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Portfolio</div>
+            <div class="info-value"><a href="https://sites.google.com/view/morkech/home" target="_blank">sites.google.com/view/morkech/home</a></div>
+          </div>
+        </div>
+
+        <div class="legal-card">
+          <h3>🏦 Banking & Payment Coordinates</h3>
+          <div class="info-row">
+            <div class="info-label">RIB</div>
+            <div class="info-value mono">007450001399370030009822</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">SWIFT / BIC</div>
+            <div class="info-value mono">BCMAMAMC</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Payment Methods</div>
+            <div class="info-value">
+              <span class="pill pill-blue">Stripe</span>
+              <span class="pill pill-green">Bank Wire (RIB)</span>
+              <span class="pill pill-gold">SWIFT Transfer</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Tax Legal Mention</div>
+            <div class="info-value" style="font-size: 0.72rem; font-style: italic; color: var(--slate-500);">
+              "Montant en dirhams exonéré de la TVA (Art 91 - II - 1° du Code Général des Impôts)"
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Export Incoterms</div>
+            <div class="info-value">
+              <span class="pill pill-terra">EXW Marrakech</span>
+              <span class="pill pill-blue">FOB Casablanca</span>
+              <span class="pill pill-green">DAP / DDP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro Forma Invoice Builder -->
+      <div class="invoice-builder">
+        <div class="invoice-header-bar">
+          <div class="invoice-title">📄 Dynamic Pro Forma Invoice Builder</div>
+          <div class="invoice-controls">
+            <div class="currency-switch" id="currencySwitch">
+              <button class="curr-btn" data-curr="MAD" onclick="switchCurrency('MAD')">MAD 🇲🇦</button>
+              <button class="curr-btn" data-curr="EUR" onclick="switchCurrency('EUR')">EUR €</button>
+              <button class="curr-btn active" data-curr="USD" onclick="switchCurrency('USD')">USD $</button>
+              <button class="curr-btn" data-curr="GBP" onclick="switchCurrency('GBP')">GBP £</button>
+              <button class="curr-btn" data-curr="AUD" onclick="switchCurrency('AUD')">AUD $</button>
+            </div>
+          </div>
+        </div>
+
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th style="width: 35%;">Item Description</th>
+              <th>Specifications</th>
+              <th>Unit Price</th>
+              <th style="width: 80px;">Qty</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+
+        <button class="add-line-btn" id="addLineBtn" onclick="addInvoiceLine()">+ Add Line Item</button>
+
+        <div class="invoice-summary" id="invoiceSummary">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="invoice-footer">
+          <div class="tax-notice">
+            ⚖️ "Montant en dirhams exonéré de la TVA (Art 91 - II - 1° du Code Général des Impôts)"
+            <br>All prices are workshop direct. Export packaging included.
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-outline" onclick="showToast('Packing list generated', 'info')">📋 Packing List</button>
+            <button class="btn btn-terra" onclick="showToast('Certificate of Authenticity generated', 'success')">🛡️ Authenticity Cert</button>
+            <button class="btn btn-gold" onclick="exportInvoicePDF()">📄 Export PDF Invoice</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Modal</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

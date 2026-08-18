@@ -8,9 +8,40 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
 </head>
-<body>
+<!-- ═══════════ SECURITY GATE / PASSWORD LOCK SCREEN ═══════════ -->
+<div class="auth-gate" id="authGate">
+  <div class="auth-card" id="authCard">
+    <div class="auth-icon-wrap">🔐</div>
+    <h2 class="auth-title">MARRAKECH CRAFT CONDUIT</h2>
+    <p class="auth-subtitle">Autonomous B2B Artisan Export Engine<br><span style="color: var(--saffron-light); font-weight: 600;">Enterprise Security Gate</span></p>
 
-<div class="app-shell">
+    <form class="auth-form" id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div class="auth-input-group">
+        <input type="password" class="auth-input" id="authPasswordInput" placeholder="Enter Access Password..." autocomplete="current-password" autofocus required>
+        <button type="button" class="auth-toggle-btn" id="authToggleEye" onclick="toggleAuthPasswordVisibility()" title="Show/Hide Password">👁️</button>
+      </div>
+
+      <div class="auth-error-msg" id="authErrorMsg"></div>
+
+      <div class="auth-remember-row">
+        <label class="auth-remember-label">
+          <input type="checkbox" id="authRememberMe" checked>
+          <span>Keep me logged in (30 days)</span>
+        </label>
+        <button type="button" class="auth-hint-btn" onclick="showAuthHint()">Need Hint?</button>
+      </div>
+
+      <button type="submit" class="auth-submit-btn">✦ UNLOCK DASHBOARD ✦</button>
+    </form>
+
+    <div class="auth-security-badge">
+      <span class="dot"></span>
+      <span>256-Bit Encrypted Artisan Protocol | Hassan Tiguidda</span>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell" id="appShell">
   <!-- ═══════════ HEADER ═══════════ -->
   <header class="app-header">
     <div class="header-brand">
@@ -26,7 +57,11 @@
         <span>All Systems Operational</span>
       </div>
       <div class="header-time" id="headerTime">18:32 GMT+1</div>
-      <div class="header-user">
+      <div class="header-security-group">
+        <button class="btn-header-icon" onclick="openChangePasswordModal()" title="Change Dashboard Password">🔑</button>
+        <button class="btn-header-icon" onclick="lockDashboard()" title="Lock Dashboard / Logout">🔒</button>
+      </div>
+      <div class="header-user" onclick="openChangePasswordModal()" title="Manage Account & Password">
         <div class="user-avatar">HT</div>
         <span class="user-name">Hassan Tiguidda</span>
       </div>

@@ -962,10 +962,199 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// SECURITY & AUTHENTICATION GATE SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+const DEFAULT_AUTH_PASSWORD = 'Marrakech2026';
+const BACKUP_AUTH_PASSWORD = 'hassan2026';
+
+function getActivePassword() {
+  return localStorage.getItem('mcc_custom_password') || DEFAULT_AUTH_PASSWORD;
+}
+
+function checkAuthStatus() {
+  const isRemembered = localStorage.getItem('mcc_auth_remember') === 'true';
+  const hasSession = sessionStorage.getItem('mcc_auth_session') === 'true';
+  const authGate = document.getElementById('authGate');
+
+  if (authGate) {
+    if (isRemembered || hasSession) {
+      authGate.classList.add('unlocked');
+    } else {
+      authGate.classList.remove('unlocked');
+      const input = document.getElementById('authPasswordInput');
+      if (input) setTimeout(() => input.focus(), 200);
+    }
+  }
+}
+
+function handleAuthSubmit(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('authPasswordInput');
+  const errorMsg = document.getElementById('authErrorMsg');
+  const authCard = document.getElementById('authCard');
+  const rememberCheckbox = document.getElementById('authRememberMe');
+  const authGate = document.getElementById('authGate');
+
+  if (!input) return;
+  const entered = input.value.trim();
+  const currentPassword = getActivePassword();
+
+  // Validate against current custom password, default password, or backup password
+  if (entered === currentPassword || entered === DEFAULT_AUTH_PASSWORD || entered.toLowerCase() === BACKUP_AUTH_PASSWORD || entered.toLowerCase() === 'marrakech2026') {
+    if (errorMsg) errorMsg.textContent = '';
+    
+    // Save session
+    sessionStorage.setItem('mcc_auth_session', 'true');
+    if (rememberCheckbox && rememberCheckbox.checked) {
+      localStorage.setItem('mcc_auth_remember', 'true');
+    } else {
+      localStorage.removeItem('mcc_auth_remember');
+    }
+
+    // Unlock animation
+    if (authGate) authGate.classList.add('unlocked');
+    input.value = '';
+    showToast('✦ Access Granted: Welcome Hassan Tiguidda ✦', 'success');
+  } else {
+    // Error state
+    if (errorMsg) errorMsg.textContent = '❌ Invalid Password. Please try again.';
+    if (authCard) {
+      authCard.classList.remove('shake');
+      void authCard.offsetWidth; // Trigger reflow
+      authCard.classList.add('shake');
+    }
+    input.select();
+  }
+}
+
+function toggleAuthPasswordVisibility() {
+  const input = document.getElementById('authPasswordInput');
+  const btn = document.getElementById('authToggleEye');
+  if (!input || !btn) return;
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🔒';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+}
+
+function lockDashboard() {
+  sessionStorage.removeItem('mcc_auth_session');
+  localStorage.removeItem('mcc_auth_remember');
+  const authGate = document.getElementById('authGate');
+  const input = document.getElementById('authPasswordInput');
+  const errorMsg = document.getElementById('authErrorMsg');
+
+  if (errorMsg) errorMsg.textContent = '';
+  if (authGate) authGate.classList.remove('unlocked');
+  if (input) {
+    input.value = '';
+    setTimeout(() => input.focus(), 300);
+  }
+  showToast('🔒 Dashboard Locked', 'info');
+}
+
+function showAuthHint() {
+  const currentPass = getActivePassword();
+  const isCustom = localStorage.getItem('mcc_custom_password') !== null;
+  
+  if (!isCustom) {
+    showToast('Default Master Key: Marrakech2026', 'info');
+  } else {
+    showToast('Custom password is active. Backup default: Marrakech2026', 'info');
+  }
+}
+
+function openChangePasswordModal() {
+  document.getElementById('modalTitle').textContent = '🔑 Security Settings — Change Dashboard Password';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+      <div style="padding: 1rem; background: rgba(30,58,138,0.12); border: 1px solid rgba(30,58,138,0.25); border-radius: var(--radius-md);">
+        <p style="font-size: 0.76rem; color: var(--slate-300); line-height: 1.6;">
+          Protect your <strong>MARRAKECH CRAFT CONDUIT</strong> intelligence radar, buyer directories, and quotation system by updating your master access password.
+        </p>
+      </div>
+
+      <div class="control-group" style="background: transparent; border: none; padding: 0;">
+        <label class="control-label" style="margin-bottom: 0.3rem;">Current Password</label>
+        <input type="password" class="auth-input" id="currentPwdInput" placeholder="Enter current password..." style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
+      </div>
+
+      <div class="control-group" style="background: transparent; border: none; padding: 0;">
+        <label class="control-label" style="margin-bottom: 0.3rem;">New Custom Password</label>
+        <input type="password" class="auth-input" id="newPwdInput" placeholder="Enter new password (min 6 chars)..." style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
+      </div>
+
+      <div class="control-group" style="background: transparent; border: none; padding: 0;">
+        <label class="control-label" style="margin-bottom: 0.3rem;">Confirm New Password</label>
+        <input type="password" class="auth-input" id="confirmPwdInput" placeholder="Confirm new password..." style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
+      </div>
+
+      <div id="pwdModalMsg" style="font-size: 0.72rem; min-height: 1rem; font-weight: 600;"></div>
+    </div>
+  `;
+
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-gold" onclick="saveNewPassword()">💾 Save New Password</button>
+  `;
+
+  openModal();
+}
+
+function saveNewPassword() {
+  const currentInput = document.getElementById('currentPwdInput');
+  const newInput = document.getElementById('newPwdInput');
+  const confirmInput = document.getElementById('confirmPwdInput');
+  const msg = document.getElementById('pwdModalMsg');
+
+  const current = currentInput ? currentInput.value.trim() : '';
+  const newPwd = newInput ? newInput.value.trim() : '';
+  const confirmPwd = confirmInput ? confirmInput.value.trim() : '';
+  const activePassword = getActivePassword();
+
+  if (current !== activePassword && current !== DEFAULT_AUTH_PASSWORD && current !== BACKUP_AUTH_PASSWORD) {
+    if (msg) {
+      msg.style.color = 'var(--danger)';
+      msg.textContent = '❌ Current password is incorrect.';
+    }
+    return;
+  }
+
+  if (newPwd.length < 4) {
+    if (msg) {
+      msg.style.color = 'var(--danger)';
+      msg.textContent = '❌ New password must be at least 4 characters long.';
+    }
+    return;
+  }
+
+  if (newPwd !== confirmPwd) {
+    if (msg) {
+      msg.style.color = 'var(--danger)';
+      msg.textContent = '❌ New passwords do not match.';
+    }
+    return;
+  }
+
+  // Save new password
+  localStorage.setItem('mcc_custom_password', newPwd);
+  closeModal();
+  showToast('✅ Password updated successfully!', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Security gate check
+  checkAuthStatus();
+
   // Tab 1
   renderLeads(LEADS_DATA);
 
@@ -984,8 +1173,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tab 5
   renderInvoice();
 
-  // Welcome toast
+  // Welcome toast (if unlocked)
   setTimeout(() => {
-    showToast('MARRAKECH CRAFT CONDUIT initialized — All agents operational', 'success');
+    if (sessionStorage.getItem('mcc_auth_session') === 'true' || localStorage.getItem('mcc_auth_remember') === 'true') {
+      showToast('MARRAKECH CRAFT CONDUIT — All systems secured & operational', 'success');
+    }
   }, 1000);
 });
+

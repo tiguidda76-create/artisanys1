@@ -1967,3 +1967,1459 @@ body::before {
   transform: translateY(-1px);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   MASS PITCH & BATCH OUTREACH SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+
+/* Table Checkbox & Row Selection */
+.data-table th.col-cb,
+.data-table td.col-cb {
+  width: 44px;
+  text-align: center;
+  padding-left: 0.8rem;
+  padding-right: 0.4rem;
+}
+
+.lead-cb-input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--saffron-gold);
+  cursor: pointer;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.data-table tbody tr.row-selected {
+  background: rgba(217, 119, 6, 0.08) !important;
+  border-left: 3px solid var(--saffron-gold);
+}
+
+.data-table tbody tr.row-selected td {
+  color: var(--slate-200);
+}
+
+/* Floating / Embedded Batch Action Bar */
+.batch-action-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.3rem;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid var(--saffron-gold);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.2rem;
+  box-shadow: 0 8px 30px rgba(217, 119, 6, 0.2), 0 0 20px rgba(30, 58, 138, 0.2);
+  animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.batch-action-bar.active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.batch-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.batch-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--saffron-gold);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+}
+
+.batch-info-text {
+  font-size: 0.82rem;
+  color: var(--slate-200);
+  font-weight: 500;
+}
+
+.batch-info-text strong {
+  color: var(--saffron-light);
+}
+
+.batch-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.batch-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+.btn-mass-pitch {
+  background: linear-gradient(135deg, var(--saffron-gold), var(--terracotta));
+  color: #fff !important;
+  font-weight: 700;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+  transition: all 0.25s;
+}
+
+.btn-mass-pitch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(217, 119, 6, 0.55);
+}
+
+/* Mass Pitch Modal & Dispatch Studio */
+.mass-pitch-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.mass-campaign-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.8rem;
+}
+
+.preset-card {
+  padding: 0.9rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.preset-card:hover {
+  border-color: var(--majorelle-light);
+  background: rgba(30, 58, 138, 0.15);
+}
+
+.preset-card.selected {
+  border-color: var(--saffron-gold);
+  background: rgba(217, 119, 6, 0.12);
+  box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+}
+
+.preset-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--slate-200);
+  margin-bottom: 0.25rem;
+}
+
+.preset-desc {
+  font-size: 0.7rem;
+  color: var(--slate-400);
+  line-height: 1.4;
+}
+
+.mass-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 650px) {
+  .mass-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.toggle-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.76rem;
+  color: var(--slate-300);
+  cursor: pointer;
+}
+
+.toggle-option input[type="checkbox"] {
+  accent-color: var(--saffron-gold);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Mass Recipients Queue Table / Accordion */
+.mass-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.9rem;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  transition: all 0.2s;
+}
+
+.queue-item:hover {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(94, 234, 212, 0.3);
+}
+
+.queue-lead-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.queue-lead-name {
+  font-weight: 700;
+  color: var(--slate-200);
+}
+
+.queue-lead-meta {
+  font-size: 0.68rem;
+  color: var(--slate-400);
+}
+
+.queue-status-tag {
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.queue-status-queued {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--slate-400);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.queue-status-running {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--saffron-light);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  animation: pulse-dot 1.5s infinite;
+}
+
+.queue-status-done {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+/* Dispatch Progress Bar */
+.dispatch-progress-wrap {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--saffron-gold);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 20px rgba(217, 119, 6, 0.15);
+}
+
+.dispatch-progress-wrap.active {
+  display: flex;
+}
+
+.dispatch-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--slate-300);
+}
+
+.dispatch-progress-header strong {
+  color: var(--saffron-light);
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(51, 65, 85, 0.5);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--majorelle-light), var(--saffron-gold), var(--success));
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.dispatch-live-agent-msg {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--majorelle-light);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Segment Mass Blast Card in Tab 3 */
+.segment-blast-card {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 1.2rem 1.4rem;
+  margin-top: 1.2rem;
+  box-shadow: var(--shadow-card);
+}
+
+.segment-blast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.segment-btn-card {
+  padding: 0.75rem 0.9rem;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.segment-btn-card:hover {
+  border-color: var(--saffron-gold);
+  background: rgba(217, 119, 6, 0.1);
+  transform: translateY(-2px);
+}
+
+.segment-card-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--slate-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.segment-card-subtitle {
+  font-size: 0.68rem;
+  color: var(--slate-400);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TAB 2: AI AGENT WORKSPACE & WAR ROOM ("Slack for Artisans")
+   ═══════════════════════════════════════════════════════════ */
+
+.war-room-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.war-room-subtitle {
+  font-size: 0.76rem;
+  color: var(--slate-400);
+}
+
+.war-room-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.agent-pulse-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.pulse-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: pulse-dot 1.8s infinite;
+}
+
+/* 3-Column Container */
+.slack-container {
+  display: grid;
+  grid-template-columns: 270px 1fr 340px;
+  height: calc(100vh - 190px);
+  min-height: 720px;
+  max-height: 900px;
+  background: rgba(10, 17, 33, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-card), 0 0 40px rgba(0,0,0,0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── COLUMN 1: SIDEBAR ── */
+.slack-sidebar {
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 14, 28, 0.95);
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.slack-sidebar-header {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.slack-ws-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.slack-ws-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--majorelle-blue), var(--terracotta));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 0 12px rgba(30, 58, 138, 0.3);
+}
+
+.slack-ws-name {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--saffron-light);
+}
+
+.slack-ws-status {
+  font-size: 0.64rem;
+  color: var(--slate-400);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ws-online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.slack-search-wrap {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.slack-search-input {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--slate-200);
+  font-size: 0.74rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.slack-search-input:focus {
+  border-color: var(--saffron-gold);
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.2);
+}
+
+.slack-nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.8rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.slack-group-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--slate-500);
+}
+
+.slack-group-count {
+  font-size: 0.6rem;
+  background: rgba(51, 65, 85, 0.4);
+  padding: 0.05rem 0.35rem;
+  border-radius: var(--radius-full);
+}
+
+.slack-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.2rem;
+}
+
+.slack-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--slate-400);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+}
+
+.slack-nav-item:hover {
+  background: rgba(30, 41, 59, 0.5);
+  color: var(--slate-200);
+}
+
+.slack-nav-item.active {
+  background: rgba(30, 58, 138, 0.25);
+  border-color: rgba(30, 58, 138, 0.5);
+  color: #fff;
+  font-weight: 600;
+}
+
+.slack-nav-item.active .slack-item-hash {
+  color: var(--saffron-light);
+}
+
+.slack-item-hash {
+  font-weight: 700;
+  color: var(--slate-500);
+  font-size: 0.82rem;
+  width: 14px;
+}
+
+.slack-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slack-item-badge {
+  font-size: 0.62rem;
+  padding: 0.1rem 0.4rem;
+  background: rgba(51, 65, 85, 0.6);
+  color: var(--slate-300);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+
+.badge-urgent {
+  background: var(--terracotta);
+  color: white;
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); box-shadow: 0 0 8px rgba(234, 88, 12, 0.6); }
+}
+
+.agent-avatar-mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.agent-dm-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.agent-role-sub {
+  font-size: 0.6rem;
+  color: var(--slate-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.agent-status-indicator.online {
+  background: var(--success);
+  box-shadow: 0 0 5px var(--success);
+}
+
+.slack-sidebar-footer {
+  padding: 0.75rem 0.9rem;
+  background: rgba(5, 10, 20, 0.9);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.telemetry-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+}
+
+.telemetry-lbl { color: var(--slate-500); }
+.telemetry-val { font-family: var(--font-mono); font-weight: 600; color: var(--slate-300); }
+.text-success { color: var(--success) !important; }
+
+/* ── COLUMN 2: ACTIVE CHAT FEED ── */
+.slack-chat-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(5, 10, 20, 0.45);
+  overflow: hidden;
+}
+
+.slack-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  background: rgba(15, 23, 42, 0.75);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.chat-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chat-target-icon {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--saffron-light);
+}
+
+.chat-target-name {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chat-target-desc {
+  font-size: 0.68rem;
+  color: var(--slate-400);
+  margin-top: 0.15rem;
+}
+
+.chat-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.presence-stack {
+  display: flex;
+  align-items: center;
+  margin-right: 0.4rem;
+}
+
+.stack-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border: 2px solid var(--bg-primary);
+  margin-left: -6px;
+  background: var(--slate-800);
+}
+
+.stack-dot.bg-blue { background: rgba(30, 58, 138, 0.8); }
+.stack-dot.bg-gold { background: rgba(217, 119, 6, 0.8); }
+.stack-dot.bg-green { background: rgba(16, 185, 129, 0.8); }
+.stack-dot.bg-cyan { background: rgba(6, 182, 212, 0.8); }
+
+/* Messages Feed */
+.slack-feed-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.slack-messages-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.feed-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--slate-500);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0.5rem 0;
+}
+
+.feed-divider::before,
+.feed-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.feed-divider span {
+  padding: 0 0.8rem;
+}
+
+/* Individual Slack Message Block */
+.slack-msg {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+
+.slack-msg:hover {
+  background: rgba(30, 41, 59, 0.25);
+}
+
+.slack-msg-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.slack-msg-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.slack-msg-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.slack-author-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.slack-role-tag {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.slack-msg-time {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--slate-500);
+  margin-left: auto;
+}
+
+.slack-msg-text {
+  font-size: 0.78rem;
+  color: var(--slate-300);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* Agent Mention Highlight */
+.agent-mention {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  background: rgba(30, 58, 138, 0.35);
+  border: 1px solid rgba(59, 95, 204, 0.4);
+  color: var(--saffron-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.74rem;
+}
+
+/* Threaded Autonomous Handoff Box */
+.slack-handoff-thread {
+  margin-top: 0.65rem;
+  padding: 0.9rem 1rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  border-radius: var(--radius-md);
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+.slack-handoff-thread::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--saffron-gold), var(--terracotta));
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.handoff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--saffron-light);
+  margin-bottom: 0.6rem;
+}
+
+.handoff-chain-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.handoff-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.74rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.handoff-step-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* Rich Actionable Cards in Feed */
+.slack-action-card {
+  margin-top: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: rgba(20, 30, 50, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+.slack-action-card.card-approved {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.card-title-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card-meta-chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.45rem 0;
+}
+
+.meta-chip {
+  font-size: 0.66rem;
+  padding: 0.15rem 0.45rem;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--slate-300);
+}
+
+.card-action-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-card-action {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-action-approve {
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+}
+
+.btn-action-approve:hover {
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-action-proforma {
+  background: linear-gradient(135deg, #D97706, #F59E0B);
+  color: #000;
+  font-weight: 700;
+}
+
+.btn-action-proforma:hover {
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-action-freight {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #22D3EE;
+}
+
+.btn-action-freight:hover {
+  background: rgba(6, 182, 212, 0.3);
+}
+
+.btn-action-secondary {
+  background: rgba(51, 65, 85, 0.4);
+  border-color: var(--border-subtle);
+  color: var(--slate-300);
+}
+
+/* Typing Indicator */
+.slack-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  color: var(--slate-400);
+  width: fit-content;
+  margin-top: 0.3rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.typing-dots span {
+  width: 4px;
+  height: 4px;
+  background: var(--saffron-light);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* ── Chat Input Container ── */
+.slack-input-container {
+  padding: 0.8rem 1.2rem;
+  background: rgba(8, 14, 28, 0.95);
+  border-top: 1px solid var(--border-subtle);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.slack-mention-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 1.2rem;
+  right: 1.2rem;
+  max-width: 460px;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.mention-popup-header {
+  padding: 0.5rem 0.8rem;
+  background: rgba(30, 58, 138, 0.2);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--saffron-light);
+}
+
+.mention-popup-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.mention-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.74rem;
+  color: var(--slate-300);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mention-item:hover {
+  background: rgba(30, 58, 138, 0.35);
+  color: #fff;
+}
+
+.mention-item small {
+  color: var(--slate-500);
+  margin-left: auto;
+  font-size: 0.65rem;
+}
+
+.slack-quick-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.2rem;
+  scrollbar-width: none;
+}
+
+.slack-quick-pills::-webkit-scrollbar { display: none; }
+
+.pills-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--slate-500);
+  white-space: nowrap;
+}
+
+.quick-pill {
+  padding: 0.2rem 0.6rem;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--slate-300);
+  font-size: 0.68rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-pill:hover {
+  border-color: var(--saffron-gold);
+  background: rgba(217, 119, 6, 0.15);
+  color: #fff;
+}
+
+.slack-input-box-wrap {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: rgba(15, 23, 42, 0.9);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.slack-input-box-wrap:focus-within {
+  border-color: var(--saffron-gold);
+  box-shadow: 0 0 14px rgba(217, 119, 6, 0.2);
+}
+
+.slack-input-box {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  outline: none;
+  resize: none;
+}
+
+.slack-input-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  background: rgba(10, 17, 33, 0.8);
+  border-top: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.input-tools-left {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.input-tool-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.45rem;
+  border-radius: var(--radius-sm);
+  color: var(--slate-400);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.input-tool-btn:hover {
+  background: rgba(51, 65, 85, 0.4);
+  color: #fff;
+}
+
+/* ── COLUMN 3: TASK CONTEXT & ACTION DRAWER ── */
+.slack-context-drawer {
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 14, 28, 0.95);
+  border-left: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.drawer-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--slate-200);
+}
+
+.drawer-content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.context-card {
+  padding: 0.85rem 0.95rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+.context-card.highlight-border {
+  border-color: rgba(217, 119, 6, 0.4);
+  background: rgba(217, 119, 6, 0.04);
+}
+
+.context-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.context-icon { font-size: 1rem; }
+
+.context-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.context-sub {
+  font-size: 0.64rem;
+  color: var(--slate-400);
+}
+
+.context-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.context-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--slate-400);
+}
+
+/* HITL Drawer Queue Items */
+.hitl-queue-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.hitl-card {
+  padding: 0.65rem 0.75rem;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+
+.hitl-card.approved {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.hitl-card-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--slate-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hitl-card-desc {
+  font-size: 0.66rem;
+  color: var(--slate-400);
+}
+
+.hitl-btn-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+/* LangGraph Node Flow */
+.langgraph-nodes-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.4rem;
+}
+
+.langgraph-node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  color: var(--slate-300);
+}
+
+.langgraph-node.completed {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.langgraph-node.completed .node-check {
+  color: var(--success);
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.langgraph-node.active-pulse {
+  border-color: var(--saffron-gold);
+  background: rgba(217, 119, 6, 0.12);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.2);
+}
+
+.node-status-chip {
+  margin-left: auto;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-full);
+  background: rgba(217, 119, 6, 0.3);
+  color: var(--saffron-light);
+}
+
+.node-connector {
+  width: 2px;
+  height: 8px;
+  background: var(--slate-700);
+  margin-left: 1rem;
+}
+
+/* Quick Drawer Action Buttons */
+.drawer-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drawer-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--slate-200);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.drawer-action-btn:hover {
+  border-color: var(--saffron-gold);
+  background: rgba(217, 119, 6, 0.12);
+  transform: translateX(2px);
+}
+
+.drawer-action-btn span {
+  font-size: 1.1rem;
+}
+
+.drawer-action-btn strong {
+  display: block;
+  font-size: 0.72rem;
+  color: #fff;
+}
+
+.drawer-action-btn small {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--slate-400);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .slack-container {
+    grid-template-columns: 240px 1fr 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .slack-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
+  }
+  .slack-sidebar {
+    max-height: 260px;
+  }
+  .slack-context-drawer {
+    display: none;
+  }
+}
+
+
+

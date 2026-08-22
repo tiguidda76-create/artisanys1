@@ -76,8 +76,9 @@
       <span class="tab-badge">18.4K</span>
     </button>
     <button class="tab-btn" data-tab="agents">
-      <span class="tab-icon">🤖</span>
-      <span class="tab-text">Agent Orchestration</span>
+      <span class="tab-icon">💬</span>
+      <span class="tab-text">AI Agent War Room</span>
+      <span class="tab-badge" id="warRoomBadge">2</span>
     </button>
     <button class="tab-btn" data-tab="outreach">
       <span class="tab-icon">✉️</span>
@@ -142,43 +143,38 @@
         <div class="card-header">
           <div class="card-title">📊 B2B Buyer Intelligence Database</div>
           <div class="btn-group">
+            <button class="btn btn-sm btn-mass-pitch" onclick="openMassPitchModal('filtered')">⚡ Mass Pitch (All Visible)</button>
             <button class="btn btn-sm btn-outline" onclick="showToast('Database synced successfully', 'success')">↻ Sync</button>
             <button class="btn btn-sm btn-primary">+ Add Lead</button>
           </div>
         </div>
+
+        <!-- Batch Action Bar (Appears when leads are checked) -->
+        <div class="batch-action-bar" id="batchActionBar">
+          <div class="batch-bar-left">
+            <span class="batch-count-badge" id="batchCountBadge">0 Selected</span>
+            <div class="batch-info-text">
+              Est. Pipeline: <strong id="batchPipelineVal">$0</strong>
+            </div>
+            <div class="batch-tags" id="batchCountryTags"></div>
+          </div>
+          <div class="batch-bar-right">
+            <button class="btn btn-sm btn-mass-pitch" onclick="openMassPitchModal('selected')">⚡ Mass Pitch Selected</button>
+            <button class="btn btn-sm btn-success" onclick="openWhatsAppBatchModal()">💬 Batch WhatsApp</button>
+            <button class="btn btn-sm btn-outline" onclick="clearLeadSelection()">✕ Clear</button>
+          </div>
+        </div>
+
         <div class="filter-bar">
           <div class="filter-group">
-            <span class="filter-label">Country</span>
-            <select class="filter-select" id="filterCountry" onchange="filterLeads()">
-              <option value="all">All Markets</option>
-              <option value="FR">🇫🇷 France</option>
-              <option value="UK">🇬🇧 United Kingdom</option>
-              <option value="ES">🇪🇸 Spain</option>
-              <option value="US">🇺🇸 United States</option>
-              <option value="AU">🇦🇺 Australia</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <span class="filter-label">Business Type</span>
-            <select class="filter-select" id="filterBizType" onchange="filterLeads()">
-              <option value="all">All Types</option>
-              <option value="concept">Concept Store</option>
-              <option value="boutique">Online Boutique</option>
-              <option value="wholesale">Wholesale Importer</option>
-              <option value="interior">Interior Design Studio</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <span class="filter-label">Craft Focus</span>
-            <select class="filter-select" id="filterCraft" onchange="filterLeads()">
-              <option value="all">All Crafts</option>
-              <option value="rugs">Rugs & Kilims</option>
-              <option value="ceramics">Ceramics & Pottery</option>
-              <option value="leather">Leather Goods</option>
-              <option value="brass">Brassware & Lighting</option>
-              <option value="wicker">Wicker & Basketry</option>
-              <option value="wood">Woodwork & Cedar</option>
-            </select>
+            <span class="filter-label">Filter by:</span>
+            <button class="filter-chip active" data-filter="all" onclick="filterByCraft('all', this)">All Crafts</button>
+            <button class="filter-chip" data-filter="rugs" onclick="filterByCraft('rugs', this)">Rugs & Kilims</button>
+            <button class="filter-chip" data-filter="ceramics" onclick="filterByCraft('ceramics', this)">Ceramics</button>
+            <button class="filter-chip" data-filter="brass" onclick="filterByCraft('brass', this)">Brassware</button>
+            <button class="filter-chip" data-filter="leather" onclick="filterByCraft('leather', this)">Leather</button>
+            <button class="filter-chip" data-filter="wicker" onclick="filterByCraft('wicker', this)">Wicker</button>
+            <button class="filter-chip" data-filter="wood" onclick="filterByCraft('wood', this)">Woodwork</button>
           </div>
           <div class="filter-group">
             <input type="text" class="filter-input" placeholder="🔍 Search buyers..." id="filterSearch" oninput="filterLeads()">
@@ -188,6 +184,7 @@
           <table class="data-table" id="leadsTable">
             <thead>
               <tr>
+                <th class="col-cb"><input type="checkbox" id="selectAllCheckbox" class="lead-cb-input" onchange="toggleSelectAllLeads(this)" title="Select all visible buyers"></th>
                 <th>Store / Buyer</th>
                 <th>Type</th>
                 <th>Location</th>
@@ -204,57 +201,365 @@
       </div>
     </section>
 
-    <!-- ──────── TAB 2: AGENT ORCHESTRATION ──────── -->
+    <!-- ──────── TAB 2: AI AGENT WORKSPACE & WAR ROOM ("Slack for Artisans") ──────── -->
     <section class="tab-panel" id="panel-agents">
-      <h2 class="section-title">🤖 Autonomous Multi-Agent <span>Hierarchy</span></h2>
-
-      <!-- Master Orchestrator -->
-      <div class="flow-container">
-        <div class="flow-master">
-          <div class="flow-master-node">
-            <div class="flow-master-icon">👑</div>
-            <div class="flow-master-text">
-              <h3>Master Orchestrator & Strategy Manager</h3>
-              <p>CrewAI + LangGraph | Supervising 7 Sub-Agents | Task Queue: 14 Active</p>
-            </div>
-            <div class="agent-status">
-              <div class="agent-status-dot active"></div>
-              <span style="color: var(--success);">LIVE</span>
-            </div>
-          </div>
+      <div class="war-room-top-header">
+        <div>
+          <h2 class="section-title" style="margin-bottom: 0.25rem;">💬 AI Agent Workspace & <span>War Room</span></h2>
+          <p class="war-room-subtitle">Autonomous multi-agent orchestration console, live handoffs & HITL decision hub ("Slack for Artisans")</p>
         </div>
-        <div class="flow-lines"><div class="flow-line-center"></div></div>
+        <div class="war-room-top-actions">
+          <div class="agent-pulse-badge">
+            <span class="pulse-dot-green"></span>
+            <span>6 Agents Live & Synchronized</span>
+          </div>
+          <button class="btn btn-sm btn-gold" onclick="triggerAutonomousHandoffDemo()">⚡ Run Live Handoff Demo</button>
+        </div>
       </div>
 
-      <!-- Agent Grid -->
-      <div class="agent-grid" id="agentGrid">
-        <!-- Populated by JS -->
-      </div>
+      <!-- 3-COLUMN SLACK LAYOUT -->
+      <div class="slack-container" id="slackContainer">
+        
+        <!-- COLUMN 1: Channel & Agent Directory Sidebar -->
+        <aside class="slack-sidebar">
+          <div class="slack-sidebar-header">
+            <div class="slack-ws-brand">
+              <div class="slack-ws-logo">🏛️</div>
+              <div class="slack-ws-info">
+                <div class="slack-ws-name">MARRAKECH HQ</div>
+                <div class="slack-ws-status"><span class="ws-online-dot"></span> LangGraph Swarm v2.4</div>
+              </div>
+            </div>
+          </div>
 
-      <!-- Orchestration Visualizer -->
-      <div class="orch-visualizer mt-2">
-        <div class="orch-title">⚡ Live Orchestration Feed — LangGraph State Flow</div>
-        <div class="orch-log" id="orchLog">
-          <!-- Populated by JS -->
-        </div>
-        <div class="token-metrics">
-          <div class="metric-bar">
-            <div class="metric-val" id="tokensProcessed">847,293</div>
-            <div class="metric-label">Tokens Processed</div>
+          <div class="slack-search-wrap">
+            <input type="text" class="slack-search-input" id="slackFilterInput" placeholder="🔍 Jump to channel or agent..." oninput="filterSlackSidebar(this.value)">
           </div>
-          <div class="metric-bar">
-            <div class="metric-val" id="tasksCompleted">1,247</div>
-            <div class="metric-label">Tasks Completed</div>
+
+          <div class="slack-nav-scroll">
+            <!-- Channels Section -->
+            <div class="slack-nav-group">
+              <div class="slack-group-title">
+                <span>CHANNELS</span>
+                <span class="slack-group-count">5</span>
+              </div>
+              <div class="slack-item-list" id="slackChannelsList">
+                <button class="slack-nav-item active" data-target="all-hands-strategy" onclick="switchSlackTarget('channel', 'all-hands-strategy')">
+                  <span class="slack-item-hash">#</span>
+                  <span class="slack-item-name">all-hands-strategy</span>
+                  <span class="slack-item-badge">1</span>
+                </button>
+                <button class="slack-nav-item" data-target="leads-radar" onclick="switchSlackTarget('channel', 'leads-radar')">
+                  <span class="slack-item-hash">#</span>
+                  <span class="slack-item-name">leads-radar</span>
+                  <span class="slack-item-badge">NEW</span>
+                </button>
+                <button class="slack-nav-item" data-target="email-outreach-studio" onclick="switchSlackTarget('channel', 'email-outreach-studio')">
+                  <span class="slack-item-hash">#</span>
+                  <span class="slack-item-name">email-outreach-studio</span>
+                  <span class="slack-item-badge">5</span>
+                </button>
+                <button class="slack-nav-item highlight-urgent" data-target="approvals-queue" onclick="switchSlackTarget('channel', 'approvals-queue')">
+                  <span class="slack-item-hash">#</span>
+                  <span class="slack-item-name">approvals-queue</span>
+                  <span class="slack-item-badge badge-urgent" id="approvalsBadge">2</span>
+                </button>
+                <button class="slack-nav-item" data-target="invoicing-export-desk" onclick="switchSlackTarget('channel', 'invoicing-export-desk')">
+                  <span class="slack-item-hash">#</span>
+                  <span class="slack-item-name">invoicing-export-desk</span>
+                  <span class="slack-item-badge">1</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Direct Messages Section -->
+            <div class="slack-nav-group mt-2">
+              <div class="slack-group-title">
+                <span>DIRECT MESSAGES</span>
+                <span class="slack-group-count">6</span>
+              </div>
+              <div class="slack-item-list" id="slackDMsList">
+                <button class="slack-nav-item" data-target="Manager-Hassan-Bot" onclick="switchSlackTarget('dm', 'Manager-Hassan-Bot')">
+                  <span class="agent-avatar-mini" style="background: linear-gradient(135deg, #1E3A8A, #D97706);">👑</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@Manager-Hassan-Bot</span>
+                    <span class="agent-role-sub">Master Orchestrator</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+                <button class="slack-nav-item" data-target="Leads-Scraper" onclick="switchSlackTarget('dm', 'Leads-Scraper')">
+                  <span class="agent-avatar-mini" style="background: rgba(30, 58, 138, 0.5);">🔍</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@Leads-Scraper</span>
+                    <span class="agent-role-sub">Prospecting (5 Markets)</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+                <button class="slack-nav-item" data-target="Multilingual-Pitcher" onclick="switchSlackTarget('dm', 'Multilingual-Pitcher')">
+                  <span class="agent-avatar-mini" style="background: rgba(217, 119, 6, 0.5);">✍️</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@Multilingual-Pitcher</span>
+                    <span class="agent-role-sub">FR / EN / ES Copywriter</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+                <button class="slack-nav-item" data-target="QC-Approver" onclick="switchSlackTarget('dm', 'QC-Approver')">
+                  <span class="agent-avatar-mini" style="background: rgba(16, 185, 129, 0.5);">🛡️</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@QC-Approver</span>
+                    <span class="agent-role-sub">Brand Voice & Accuracy</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+                <button class="slack-nav-item" data-target="Legal-Billing" onclick="switchSlackTarget('dm', 'Legal-Billing')">
+                  <span class="agent-avatar-mini" style="background: rgba(194, 65, 12, 0.5);">⚖️</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@Legal-Billing</span>
+                    <span class="agent-role-sub">Auto-Entrepreneur & Tax</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+                <button class="slack-nav-item" data-target="Freight-Logistics" onclick="switchSlackTarget('dm', 'Freight-Logistics')">
+                  <span class="agent-avatar-mini" style="background: rgba(6, 182, 212, 0.5);">🚢</span>
+                  <div class="agent-dm-info">
+                    <span class="slack-item-name">@Freight-Logistics</span>
+                    <span class="agent-role-sub">DHL & Maritime Freight</span>
+                  </div>
+                  <span class="agent-status-indicator online"></span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="metric-bar">
-            <div class="metric-val" id="avgLatency">1.2s</div>
-            <div class="metric-label">Avg Latency</div>
+
+          <!-- Mini Telemetry Footer -->
+          <div class="slack-sidebar-footer">
+            <div class="telemetry-row">
+              <span class="telemetry-lbl">Processed Tokens:</span>
+              <span class="telemetry-val" id="slackTokensCount">849,120</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-lbl">HITL Pass Rate:</span>
+              <span class="telemetry-val text-success">99.2%</span>
+            </div>
           </div>
-          <div class="metric-bar">
-            <div class="metric-val" id="hitlApprovals">98.4%</div>
-            <div class="metric-label">HITL Approval Rate</div>
+        </aside>
+
+        <!-- COLUMN 2: Center Active Chat Feed -->
+        <main class="slack-chat-col">
+          <!-- Chat Header -->
+          <div class="slack-chat-header">
+            <div class="chat-header-info">
+              <div class="chat-header-title-row">
+                <span class="chat-target-icon" id="chatTargetIcon">#</span>
+                <h3 class="chat-target-name" id="chatTargetName">all-hands-strategy</h3>
+                <span class="chat-target-badge pill pill-gold" id="chatTargetPill">Coordination Hub</span>
+              </div>
+              <div class="chat-target-desc" id="chatTargetDesc">Manager status board & cross-agent synchronization across all export pipelines</div>
+            </div>
+            <div class="chat-header-tools">
+              <div class="presence-stack" title="Active agents in channel">
+                <span class="stack-dot bg-blue" title="Manager-Hassan-Bot">👑</span>
+                <span class="stack-dot bg-gold" title="Multilingual-Pitcher">✍️</span>
+                <span class="stack-dot bg-green" title="QC-Approver">🛡️</span>
+                <span class="stack-dot bg-cyan" title="Freight-Logistics">🚢</span>
+              </div>
+              <button class="btn btn-sm btn-gold" onclick="triggerAutonomousHandoffDemo()" title="Simulate autonomous handoff chain">⚡ Handoff Demo</button>
+              <button class="btn btn-sm btn-outline" onclick="clearCurrentChatFeed()" title="Clear view">🧹 Clear</button>
+            </div>
           </div>
-        </div>
+
+          <!-- Active Message Feed Scroll Area -->
+          <div class="slack-feed-scroll" id="slackFeedScroll">
+            <div class="slack-messages-wrap" id="slackMessagesWrap">
+              <!-- Dynamically rendered by JS -->
+            </div>
+            <div class="slack-typing-indicator" id="slackTypingIndicator" style="display: none;">
+              <span class="typing-icon">🤖</span>
+              <span class="typing-text" id="slackTypingText">Agent is processing...</span>
+              <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+
+          <!-- Chat Input Controls & Mentions -->
+          <div class="slack-input-container">
+            <!-- Mention Autocomplete Popup -->
+            <div class="slack-mention-popup" id="slackMentionPopup" style="display: none;">
+              <div class="mention-popup-header">Mention an AI Specialist:</div>
+              <div class="mention-popup-list" id="mentionPopupList">
+                <div class="mention-item" onclick="insertMention('@Manager-Hassan-Bot')">
+                  <span>👑</span> <strong>@Manager-Hassan-Bot</strong> <small>Master Orchestrator</small>
+                </div>
+                <div class="mention-item" onclick="insertMention('@Leads-Scraper')">
+                  <span>🔍</span> <strong>@Leads-Scraper</strong> <small>Prospecting (FR, UK, ES, US, AU)</small>
+                </div>
+                <div class="mention-item" onclick="insertMention('@Multilingual-Pitcher')">
+                  <span>✍️</span> <strong>@Multilingual-Pitcher</strong> <small>French / English / Spanish Copy</small>
+                </div>
+                <div class="mention-item" onclick="insertMention('@QC-Approver')">
+                  <span>🛡️</span> <strong>@QC-Approver</strong> <small>Brand Voice & HITL Signoff</small>
+                </div>
+                <div class="mention-item" onclick="insertMention('@Legal-Billing')">
+                  <span>⚖️</span> <strong>@Legal-Billing</strong> <small>Pro Forma, ICE & Auto-Entrepreneur</small>
+                </div>
+                <div class="mention-item" onclick="insertMention('@Freight-Logistics')">
+                  <span>🚢</span> <strong>@Freight-Logistics</strong> <small>DHL Express & Maritime Freight</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Prompt Pills -->
+            <div class="slack-quick-pills">
+              <span class="pills-label">Quick Actions:</span>
+              <button class="quick-pill" onclick="insertPromptQuick('@Legal-Billing generate quote for 10 Beni Ourain rugs to Madrid')">@Legal-Billing quote 10 rugs Madrid</button>
+              <button class="quick-pill" onclick="insertPromptQuick('@Freight-Logistics calculate DHL Express vs Sea Freight for 50kg ceramics to London')">@Freight-Logistics DHL vs Sea London</button>
+              <button class="quick-pill" onclick="insertPromptQuick('@Leads-Scraper scan high-end Marais concept stores in Paris for pottery')">@Leads-Scraper scan Paris stores</button>
+              <button class="quick-pill" onclick="insertPromptQuick('@Multilingual-Pitcher craft bespoke French pitch with 0-MOQ discovery pack')">@Multilingual-Pitcher French 0-MOQ pitch</button>
+            </div>
+
+            <!-- Input Box -->
+            <div class="slack-input-box-wrap">
+              <textarea class="slack-input-box" id="slackInputBox" placeholder="Message #all-hands-strategy or type @ to mention an agent..." rows="2" onkeydown="handleSlackInputKey(event)" oninput="handleSlackInputText(this)"></textarea>
+              <div class="slack-input-bottom-bar">
+                <div class="input-tools-left">
+                  <button class="input-tool-btn" onclick="toggleMentionPopup()" title="Mention Agent">@</button>
+                  <button class="input-tool-btn" onclick="insertEmoji('✨')" title="Add Sparkles">✨</button>
+                  <button class="input-tool-btn" onclick="insertEmoji('📦')" title="Add Box">📦</button>
+                  <button class="input-tool-btn" onclick="insertEmoji('📄')" title="Add Document">📄</button>
+                </div>
+                <div class="input-tools-right">
+                  <button class="btn btn-sm btn-primary" onclick="sendSlackUserMessage()">Send ↵</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- COLUMN 3: Task Context & Quick Action Drawer -->
+        <aside class="slack-context-drawer">
+          <div class="drawer-header">
+            <div class="drawer-title">⚡ War Room Intelligence</div>
+            <span class="pill pill-gold">HITL Live</span>
+          </div>
+
+          <div class="drawer-content-scroll">
+            <!-- Active Mission Card -->
+            <div class="context-card">
+              <div class="context-card-header">
+                <span class="context-icon">🎯</span>
+                <div>
+                  <div class="context-title">Active Campaign Objective</div>
+                  <div class="context-sub">Q1 European & US Artisan Scale</div>
+                </div>
+              </div>
+              <div class="context-body">
+                <div class="context-metric-row">
+                  <span>Target Markets:</span>
+                  <span style="color: var(--slate-200);">🇫🇷 FR, 🇬🇧 UK, 🇪🇸 ES, 🇺🇸 US, 🇦🇺 AU</span>
+                </div>
+                <div class="context-metric-row">
+                  <span>Pipeline Phase:</span>
+                  <span class="pill pill-blue" style="font-size: 0.65rem;">Phase 3: Autonomous Pitching</span>
+                </div>
+                <div class="context-metric-row">
+                  <span>Active HITL Queue:</span>
+                  <strong style="color: var(--warning);" id="drawerPendingCount">2 Pending Review</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Human in the Loop (HITL) Action Queue Card -->
+            <div class="context-card highlight-border">
+              <div class="context-card-header">
+                <span class="context-icon">🛡️</span>
+                <div>
+                  <div class="context-title">Human-in-the-Loop Actions</div>
+                  <div class="context-sub">Signoffs requiring artisan director approval</div>
+                </div>
+              </div>
+              <div class="hitl-queue-items" id="hitlQueueItems">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- LangGraph State Machine Live Visualizer -->
+            <div class="context-card">
+              <div class="context-card-header">
+                <span class="context-icon">⚡</span>
+                <div>
+                  <div class="context-title">LangGraph State Machine</div>
+                  <div class="context-sub">Real-time DAG Execution Flow</div>
+                </div>
+              </div>
+              <div class="langgraph-nodes-flow">
+                <div class="langgraph-node completed" id="node-scrape">
+                  <span class="node-icon">🔍</span>
+                  <span class="node-name">1. Lead Discovery</span>
+                  <span class="node-check">✓</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="langgraph-node completed" id="node-draft">
+                  <span class="node-icon">✍️</span>
+                  <span class="node-name">2. Copywriting</span>
+                  <span class="node-check">✓</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="langgraph-node active-pulse" id="node-qc">
+                  <span class="node-icon">🛡️</span>
+                  <span class="node-name">3. QC Audit</span>
+                  <span class="node-status-chip">ACTIVE</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="langgraph-node pending" id="node-hitl">
+                  <span class="node-icon">👤</span>
+                  <span class="node-name">4. HITL Signoff</span>
+                  <span class="node-status-chip">WAITING</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="langgraph-node pending" id="node-dispatch">
+                  <span class="node-icon">🚀</span>
+                  <span class="node-name">5. Export & Billing</span>
+                  <span class="node-status-chip">QUEUED</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instant Actions Drawer -->
+            <div class="context-card">
+              <div class="context-card-header">
+                <span class="context-icon">🛠️</span>
+                <div>
+                  <div class="context-title">Quick Action Triggers</div>
+                  <div class="context-sub">Execute immediate agent tools</div>
+                </div>
+              </div>
+              <div class="drawer-action-buttons">
+                <button class="drawer-action-btn" onclick="executeQuickAction('calcFreight')">
+                  <span>📦</span>
+                  <div>
+                    <strong>Calculate Landed Cost</strong>
+                    <small>DHL Express vs Sea Freight to EU/US</small>
+                  </div>
+                </button>
+                <button class="drawer-action-btn" onclick="executeQuickAction('generateProForma')">
+                  <span>📄</span>
+                  <div>
+                    <strong>Generate Pro Forma Quote</strong>
+                    <small>Auto-entrepreneur invoice with ICE/RIB</small>
+                  </div>
+                </button>
+                <button class="drawer-action-btn" onclick="executeQuickAction('triggerScrape')">
+                  <span>🌐</span>
+                  <div>
+                    <strong>Scan 5 Export Markets</strong>
+                    <small>Scrape Faire, Ankorstore & Google Places</small>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
       </div>
     </section>
 
@@ -262,7 +567,44 @@
     <section class="tab-panel" id="panel-outreach">
       <h2 class="section-title">✉️ Multilingual Outreach & <span>Lookbook Studio</span></h2>
 
-      <div class="outreach-studio">
+      <!-- 1-Click Segment Mass Blast Studio -->
+      <div class="segment-blast-card">
+        <div class="card-header" style="margin-bottom: 0.5rem;">
+          <div class="card-title">🚀 1-Click Multi-Agent Segment Mass Campaigns</div>
+          <span class="pill pill-gold">Autonomous Personalization</span>
+        </div>
+        <p style="font-size: 0.74rem; color: var(--slate-400);">
+          Launch high-converting personalized pitches across entire market segments in parallel. The Outreach Agent auto-localizes copy, crafts, and currency for each recipient.
+        </p>
+        <div class="segment-blast-grid">
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('FR')">
+            <div class="segment-card-title"><span>🇫🇷 French Concept Stores</span> <span class="pill pill-blue">3 Buyers</span></div>
+            <div class="segment-card-subtitle">Paris, Lyon & Aix • French • 0-MOQ Sample Focus</div>
+          </div>
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('UK')">
+            <div class="segment-card-title"><span>🇬🇧 UK Boutique Network</span> <span class="pill pill-blue">3 Buyers</span></div>
+            <div class="segment-card-subtitle">London & Brighton • English • Luxury Boho</div>
+          </div>
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('US')">
+            <div class="segment-card-title"><span>🇺🇸 US Designers & Boutiques</span> <span class="pill pill-gold">4 Buyers</span></div>
+            <div class="segment-card-subtitle">NYC, LA & Brooklyn • English • Trade & Bulk</div>
+          </div>
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('ES')">
+            <div class="segment-card-title"><span>🇪🇸 Spanish Retail Curators</span> <span class="pill pill-terra">3 Buyers</span></div>
+            <div class="segment-card-subtitle">Madrid & Barcelona • Spanish • Pottery & Brass</div>
+          </div>
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('AU')">
+            <div class="segment-card-title"><span>🇦🇺 Australian Coastal Stores</span> <span class="pill pill-green">3 Buyers</span></div>
+            <div class="segment-card-subtitle">Byron Bay & Sydney • English • Wicker & Rugs</div>
+          </div>
+          <div class="segment-btn-card" onclick="launchSegmentCampaign('all')">
+            <div class="segment-card-title"><span>🌐 Full Global Radar</span> <span class="pill pill-gold">18 Buyers</span></div>
+            <div class="segment-card-subtitle">All 5 Markets • Multi-Language • €1.47M Pipeline</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outreach-studio mt-2">
         <div class="studio-controls">
           <div class="control-group">
             <label class="control-label">🎯 Target Market</label>

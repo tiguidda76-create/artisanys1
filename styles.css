@@ -506,7 +506,113 @@ body::before {
   width: 180px;
 }
 
-/* ── Data Table ────────────────────────────────────────────── */
+/* ── Filter Chips (Métiers) ────────────────────────────────── */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--slate-400);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: var(--slate-200);
+  border-color: var(--slate-600);
+  transform: translateY(-1px);
+}
+
+.filter-chip.active {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(194, 65, 12, 0.2));
+  border-color: var(--saffron-gold);
+  color: var(--saffron-light);
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.25);
+  font-weight: 700;
+}
+
+/* ── Category Tabs (Catalog) ───────────────────────────────── */
+.category-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+}
+
+.cat-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--slate-400);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cat-tab:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: var(--slate-200);
+  border-color: var(--slate-600);
+}
+
+.cat-tab.active {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(194, 65, 12, 0.15));
+  border-color: var(--saffron-gold);
+  color: var(--saffron-light);
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+}
+
+/* ── Currency Switch (Facturation) ─────────────────────────── */
+.currency-switch {
+  display: inline-flex;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.curr-btn {
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--slate-400);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.curr-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.curr-btn.active {
+  background: linear-gradient(135deg, var(--saffron-gold), var(--terracotta));
+  color: #fff;
+  font-weight: 700;
+}
+
 .data-table-wrap {
   overflow-x: auto;
 }

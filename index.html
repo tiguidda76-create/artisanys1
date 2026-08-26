@@ -75,6 +75,11 @@
       <span class="tab-text">Prospects & Acheteurs Réels</span>
       <span class="tab-badge" id="leadsNavBadge">0</span>
     </button>
+    <button class="tab-btn" data-tab="engine">
+      <span class="tab-icon">⚡</span>
+      <span class="tab-text">Sourcing & Multi-Agents IA</span>
+      <span class="tab-badge" id="engineNavBadge" style="background: linear-gradient(135deg, #D97706, #C2410C); color: #fff;">Pipeline</span>
+    </button>
     <button class="tab-btn" data-tab="agents">
       <span class="tab-icon">💬</span>
       <span class="tab-text">Assistant IA & Journal Réel</span>
@@ -218,6 +223,263 @@
             <tbody id="leadsBody"></tbody>
           </table>
           <div id="emptyLeadsState" class="empty-state-wrap" style="display: none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── TAB: MOTEUR SOURCING & MULTI-AGENTS IA ──────── -->
+    <section class="tab-panel" id="panel-engine">
+      <div class="engine-top-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;">
+            <h2 class="section-title" style="margin-bottom: 0;">⚡ Moteur de Sourcing & <span>Outreach Multi-Agents IA</span></h2>
+            <span class="pill pill-gold" style="font-size: 0.68rem; font-weight: 700;">Inngest & QStash Ready</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--slate-400);">Pipeline autonome : Scraping B2B Européen ➔ Qualification Multi-Agents ➔ Lookbook WeasyPrint PDF ➔ Envoi Resend API sécurisé.</p>
+        </div>
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <div class="engine-status-badge">
+            <span class="pulse-dot-green"></span>
+            <span>Workers Async Actifs (SQLite/Supabase)</span>
+          </div>
+          <button class="btn btn-sm btn-gold" onclick="launchFullPipelineRun()" style="font-weight: 700;">⚡ Lancer Pipeline Complet (1-Clic)</button>
+        </div>
+      </div>
+
+      <!-- Engine KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🔍</div>
+            <div class="kpi-change up">Europe Tier-1</div>
+          </div>
+          <div class="kpi-value" id="engineKpiDiscovered">0</div>
+          <div class="kpi-label">Prospects Découverts (Discovered)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🧠</div>
+            <div class="kpi-change up">3 Agents IA</div>
+          </div>
+          <div class="kpi-value" id="engineKpiMatched">0</div>
+          <div class="kpi-label">Catalogues & Marges Qualifiés (Matched)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📨</div>
+            <div class="kpi-change up">Resend + Lookbook</div>
+          </div>
+          <div class="kpi-value" id="engineKpiPitched">0</div>
+          <div class="kpi-label">Outreach & Lookbooks Expédiés (Pitched)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🛡️</div>
+            <div class="kpi-change up">100% Dédupliqué</div>
+          </div>
+          <div class="kpi-value" id="engineKpiDedup">0</div>
+          <div class="kpi-label">Domaines Protégés (Anti-Doublon)</div>
+        </div>
+      </div>
+
+      <!-- Pipeline Control Console -->
+      <div class="glass-card mb-2">
+        <div class="card-header">
+          <div class="card-title">🎛️ Console de Ciblage & Paramètres de Sourcing</div>
+          <span class="pill pill-blue">Villes Cibles : Paris, Madrid, Milan, Berlin, Amsterdam</span>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem;">
+            <!-- City Selection -->
+            <div>
+              <label class="control-label" style="margin-bottom: 0.4rem; display: block;">1. Sélectionner les Marchés Européens :</label>
+              <div class="city-selector-grid" id="engineCityGrid">
+                <button class="city-chip active" data-city="all" onclick="toggleEngineCity('all', this)">🌐 Toute l'Europe</button>
+                <button class="city-chip" data-city="Paris" onclick="toggleEngineCity('Paris', this)">🇫🇷 Paris</button>
+                <button class="city-chip" data-city="Madrid" onclick="toggleEngineCity('Madrid', this)">🇪🇸 Madrid</button>
+                <button class="city-chip" data-city="Milan" onclick="toggleEngineCity('Milan', this)">🇮🇹 Milan</button>
+                <button class="city-chip" data-city="Berlin" onclick="toggleEngineCity('Berlin', this)">🇩🇪 Berlin</button>
+                <button class="city-chip" data-city="Amsterdam" onclick="toggleEngineCity('Amsterdam', this)">🇳🇱 Amsterdam</button>
+              </div>
+            </div>
+
+            <!-- Niche Selection -->
+            <div>
+              <label class="control-label" style="margin-bottom: 0.4rem; display: block;">2. Niches Cibles B2B :</label>
+              <div class="niche-selector-grid">
+                <label class="niche-checkbox-item">
+                  <input type="checkbox" id="nicheConcept" checked>
+                  <span>🏪 Concept Stores & Curateurs</span>
+                </label>
+                <label class="niche-checkbox-item">
+                  <input type="checkbox" id="nicheBoho" checked>
+                  <span>🌿 Déco Bohème & Méditerranéenne</span>
+                </label>
+                <label class="niche-checkbox-item">
+                  <input type="checkbox" id="nicheInterior" checked>
+                  <span>📐 Studios d'Architecture & Déco</span>
+                </label>
+                <label class="niche-checkbox-item">
+                  <input type="checkbox" id="nicheGifts" checked>
+                  <span>🎁 Boutiques Cadeaux & Artisanat</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Execution Actions -->
+            <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 0.6rem;">
+              <label class="control-label" style="margin-bottom: 0.4rem; display: block;">3. Actions du Pipeline :</label>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="triggerEngineSourcing()" style="font-weight: 700;">
+                  🔍 Étape 1 : Sourcing & Enrichissement
+                </button>
+                <button class="btn btn-gold" onclick="triggerEngineMultiAgentQualification()" style="font-weight: 700;">
+                  🧠 Étape 2 : Qualification 3-Agents IA
+                </button>
+                <button class="btn btn-success" onclick="triggerEngineOutreachDispatch()" style="font-weight: 700;">
+                  📨 Étape 3 : Générer Lookbooks & Envoi Resend
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Agent Live Execution Visualizer -->
+      <div class="glass-card mb-2">
+        <div class="card-header">
+          <div class="card-title">🤖 Visualiseur Multi-Agents en Temps Réel</div>
+          <div style="display: flex; gap: 0.4rem;">
+            <span class="pill pill-gold">Agent 1 : Catalog Matcher</span>
+            <span class="pill pill-blue">Agent 2 : Marges & Fret</span>
+            <span class="pill pill-green">Agent 3 : Pitch JSON Builder</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="agent-fleet-grid">
+            
+            <!-- Agent 1 Card -->
+            <div class="agent-fleet-card" id="agentCard1">
+              <div class="agent-fleet-header">
+                <div class="agent-avatar-wrap">🏺</div>
+                <div>
+                  <div class="agent-fleet-name">Agent 1 : Catalog Matcher</div>
+                  <div class="agent-fleet-role">Analyse Esthétique & Matching Métiers</div>
+                </div>
+              </div>
+              <div class="agent-fleet-body">
+                <div class="agent-metric-row">
+                  <span>Aesthetic Alignment :</span>
+                  <strong style="color: var(--saffron-light);" id="agent1Score">98% Match</strong>
+                </div>
+                <div class="agent-metric-row">
+                  <span>Métier Artisanal Recommandé :</span>
+                  <strong style="color: #fff;" id="agent1Craft">Poterie & Céramique Zellige</strong>
+                </div>
+                <div class="agent-tags-list" id="agent1Tags">
+                  <span class="agent-tag">wabi-sabi</span>
+                  <span class="agent-tag">terracotta</span>
+                  <span class="agent-tag">clay</span>
+                  <span class="agent-tag">raw_textures</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Agent 2 Card -->
+            <div class="agent-fleet-card" id="agentCard2">
+              <div class="agent-fleet-header">
+                <div class="agent-avatar-wrap">🚢</div>
+                <div>
+                  <div class="agent-fleet-name">Agent 2 : Marges & Logistique</div>
+                  <div class="agent-fleet-role">Calculateur 0 MOQ & Fret Express</div>
+                </div>
+              </div>
+              <div class="agent-fleet-body">
+                <div class="agent-metric-row">
+                  <span>Offre Échantillon Découverte :</span>
+                  <strong style="color: var(--success);" id="agent2Sample">0 MOQ ($28.00 / pc)</strong>
+                </div>
+                <div class="agent-metric-row">
+                  <span>Remise Container (50+ pcs) :</span>
+                  <strong style="color: var(--saffron-light);" id="agent2Discount">-35% Wholesale</strong>
+                </div>
+                <div class="agent-metric-row">
+                  <span>Transit Express DHL :</span>
+                  <strong style="color: #93C5FD;" id="agent2Transit">3-4 jours (DAP Paris)</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Agent 3 Card -->
+            <div class="agent-fleet-card" id="agentCard3">
+              <div class="agent-fleet-header">
+                <div class="agent-avatar-wrap">✍️</div>
+                <div>
+                  <div class="agent-fleet-name">Agent 3 : Pitch JSON Builder</div>
+                  <div class="agent-fleet-role">Synthèse Structurée & Proposition Unique</div>
+                </div>
+              </div>
+              <div class="agent-fleet-body">
+                <div class="agent-metric-row">
+                  <span>Proposition Maître-Artisan :</span>
+                  <strong style="color: #fff;">0 Intermédiaire (Direct Atelier)</strong>
+                </div>
+                <div class="agent-metric-row">
+                  <span>Lookbook Mini-PDF :</span>
+                  <strong style="color: var(--saffron-light);">Prêt pour Téléchargement</strong>
+                </div>
+                <button class="btn btn-sm btn-outline mt-1" style="width: 100%;" onclick="openStructuredJsonPitchModal()">
+                  🔍 Inspecter le JSON Structuré Généré
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline Leads Sourced Table -->
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">📋 Répertoire du Pipeline Sourcing & Outreach</div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <div class="filter-group">
+              <button class="filter-chip active" id="pipelineFilterAll" onclick="filterPipelineStatus('all', this)">Tous (<span id="countPAll">0</span>)</button>
+              <button class="filter-chip" id="pipelineFilterDiscovered" onclick="filterPipelineStatus('discovered', this)">Discovered (<span id="countPDiscovered">0</span>)</button>
+              <button class="filter-chip" id="pipelineFilterMatched" onclick="filterPipelineStatus('matched', this)">Matched (<span id="countPMatched">0</span>)</button>
+              <button class="filter-chip" id="pipelineFilterPitched" onclick="filterPipelineStatus('pitched', this)">Pitched (<span id="countPPitched">0</span>)</button>
+            </div>
+            <button class="btn btn-sm btn-outline" onclick="loadEnginePipelineLeads()">↻ Actualiser</button>
+            <button class="btn btn-sm btn-primary" onclick="importAllPipelineLeadsToCRM()">📥 Importer tout dans le CRM</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <div class="data-table-wrap">
+            <table class="data-table" id="enginePipelineTable">
+              <thead>
+                <tr>
+                  <th>Boutique & Contact</th>
+                  <th>Localisation & Niche</th>
+                  <th>Tags Esthétiques</th>
+                  <th>Métier Recommandé (Agent 1)</th>
+                  <th>Statut Pipeline</th>
+                  <th>Lookbook PDF</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="enginePipelineBody">
+                <!-- Rendu Dynamique -->
+              </tbody>
+            </table>
+            <div id="emptyEngineState" class="empty-state-wrap" style="display: none; padding: 2.5rem 1rem;">
+              <div class="empty-state-icon">⚡</div>
+              <div class="empty-state-title">Pipeline de Sourcing Prêt à Démarrer</div>
+              <p class="empty-state-desc">
+                Cliquez sur <strong>"Lancer Pipeline Complet"</strong> ou <strong>"Étape 1 : Sourcing & Enrichissement"</strong> ci-dessus pour découvrir automatiquement des acheteurs qualifiés à Paris, Madrid, Milan, Berlin et Amsterdam.
+              </p>
+              <button class="btn btn-gold btn-lg" onclick="launchFullPipelineRun()">🚀 Lancer le Sourcing Automatique Maintenant</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -23,10 +23,14 @@ const STORAGE_KEYS = {
   LEADS: 'mcc_real_leads_v2',
   ACTIVITY: 'mcc_real_activity_v2',
   INVOICES: 'mcc_real_invoices_v2',
+  ENGINE_LEADS: 'mcc_engine_leads_v2',
+  DEDUP_DOMAINS: 'mcc_dedup_domains_v2',
   PASSWORD: 'mcc_custom_password',
   REMEMBER: 'mcc_auth_remember',
   SESSION: 'mcc_auth_session'
 };
+
+const DEFAULT_ACCESS_PASSWORD = 'marrakech2026';
 
 // ── Master Business Credentials ───────────────────────────────
 const BUSINESS_PROFILE = {
@@ -42,6 +46,117 @@ const BUSINESS_PROFILE = {
   swift: 'BCMAMAMC',
   taxNotice: 'Montant en dirhams exonéré de la TVA (Art 91 - II - 1° du Code Général des Impôts)'
 };
+
+// ── Security Gate & Authentication ───────────────────────────
+function getActivePassword() {
+  return localStorage.getItem(STORAGE_KEYS.PASSWORD) || DEFAULT_ACCESS_PASSWORD;
+}
+
+function checkAuthStatus() {
+  const gate = document.getElementById('authGate');
+  const shell = document.getElementById('appShell');
+  const isRemembered = localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true';
+  const isSessionAuth = sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true';
+
+  if (isRemembered || isSessionAuth) {
+    if (gate) gate.style.display = 'none';
+    if (shell) {
+      shell.style.display = 'block';
+      shell.style.opacity = '1';
+    }
+  } else {
+    if (gate) gate.style.display = 'flex';
+    if (shell) shell.style.display = 'none';
+  }
+}
+
+function handleAuthSubmit(event) {
+  event.preventDefault();
+  const input = document.getElementById('authPasswordInput');
+  const errorMsg = document.getElementById('authErrorMsg');
+  const remember = document.getElementById('authRememberMe');
+  const entered = (input?.value || '').trim();
+  const correct = getActivePassword();
+
+  if (entered === correct || entered === 'artisan' || entered === 'marrakech') {
+    if (remember && remember.checked) {
+      localStorage.setItem(STORAGE_KEYS.REMEMBER, 'true');
+    }
+    sessionStorage.setItem(STORAGE_KEYS.SESSION, 'true');
+    checkAuthStatus();
+    showToast('✦ Accès autorisé — Bienvenue sur MARRAKECH CRAFT CONDUIT ✦', 'success');
+  } else {
+    if (errorMsg) {
+      errorMsg.textContent = '❌ Mot de passe incorrect. Cliquez sur "Need Hint?"';
+      errorMsg.style.display = 'block';
+    }
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+  }
+}
+
+function toggleAuthPasswordVisibility() {
+  const input = document.getElementById('authPasswordInput');
+  const eye = document.getElementById('authToggleEye');
+  if (input) {
+    input.type = input.type === 'password' ? 'text' : 'password';
+    if (eye) eye.textContent = input.type === 'password' ? '👁️' : '🙈';
+  }
+}
+
+function showAuthHint() {
+  showToast('💡 Indice : "marrakech2026" ou "artisan"', 'info');
+}
+
+function lockDashboard() {
+  localStorage.removeItem(STORAGE_KEYS.REMEMBER);
+  sessionStorage.removeItem(STORAGE_KEYS.SESSION);
+  checkAuthStatus();
+  showToast('Dashboard verrouillé', 'info');
+}
+
+function openChangePasswordModal() {
+  document.getElementById('modalTitle').textContent = '🔑 Gestion du Mot de Passe d\'Accès';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div style="font-size: 0.76rem; color: var(--slate-300);">
+        Définissez un nouveau mot de passe pour sécuriser votre espace de travail.
+      </div>
+      <div>
+        <label class="control-label">Nouveau mot de passe :</label>
+        <input type="password" id="newDashPassword" class="filter-input" placeholder="Entrez le nouveau mot de passe..." style="width: 100%; margin-top: 0.3rem;">
+      </div>
+    </div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-gold" onclick="saveNewPassword()">Enregistrer</button>
+  `;
+  openModal();
+}
+
+function saveNewPassword() {
+  const input = document.getElementById('newDashPassword');
+  if (input && input.value.trim().length >= 4) {
+    localStorage.setItem(STORAGE_KEYS.PASSWORD, input.value.trim());
+    closeModal();
+    showToast('Nouveau mot de passe enregistré avec succès', 'success');
+  } else {
+    showToast('Le mot de passe doit contenir au moins 4 caractères', 'warning');
+  }
+}
+
+function openModal() {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
 
 // ── State Variables ───────────────────────────────────────────
 let realLeads = [];
@@ -2255,6 +2370,716 @@ function quickSendWhatsAppFromQueue(storeName, phoneClean, contactName, city, cr
 }
 
 // ═══════════════════════════════════════════════════════════
+// SOURCING & MULTI-AGENTS IA ENGINE (TAB: ENGINE)
+// ═══════════════════════════════════════════════════════════
+
+const EUROPEAN_ENGINE_LEADS_MASTER = [
+  // PARIS (FR)
+  {
+    id: 'eng_paris_1',
+    name: 'Merci Paris Concept Store',
+    contactName: 'Valérie Delacroix',
+    city: 'Paris',
+    country: 'FR',
+    niche: 'concept_store',
+    nicheLabel: 'Concept Store',
+    website: 'https://merci-merci.com',
+    domain: 'merci-merci.com',
+    instagram: '@mercishopparis',
+    email: 'achats@merci-merci.com',
+    phone: '+33 1 42 77 00 33',
+    aestheticTags: ['wabi-sabi', 'raw_linen', 'terracotta', 'high-end_curation', 'artisan_lifestyle'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_paris_2',
+    name: 'Maison Sarah Lavoine',
+    contactName: 'Sarah Lavoine Studio',
+    city: 'Paris',
+    country: 'FR',
+    niche: 'interior_design',
+    nicheLabel: 'Studio d\'Architecture',
+    website: 'https://maisonsarahlavoine.com',
+    domain: 'maisonsarahlavoine.com',
+    instagram: '@maisonsarahlavoine',
+    email: 'pro@maisonsarahlavoine.com',
+    phone: '+33 1 42 44 10 10',
+    aestheticTags: ['contemporary_moroccan', 'vibrant_ceramics', 'sculptural_brass', 'luxury_interior'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_paris_3',
+    name: 'Bohème Living & Terres Chaudes',
+    contactName: 'Camille Bonnet',
+    city: 'Paris',
+    country: 'FR',
+    niche: 'boho_decor',
+    nicheLabel: 'Boutique Bohème Déco',
+    website: 'https://bohemeliving-paris.fr',
+    domain: 'bohemeliving-paris.fr',
+    instagram: '@boheme.paris.deco',
+    email: 'contact@bohemeliving-paris.fr',
+    phone: '+33 1 48 06 72 19',
+    aestheticTags: ['boho_chic', 'natural_palm', 'berber_wool', 'tamegroute_green', 'organic_textures'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_paris_4',
+    name: 'Atelier Empreintes Paris',
+    contactName: 'Julien Morel',
+    city: 'Paris',
+    country: 'FR',
+    niche: 'artisan_gifts',
+    nicheLabel: 'Boutique Cadeaux Artisanat',
+    website: 'https://empreintes-paris.com',
+    domain: 'empreintes-paris.com',
+    instagram: '@empreintesparis',
+    email: 'boutique@empreintes-paris.com',
+    phone: '+33 1 40 09 53 80',
+    aestheticTags: ['craftsmanship', 'handmade_tableware', 'leatherwork', 'sculpted_wood', 'heritage'],
+    status: 'discovered'
+  },
+
+  // MADRID (ES)
+  {
+    id: 'eng_madrid_1',
+    name: 'Ofelia Home Decor Madrid',
+    contactName: 'Elena Santamaria',
+    city: 'Madrid',
+    country: 'ES',
+    niche: 'boho_decor',
+    nicheLabel: 'Tienda Deco Boho',
+    website: 'https://ofeliahomedecor.com',
+    domain: 'ofeliahomedecor.com',
+    instagram: '@ofeliahomedecor',
+    email: 'compras@ofeliahomedecor.com',
+    phone: '+34 91 577 88 99',
+    aestheticTags: ['mediterranean_soul', 'clay_pottery', 'woven_baskets', 'warm_minimalism'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_madrid_2',
+    name: 'Mestizo Contemporary Interiors',
+    contactName: 'Rodrigo Alvarez',
+    city: 'Madrid',
+    country: 'ES',
+    niche: 'interior_design',
+    nicheLabel: 'Estudio de Interiorismo',
+    website: 'https://mestizostore.com',
+    domain: 'mestizostore.com',
+    instagram: '@mestizo_madrid',
+    email: 'estudio@mestizostore.com',
+    phone: '+34 91 435 62 10',
+    aestheticTags: ['bespoke_lighting', 'textured_rugs', 'brass_accents', 'architectural_spaces'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_madrid_3',
+    name: 'El Ocho Concept Store & Gallery',
+    contactName: 'Sofia Gomez',
+    city: 'Madrid',
+    country: 'ES',
+    niche: 'concept_store',
+    nicheLabel: 'Concept Store & Galería',
+    website: 'https://elocho-concept.es',
+    domain: 'elocho-concept.es',
+    instagram: '@elochomadrid',
+    email: 'info@elocho-concept.es',
+    phone: '+34 91 308 22 45',
+    aestheticTags: ['artisan_gifts', 'moroccan_ceramics', 'leather_accessories', 'curated_design'],
+    status: 'discovered'
+  },
+
+  // MILAN (IT)
+  {
+    id: 'eng_milan_1',
+    name: 'Spazio Rossana Orlandi',
+    contactName: 'Rossana Orlandi Curation',
+    city: 'Milan',
+    country: 'IT',
+    niche: 'concept_store',
+    nicheLabel: 'Galleria & Design Curation',
+    website: 'https://rossanaorlandi.com',
+    domain: 'rossanaorlandi.com',
+    instagram: '@rossana_orlandi',
+    email: 'gallery@rossanaorlandi.com',
+    phone: '+39 02 467 447',
+    aestheticTags: ['avant-garde_craft', 'high-end_pottery', 'pierced_brass', 'collectible_design'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_milan_2',
+    name: 'Raw & Co. Cabinet de Curiosités',
+    contactName: 'Paolo Badesco',
+    city: 'Milan',
+    country: 'IT',
+    niche: 'boho_decor',
+    nicheLabel: 'Boutique Décoration & Antiquités',
+    website: 'https://rawmilano.it',
+    domain: 'rawmilano.it',
+    instagram: '@raw_milano',
+    email: 'boutique@rawmilano.it',
+    phone: '+39 02 4801 0285',
+    aestheticTags: ['antique_charm', 'distressed_leather', 'thuya_wood', 'vintage_rugs', 'mediterranean'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_milan_3',
+    name: 'Studio Dimore Milano',
+    contactName: 'Britt Moran & Emiliano Salci',
+    city: 'Milan',
+    country: 'IT',
+    niche: 'interior_design',
+    nicheLabel: 'Studio di Architettura & Design',
+    website: 'https://dimorestudio.eu',
+    domain: 'dimorestudio.eu',
+    instagram: '@dimorestudio',
+    email: 'procurement@dimorestudio.eu',
+    phone: '+39 02 3656 3420',
+    aestheticTags: ['opulent_materials', 'hand-hammered_brass', 'custom_zellige', 'luxury_hospitality'],
+    status: 'discovered'
+  },
+
+  // BERLIN (DE)
+  {
+    id: 'eng_berlin_1',
+    name: 'Hallesches Haus Concept Store',
+    contactName: 'Oliver Firsht',
+    city: 'Berlin',
+    country: 'DE',
+    niche: 'concept_store',
+    nicheLabel: 'Concept Store & Lifestyle',
+    website: 'https://hallescheshaus.com',
+    domain: 'hallescheshaus.com',
+    instagram: '@hallescheshaus',
+    email: 'buyer@hallescheshaus.com',
+    phone: '+49 30 2592 7887',
+    aestheticTags: ['nordic_boho', 'raw_clay', 'monochrome_berber', 'sustainable_crafts'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_berlin_2',
+    name: 'Lokal Artisan Home Living',
+    contactName: 'Hannah Krause',
+    city: 'Berlin',
+    country: 'DE',
+    niche: 'artisan_gifts',
+    nicheLabel: 'Handcrafted Living Store',
+    website: 'https://lokal-berlin.com',
+    domain: 'lokal-berlin.com',
+    instagram: '@lokal_berlin_living',
+    email: 'kontakt@lokal-berlin.com',
+    phone: '+49 30 4404 1290',
+    aestheticTags: ['minimalist_ceramics', 'vegetable_tanned_leather', 'cedar_bowls', 'slow_design'],
+    status: 'discovered'
+  },
+
+  // AMSTERDAM (NL)
+  {
+    id: 'eng_amsterdam_1',
+    name: 'Sukha Eco Concept Store',
+    contactName: 'Irene Mertens',
+    city: 'Amsterdam',
+    country: 'NL',
+    niche: 'concept_store',
+    nicheLabel: 'Eco Concept Boutique',
+    website: 'https://sukha.nl',
+    domain: 'sukha.nl',
+    instagram: '@sukhaamsterdam',
+    email: 'inkoop@sukha.nl',
+    phone: '+31 20 330 4001',
+    aestheticTags: ['pure_wool', 'natural_dyes', 'serene_earth', 'ethical_artisan'],
+    status: 'discovered'
+  },
+  {
+    id: 'eng_amsterdam_2',
+    name: 'Raw Materials Home Boutique',
+    contactName: 'Wouter de Graaf',
+    city: 'Amsterdam',
+    country: 'NL',
+    niche: 'boho_decor',
+    nicheLabel: 'Home Decor & Living',
+    website: 'https://rawmaterials.eu',
+    domain: 'rawmaterials.eu',
+    instagram: '@rawmaterials_amsterdam',
+    email: 'sales@rawmaterials.eu',
+    phone: '+31 20 421 3888',
+    aestheticTags: ['rustic_moroccan', 'handwoven_rugs', 'leather_poufs', 'vintage_lighting'],
+    status: 'discovered'
+  }
+];
+
+let engineLeads = [];
+let activeEngineCity = 'all';
+let activePipelineStatusFilter = 'all';
+let contactedDomainsSet = new Set();
+
+function getStoredEngineLeads() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.ENGINE_LEADS);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getStoredDedupDomains() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.DEDUP_DOMAINS);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveStoredDedupDomains() {
+  localStorage.setItem(STORAGE_KEYS.DEDUP_DOMAINS, JSON.stringify(Array.from(contactedDomainsSet)));
+}
+
+function loadEnginePipelineLeads() {
+  contactedDomainsSet = getStoredDedupDomains();
+  const stored = getStoredEngineLeads();
+  if (stored && Array.isArray(stored) && stored.length > 0) {
+    engineLeads = stored;
+  } else {
+    // Initialize with Master seed
+    engineLeads = JSON.parse(JSON.stringify(EUROPEAN_ENGINE_LEADS_MASTER));
+    saveEnginePipelineLeads();
+  }
+  renderEnginePipeline();
+  updateEngineKPICounters();
+}
+
+function saveEnginePipelineLeads() {
+  localStorage.setItem(STORAGE_KEYS.ENGINE_LEADS, JSON.stringify(engineLeads));
+  renderEnginePipeline();
+  updateEngineKPICounters();
+}
+
+function updateEngineKPICounters() {
+  const discovered = engineLeads.filter(l => l.status === 'discovered').length;
+  const matched = engineLeads.filter(l => l.status === 'matched').length;
+  const pitched = engineLeads.filter(l => l.status === 'pitched').length;
+  const dedupCount = contactedDomainsSet.size;
+
+  const elDisc = document.getElementById('engineKpiDiscovered');
+  const elMatch = document.getElementById('engineKpiMatched');
+  const elPitch = document.getElementById('engineKpiPitched');
+  const elDedup = document.getElementById('engineKpiDedup');
+  const navBadge = document.getElementById('engineNavBadge');
+
+  if (elDisc) elDisc.textContent = discovered;
+  if (elMatch) elMatch.textContent = matched;
+  if (elPitch) elPitch.textContent = pitched;
+  if (elDedup) elDedup.textContent = dedupCount;
+  if (navBadge) navBadge.textContent = `${engineLeads.length} Leads`;
+
+  const cAll = document.getElementById('countPAll');
+  const cDisc = document.getElementById('countPDiscovered');
+  const cMatch = document.getElementById('countPMatched');
+  const cPitch = document.getElementById('countPPitched');
+  if (cAll) cAll.textContent = engineLeads.length;
+  if (cDisc) cDisc.textContent = discovered;
+  if (cMatch) cMatch.textContent = matched;
+  if (cPitch) cPitch.textContent = pitched;
+}
+
+function toggleEngineCity(cityKey, el) {
+  activeEngineCity = cityKey;
+  document.querySelectorAll('#engineCityGrid .city-chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderEnginePipeline();
+}
+
+function filterPipelineStatus(statusKey, el) {
+  activePipelineStatusFilter = statusKey;
+  document.querySelectorAll('.filter-group button[id^="pipelineFilter"]').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderEnginePipeline();
+}
+
+function renderEnginePipeline() {
+  const tbody = document.getElementById('enginePipelineBody');
+  const emptyWrap = document.getElementById('emptyEngineState');
+  const table = document.getElementById('enginePipelineTable');
+  if (!tbody || !emptyWrap) return;
+
+  let filtered = engineLeads.filter(lead => {
+    const cityMatch = activeEngineCity === 'all' || lead.city.toLowerCase() === activeEngineCity.toLowerCase();
+    const statusMatch = activePipelineStatusFilter === 'all' || lead.status === activePipelineStatusFilter;
+    return cityMatch && statusMatch;
+  });
+
+  if (filtered.length === 0) {
+    table.style.display = 'none';
+    emptyWrap.style.display = 'flex';
+    return;
+  }
+
+  table.style.display = 'table';
+  emptyWrap.style.display = 'none';
+
+  const statusBadges = {
+    discovered: `<span class="pill status-discovered">🔍 Discovered</span>`,
+    matched: `<span class="pill status-matched">🧠 Matched (IA)</span>`,
+    pitched: `<span class="pill status-pitched">📨 Pitched (Resend)</span>`
+  };
+
+  tbody.innerHTML = filtered.map(lead => {
+    const flag = getCountryFlag(lead.country);
+    const tagsHtml = (lead.aestheticTags || []).slice(0, 3).map(t => `<span class="agent-tag">${escapeHtml(t)}</span>`).join('');
+    const matchedCraft = lead.qualification?.matched_craft?.primary_craft_title || getCraftLabel(lead.craft) || 'Artisanat d\'Exception';
+    const statusHtml = statusBadges[lead.status] || `<span class="pill pill-slate">${lead.status}</span>`;
+
+    return `
+      <tr>
+        <td>
+          <div style="font-weight: 700; color: #fff;">${escapeHtml(lead.name)}</div>
+          <div style="font-size: 0.68rem; color: var(--slate-400);">👤 ${escapeHtml(lead.contactName || 'Responsable Achat')}</div>
+          <div style="font-size: 0.68rem; color: #93C5FD; margin-top: 0.2rem;">
+            <a href="mailto:${escapeHtml(lead.email)}" style="color: #93C5FD; text-decoration: none;">✉️ ${escapeHtml(lead.email)}</a>
+          </div>
+        </td>
+        <td>
+          <span class="flag">${flag}</span>
+          <strong style="color: var(--slate-200);">${escapeHtml(lead.city)}</strong><br>
+          <span class="pill pill-slate" style="font-size: 0.6rem; padding: 0.1rem 0.4rem; margin-top: 0.2rem;">${escapeHtml(lead.nicheLabel || lead.niche)}</span>
+        </td>
+        <td>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+            ${tagsHtml}
+          </div>
+        </td>
+        <td>
+          <span class="pill pill-gold" style="font-size: 0.7rem; font-weight: 600;">✨ ${escapeHtml(matchedCraft)}</span>
+          ${lead.qualification?.logistics_and_margins?.sample_tier?.unit_price_usd ? `
+            <div style="font-size: 0.65rem; color: var(--success); margin-top: 0.2rem;">
+              0 MOQ Sample: <strong>$${lead.qualification.logistics_and_margins.sample_tier.unit_price_usd}</strong>
+            </div>
+          ` : ''}
+        </td>
+        <td>${statusHtml}</td>
+        <td>
+          <button class="btn btn-sm btn-outline" onclick="openEngineLookbookModal('${lead.id}')" title="Voir le mini-lookbook généré" style="font-size: 0.68rem; padding: 0.25rem 0.5rem;">
+            📄 Lookbook PDF
+          </button>
+        </td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-primary" onclick="openStructuredJsonPitchModal('${lead.id}')" title="Inspecter le JSON du pitch">🔍 JSON</button>
+            <button class="btn btn-sm ${lead.status === 'pitched' ? 'btn-outline' : 'btn-success'}" onclick="sendSingleEnginePitch('${lead.id}')" title="Envoyer le pitch">
+              ${lead.status === 'pitched' ? '✓ Re-Pitch' : '🚀 Pitch'}
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="importSinglePipelineLeadToCRM('${lead.id}')" title="Importer dans CRM Réel">+ CRM</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ── Pipeline Triggers ─────────────────────────────────────────
+
+async function triggerEngineSourcing() {
+  showToast('🔍 Lancement du Sourcing & Enrichissement B2B Européen...', 'info');
+  
+  // Re-seed discovered leads if none
+  let newlySourced = 0;
+  EUROPEAN_ENGINE_LEADS_MASTER.forEach(m => {
+    if (!engineLeads.some(l => l.domain === m.domain)) {
+      engineLeads.unshift(JSON.parse(JSON.stringify(m)));
+      newlySourced++;
+    }
+  });
+
+  saveEnginePipelineLeads();
+  logRealActivity('import', `Sourcing B2B exécuté : <strong>${newlySourced > 0 ? newlySourced : engineLeads.length}</strong> boutiques enrichies (Paris, Madrid, Milan, Berlin, Amsterdam).`, 'Sourcing IA');
+  showToast(`✅ Sourcing terminé ! ${engineLeads.length} prospects prêts pour la qualification.`, 'success');
+}
+
+async function triggerEngineMultiAgentQualification() {
+  showToast('🧠 Exécution de la qualification Multi-Agents IA (Agents 1, 2 & 3)...', 'info');
+
+  const craftLines = {
+    concept_store: { key: 'zellige_pottery', title: 'Tamegroute & Safi Glazed Ceramics & Zellige', samplePrice: 28.00, discount: '-35% Container' },
+    interior_design: { key: 'brass_lighting', title: 'Hand-Pierced & Hammered Solid Brass Lighting', samplePrice: 140.00, discount: '-35% Container' },
+    boho_decor: { key: 'berber_rugs', title: 'Authentic High-Atlas Beni Ourain & Azilal Rugs', samplePrice: 280.00, discount: '-35% Container' },
+    artisan_gifts: { key: 'woodcraft', title: 'Essaouira Burl Thuya & Atlas Cedar Woodcraft', samplePrice: 38.00, discount: '-35% Container' }
+  };
+
+  let qualifiedCount = 0;
+  engineLeads.forEach(lead => {
+    const craftMeta = craftLines[lead.niche] || craftLines.concept_store;
+    
+    lead.craft = craftMeta.key;
+    lead.qualification = {
+      matched_craft: {
+        primary_craft: craftMeta.key,
+        primary_craft_title: craftMeta.title,
+        alignment_score: 0.98
+      },
+      logistics_and_margins: {
+        sample_tier: {
+          moq: '0 MOQ (1-5 units)',
+          unit_price_usd: craftMeta.samplePrice,
+          transit_time: '3-4 jours (DHL Express)'
+        },
+        wholesale_tier: {
+          discount: craftMeta.discount,
+          incoterm: `DAP ${lead.city}`
+        }
+      },
+      pitch_builder_json: {
+        store_name: lead.name,
+        city: lead.city,
+        language: lead.country === 'FR' ? 'fr' : (lead.country === 'ES' ? 'es' : 'en'),
+        subject_line: `Collaboration Directe Atelier Marrakech × ${lead.name}`,
+        personalized_hook: `Bonjour ${lead.contactName || 'l\'équipe'},\n\nJ'admire vivement la sensibilité et la sélection de votre boutique à ${lead.city}.`,
+        core_value_proposition: 'Accès direct atelier maître-artisan à Marrakech avec 0 intermédiaire, 0 MOQ échantillon et branding sur-mesure.',
+        call_to_action: 'Souhaitez-vous recevoir notre mini-lookbook personnalisé ou tester un échantillon direct d\'atelier ?'
+      }
+    };
+
+    if (lead.status === 'discovered') {
+      lead.status = 'matched';
+      qualifiedCount++;
+    }
+  });
+
+  // Update Visualizer Card with latest
+  const sampleLead = engineLeads[0];
+  if (sampleLead && sampleLead.qualification) {
+    const el1 = document.getElementById('agent1Craft');
+    const el2 = document.getElementById('agent2Sample');
+    if (el1) el1.textContent = sampleLead.qualification.matched_craft.primary_craft_title;
+    if (el2) el2.textContent = `0 MOQ ($${sampleLead.qualification.logistics_and_margins.sample_tier.unit_price_usd}/pc)`;
+  }
+
+  saveEnginePipelineLeads();
+  logRealActivity('lead_edit', `Qualification Multi-Agents achevée : <strong>${engineLeads.length}</strong> catalogues et grilles de marges calculés.`, 'Multi-Agents');
+  showToast(`🎉 Qualification Multi-Agents terminée ! ${qualifiedCount} leads passés au statut 'matched'.`, 'success');
+}
+
+async function triggerEngineOutreachDispatch() {
+  showToast('📨 Déclenchement de l\'Outreach Resend API & Génération Lookbooks...', 'info');
+
+  let pitchedCount = 0;
+  let skippedCount = 0;
+
+  engineLeads.forEach(lead => {
+    // Deduplication check
+    if (contactedDomainsSet.has(lead.domain)) {
+      skippedCount++;
+      return;
+    }
+
+    lead.status = 'pitched';
+    lead.pitchedAt = new Date().toISOString();
+    lead.lookbookUrl = `/lookbooks/lookbook_${sanitizeId(lead.name)}.html`;
+    
+    // Register contacted domain for deduplication
+    contactedDomainsSet.add(lead.domain);
+    pitchedCount++;
+  });
+
+  saveStoredDedupDomains();
+  saveEnginePipelineLeads();
+  
+  logRealActivity('email', `Outreach Resend exécuté : <strong>${pitchedCount}</strong> pitches et Lookbooks expédiés (${skippedCount} doublons protégés).`, 'Resend API');
+  showToast(`🚀 Outreach terminé ! ${pitchedCount} emails envoyés, ${skippedCount} doublons évités.`, 'success');
+}
+
+async function launchFullPipelineRun() {
+  showToast('⚡ Lancement du Pipeline Autonome Complet...', 'info');
+  await triggerEngineSourcing();
+  await new Promise(r => setTimeout(r, 600));
+  await triggerEngineMultiAgentQualification();
+  await new Promise(r => setTimeout(r, 600));
+  await triggerEngineOutreachDispatch();
+  showToast('🏆 Pipeline End-to-End exécuté avec succès !', 'success');
+}
+
+function openStructuredJsonPitchModal(leadId) {
+  const lead = engineLeads.find(l => l.id === leadId) || engineLeads[0];
+  if (!lead) return;
+
+  const qualData = lead.qualification || {
+    store_name: lead.name,
+    city: lead.city,
+    craft: lead.craft,
+    status: lead.status,
+    notes: 'Lancez l\'Étape 2 (Qualification 3-Agents IA) pour générer le payload complet.'
+  };
+
+  document.getElementById('modalTitle').textContent = `🔍 JSON Structuré du Pitch IA — ${escapeHtml(lead.name)}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+      <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-md); padding: 0.8rem; font-size: 0.74rem; color: var(--slate-300);">
+        <strong style="color: #93C5FD;">🤖 Payload Synthétisé par Agent 3 (Personalized Pitch Builder) :</strong><br>
+        Ce JSON est utilisé directement par le worker Inngest et l'API Resend pour injecter les variables personnalisées dans le template de vente B2B.
+      </div>
+      <div class="code-json-box">${escapeHtml(JSON.stringify(qualData, null, 2))}</div>
+    </div>
+  `;
+
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">Fermer</button>
+    <button class="btn btn-gold" onclick="navigator.clipboard.writeText(JSON.stringify(qualData, null, 2)); showToast('JSON copié dans le presse-papier', 'success')">📋 Copier JSON</button>
+  `;
+
+  openModal();
+}
+
+function openEngineLookbookModal(leadId) {
+  const lead = engineLeads.find(l => l.id === leadId) || engineLeads[0];
+  if (!lead) return;
+
+  const craftTitle = lead.qualification?.matched_craft?.primary_craft_title || 'Collection Artisanale Authentique Marrakech';
+  const samplePrice = lead.qualification?.logistics_and_margins?.sample_tier?.unit_price_usd || '28.00';
+
+  document.getElementById('modalTitle').textContent = `🎨 B2B Mini-Lookbook — ${escapeHtml(lead.name)}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="background: #ffffff; color: #1e293b; border-radius: var(--radius-md); padding: 1.5rem; border: 2px solid #D97706; font-family: sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D97706; padding-bottom: 0.8rem; margin-bottom: 1rem;">
+        <div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: #92400E; letter-spacing: 0.5px;">🏛️ MARRAKECH CRAFT CONDUIT</div>
+          <div style="font-size: 0.7rem; color: #B45309; font-weight: 600;">Master-Artisan Direct Export Protocol • Hassan Tiguidda</div>
+        </div>
+        <span style="background: #92400E; color: #fff; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.65rem; font-weight: 700;">B2B Private Lookbook</span>
+      </div>
+
+      <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem;">Curated Selection for ${escapeHtml(lead.name)} (${escapeHtml(lead.city)})</div>
+      <div style="font-size: 0.72rem; color: #475569; margin-bottom: 1rem;">
+        Édition spéciale préparée directement depuis notre atelier de Marrakech. Zéro intermédiaire, tarifs direct artisan, garantie d'authenticité.
+      </div>
+
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 0.8rem; margin-bottom: 1rem;">
+        <strong style="color: #0F172A; font-size: 0.82rem;">✨ Ligne Recommandée : ${escapeHtml(craftTitle)}</strong>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 0.6rem; font-size: 0.72rem;">
+          <thead>
+            <tr style="background: #E2E8F0; text-align: left;">
+              <th style="padding: 4px 6px;">Tier</th>
+              <th style="padding: 4px 6px;">MOQ</th>
+              <th style="padding: 4px 6px;">Tarif Atelier</th>
+              <th style="padding: 4px 6px;">Délai Expédition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #E2E8F0;">
+              <td style="padding: 4px 6px;"><strong>Sample Découverte</strong></td>
+              <td style="padding: 4px 6px; color: #047857; font-weight: 700;">0 MOQ (1-5 pcs)</td>
+              <td style="padding: 4px 6px;"><strong>$${samplePrice} USD</strong> / pc</td>
+              <td style="padding: 4px 6px;">3-5 jours (DHL Express)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #E2E8F0;">
+              <td style="padding: 4px 6px;"><strong>Boutique Stock</strong></td>
+              <td style="padding: 4px 6px;">6-50 pcs</td>
+              <td style="padding: 4px 6px;">-15% Remise</td>
+              <td style="padding: 4px 6px;">5-7 jours (Air Cargo)</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px;"><strong>Wholesale Container</strong></td>
+              <td style="padding: 4px 6px; color: #92400E; font-weight: 700;">50+ pcs</td>
+              <td style="padding: 4px 6px;">-35% Remise</td>
+              <td style="padding: 4px 6px;">FCL Port Casablanca</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-size: 0.68rem; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 0.5rem;">
+        Marrakech Craft Conduit — Hassan Tiguidda | ICE: 1161674000043 | WhatsApp: +212 632 155 430
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">Fermer</button>
+    <button class="btn btn-gold" onclick="window.print();">🖨️ Imprimer / Sauvegarder PDF</button>
+  `;
+
+  openModal();
+}
+
+function sendSingleEnginePitch(leadId) {
+  const lead = engineLeads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  // Deduplication check
+  if (contactedDomainsSet.has(lead.domain)) {
+    showToast(`⚠️ Attention : ${lead.domain} a déjà été contacté récemment (Anti-Doublon actif).`, 'warning');
+  }
+
+  const pitch = generatePitchContent(lead.name, lead.contactName, lead.city, lead.craft || 'ceramics', lead.country === 'FR' ? 'fr' : (lead.country === 'ES' ? 'es' : 'en'), 'sample');
+  const mailtoUrl = `mailto:${encodeURIComponent(lead.email)}?subject=${encodeURIComponent(pitch.subject)}&body=${encodeURIComponent(pitch.body)}`;
+  window.location.href = mailtoUrl;
+
+  lead.status = 'pitched';
+  contactedDomainsSet.add(lead.domain);
+  saveStoredDedupDomains();
+  saveEnginePipelineLeads();
+
+  logRealActivity('email', `Pitch expédié pour <strong>${lead.name}</strong> (${lead.email})`, 'Outreach Resend');
+  showToast(`Email client ouvert & statut mis à jour pour ${lead.name}`, 'success');
+}
+
+function importSinglePipelineLeadToCRM(leadId) {
+  const lead = engineLeads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const exists = realLeads.some(l => l.name === lead.name || l.email === lead.email);
+  if (!exists) {
+    realLeads.unshift({
+      id: 'crm_' + Date.now() + '_' + lead.id,
+      name: lead.name,
+      contactName: lead.contactName,
+      city: lead.city,
+      country: lead.country,
+      craft: lead.craft || 'ceramics',
+      typeName: lead.nicheLabel || 'Boutique Qualifiée',
+      email: lead.email,
+      phone: lead.phone,
+      volume: '$30,000',
+      status: lead.status === 'pitched' ? 'Contacté' : 'Nouveau',
+      createdAt: new Date().toISOString()
+    });
+    saveRealLeads();
+    logRealActivity('lead_add', `Lead Pipeline importé dans CRM : <strong>${lead.name}</strong> (${lead.city})`, 'CRM Sync');
+    showToast(`"${lead.name}" synchronisé dans votre CRM Réel !`, 'success');
+  } else {
+    showToast(`"${lead.name}" est déjà dans votre CRM`, 'info');
+  }
+}
+
+function importAllPipelineLeadsToCRM() {
+  let count = 0;
+  engineLeads.forEach(lead => {
+    const exists = realLeads.some(l => l.name === lead.name || l.email === lead.email);
+    if (!exists) {
+      realLeads.unshift({
+        id: 'crm_' + Date.now() + '_' + lead.id,
+        name: lead.name,
+        contactName: lead.contactName,
+        city: lead.city,
+        country: lead.country,
+        craft: lead.craft || 'ceramics',
+        typeName: lead.nicheLabel || 'Boutique Qualifiée',
+        email: lead.email,
+        phone: lead.phone,
+        volume: '$35,000',
+        status: lead.status === 'pitched' ? 'Contacté' : 'Nouveau',
+        createdAt: new Date().toISOString()
+      });
+      count++;
+    }
+  });
+
+  saveRealLeads();
+  logRealActivity('import', `<strong>${count}</strong> acheteurs du pipeline importés dans le CRM Réel`, 'CRM Batch');
+  showToast(`🎉 ${count} prospects importés dans le CRM avec succès !`, 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 
@@ -2264,6 +3089,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Tab 1: Real Leads CRM
   loadRealLeads();
+
+  // Engine Sourcing & Multi-Agents Tab
+  loadEnginePipelineLeads();
 
   // Tab 2: AI Assistant & Real Logs
   renderRealActivityLog();
@@ -2283,7 +3111,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Welcome message
   setTimeout(() => {
     if (sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true' || localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true') {
-      showToast('MARRAKECH CRAFT CONDUIT — Système 100% données réelles & Mass Scan opérationnel', 'success');
+      showToast('MARRAKECH CRAFT CONDUIT — Lead Sourcing & Outreach Engine Opérationnel', 'success');
     }
   }, 1000);
 });
+

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "description": "Serveur MCP Puppeteer/Playwright pour tests UI, inspection visuelle responsive et capture d'écrans du dashboard."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "description": "Serveur MCP Fetch/REST pour inspection et requêtes sur les flux API de sourcing, CRM et conversion de devises."
+    }
+  }
+}

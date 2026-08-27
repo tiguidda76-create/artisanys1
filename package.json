@@ -1,0 +1,23 @@
+{
+  "name": "marrakech-craft-conduit",
+  "version": "2.0.0",
+  "description": "Autonomous B2B Export Engine & Copilot Orchestrator for Authentic Moroccan Artisan Crafts",
+  "main": "app.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "keywords": [
+    "marrakech",
+    "artisan",
+    "export",
+    "b2b",
+    "copilot",
+    "moroccan-craft"
+  ],
+  "author": "Hassan Tiguidda",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -3080,6 +3080,555 @@ function importAllPipelineLeadsToCRM() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// COPILOT IA OMNIPRÉSENT "MARRAKECH CRAFT ORCHESTRATOR 360°"
+// ═══════════════════════════════════════════════════════════
+
+let copilotIsOpen = false;
+let copilotCurrentMode = 'floating'; // 'floating' | 'drawer' | 'fullscreen'
+let copilotSpeechRecognition = null;
+let isVoiceDictating = false;
+let isCopilotSpeaking = false;
+let copilotMessagesHistory = [];
+
+function initCopilotController() {
+  // Global Shortcut: Ctrl + K or Cmd + K
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      toggleCopilot();
+    } else if (e.key === 'Escape' && copilotIsOpen) {
+      toggleCopilot(false);
+    }
+  });
+
+  // Setup Web Speech API if supported
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    copilotSpeechRecognition = new SpeechRecognition();
+    copilotSpeechRecognition.lang = 'fr-FR';
+    copilotSpeechRecognition.continuous = false;
+    copilotSpeechRecognition.interimResults = false;
+
+    copilotSpeechRecognition.onstart = () => {
+      isVoiceDictating = true;
+      const btn = document.getElementById('copilotMicBtn');
+      if (btn) btn.classList.add('listening');
+      showToast('🎙️ Dictée vocale active... Parlez maintenant', 'info');
+    };
+
+    copilotSpeechRecognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const input = document.getElementById('copilotInput');
+      if (input) {
+        input.value = transcript;
+        sendCopilotMessage();
+      }
+    };
+
+    copilotSpeechRecognition.onerror = (event) => {
+      console.warn('SpeechRecognition error:', event.error);
+      stopVoiceDictation();
+    };
+
+    copilotSpeechRecognition.onend = () => {
+      stopVoiceDictation();
+    };
+  }
+
+  // Render initial greeting message if empty
+  if (copilotMessagesHistory.length === 0) {
+    pushCopilotAIMessage(
+      `Salam & Bienvenue ! Je suis **Marrakech Craft AI**, votre orchestrateur 360° pour l'export d'artisanat.\n\n` +
+      `Je suis connecté en direct avec nos **6 ateliers de la Médina**, l'inventaire en temps réel et le moteur de facturation pro forma.\n\n` +
+      `💡 *Essayez : "Bilan global", "Artisans critiques", "Stock zellige", ou "Finances MAD/EUR".*`,
+      [
+        { type: 'workshop_profile', label: 'Bilan Global 360°', icon: '📊', payload: { action: 'check_everything' } },
+        { type: 'check_stock', label: 'Vérifier Stocks', icon: '📦', payload: { action: 'stock_audit' } },
+        { type: 'custom_search', label: 'Ateliers Sidi Ghanem', icon: '📍', payload: { query: 'Sidi Ghanem' } },
+        { type: 'pro_forma_quote', label: 'Créer Devis Pro Forma', icon: '💼', payload: { action: 'open_invoice' } }
+      ]
+    );
+  }
+
+  updateCopilotLiveTelemetry();
+}
+
+function updateCopilotLiveTelemetry() {
+  if (!window.CraftBrainService) return;
+  try {
+    const kpis = window.CraftBrainService.getFinancialKPIs();
+    const workshopsEl = document.getElementById('copilotStatWorkshops');
+    const stockEl = document.getElementById('copilotStatStock');
+    const alertsEl = document.getElementById('copilotStatAlerts');
+    const pipelineEl = document.getElementById('copilotStatPipeline');
+    const badgeEl = document.getElementById('copilotFloatingBadge');
+
+    if (workshopsEl) workshopsEl.textContent = `${kpis.totalWorkshops} Connectés`;
+    if (stockEl) stockEl.textContent = `${window.CraftBrainService.getInventory().length} Réf. Actives`;
+    if (alertsEl) alertsEl.textContent = `${kpis.criticalWorkshopsCount} sous tension`;
+    if (pipelineEl) pipelineEl.textContent = `$${kpis.pipelineUsd.toLocaleString()} USD`;
+    if (badgeEl) badgeEl.textContent = `${kpis.totalWorkshops} Ateliers • ${kpis.criticalWorkshopsCount > 0 ? '⚠️ ' + kpis.criticalWorkshopsCount + ' Alertes' : 'Live'}`;
+  } catch (e) {
+    console.error('Error updating Copilot telemetry:', e);
+  }
+}
+
+function toggleCopilot(forceState = null) {
+  const backdrop = document.getElementById('copilotBackdrop');
+  if (!backdrop) return;
+
+  copilotIsOpen = forceState !== null ? forceState : !copilotIsOpen;
+
+  if (copilotIsOpen) {
+    backdrop.classList.add('active');
+    updateCopilotLiveTelemetry();
+    setTimeout(() => {
+      const input = document.getElementById('copilotInput');
+      if (input) input.focus();
+      scrollCopilotToBottom();
+    }, 100);
+  } else {
+    backdrop.classList.remove('active');
+    stopVoiceDictation();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
+}
+
+function handleCopilotBackdropClick(event) {
+  // If clicked outside the window in floating mode or drawer mode
+  if (event.target.id === 'copilotBackdrop') {
+    toggleCopilot(false);
+  }
+}
+
+function setCopilotMode(mode) {
+  const win = document.getElementById('copilotWindow');
+  if (!win) return;
+
+  copilotCurrentMode = mode;
+  win.classList.remove('mode-floating', 'mode-drawer', 'mode-fullscreen');
+  win.classList.add(`mode-${mode}`);
+
+  // Update mode buttons state
+  document.querySelectorAll('.copilot-mode-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(`modeBtn${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  scrollCopilotToBottom();
+}
+
+function handleCopilotKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendCopilotMessage();
+  }
+}
+
+function submitQuickCopilotPrompt(promptText) {
+  const input = document.getElementById('copilotInput');
+  if (input) input.value = promptText;
+  sendCopilotMessage();
+}
+
+async function sendCopilotMessage(customText = null) {
+  const input = document.getElementById('copilotInput');
+  const query = customText || (input ? input.value.trim() : '');
+  if (!query) return;
+
+  if (input) input.value = '';
+
+  // 1. Push User Message
+  pushCopilotUserMessage(query);
+
+  // 2. Render Temporary Thinking Skeleton
+  const thinkingId = 'copilot_thinking_' + Date.now();
+  renderCopilotThinkingBubble(thinkingId);
+
+  try {
+    // 3. Process via CraftBrainService
+    if (!window.CraftBrainService) {
+      throw new Error('CraftBrainService non disponible');
+    }
+
+    // Small delay for natural conversational feel
+    await new Promise(r => setTimeout(r, 450));
+
+    const response = await window.CraftBrainService.processQuery(query);
+
+    // Remove thinking bubble
+    const thinkingEl = document.getElementById(thinkingId);
+    if (thinkingEl) thinkingEl.remove();
+
+    // 4. Push AI Response
+    pushCopilotAIMessage(response.text, response.actionCards, response.voiceText);
+
+    // 5. Update Activity Log
+    logRealActivity('email', `Copilot IA : Requête traitée <strong>"${escapeHtml(query.substring(0, 35))}"</strong>`, 'Copilot 360°');
+
+  } catch (error) {
+    console.error('Copilot processing error:', error);
+    const thinkingEl = document.getElementById(thinkingId);
+    if (thinkingEl) thinkingEl.remove();
+
+    pushCopilotAIMessage(
+      `⚠️ *Désolé, une erreur est survenue lors de l'analyse de votre demande.* Vous pouvez réessayer avec une commande simple comme *"bilan global"* ou *"artisans critiques"*.`
+    );
+  }
+}
+
+function pushCopilotUserMessage(text) {
+  const msgObj = { id: 'usr_' + Date.now(), sender: 'user', text, timestamp: new Date() };
+  copilotMessagesHistory.push(msgObj);
+  renderSingleCopilotMessage(msgObj);
+}
+
+function pushCopilotAIMessage(text, actionCards = [], voiceText = '') {
+  const msgObj = {
+    id: 'ai_' + Date.now(),
+    sender: 'ai',
+    text,
+    actionCards: actionCards || [],
+    voiceText: voiceText || text,
+    timestamp: new Date()
+  };
+  copilotMessagesHistory.push(msgObj);
+  renderSingleCopilotMessage(msgObj);
+}
+
+function renderSingleCopilotMessage(msg) {
+  const container = document.getElementById('copilotMessagesList');
+  if (!container) return;
+
+  const isUser = msg.sender === 'user';
+  const wrap = document.createElement('div');
+  wrap.className = `copilot-msg-wrap ${isUser ? 'user' : 'ai'}`;
+  wrap.id = msg.id;
+
+  const timeStr = msg.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const formattedHtml = formatMarkdownForCopilot(msg.text);
+
+  let cardsHtml = '';
+  if (!isUser && msg.actionCards && msg.actionCards.length > 0) {
+    cardsHtml = `
+      <div class="copilot-action-cards-grid">
+        ${msg.actionCards.map(card => `
+          <button class="copilot-action-btn" onclick="executeCopilotAction('${card.type}', ${escapeJsonForAttr(card.payload)})">
+            <span class="btn-icon">${card.icon}</span>
+            <span>${escapeHtml(card.label)}</span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  wrap.innerHTML = `
+    <div class="copilot-msg-avatar">${isUser ? '👤' : '✨'}</div>
+    <div class="copilot-msg-content">
+      <div class="copilot-msg-bubble">
+        ${formattedHtml}
+        ${cardsHtml}
+      </div>
+      <div class="copilot-msg-actions-bar">
+        <span>${timeStr}</span>
+        ${!isUser ? `
+          <span>•</span>
+          <button class="copilot-speech-btn" onclick="toggleSpeakCopilotMessage('${msg.id}')" title="Écouter la réponse vocalement">🔊 Lire</button>
+          <button class="copilot-speech-btn" onclick="copyCopilotMessageText('${msg.id}')" title="Copier le texte">📋 Copier</button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  container.appendChild(wrap);
+  scrollCopilotToBottom();
+}
+
+function renderCopilotThinkingBubble(id) {
+  const container = document.getElementById('copilotMessagesList');
+  if (!container) return;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'copilot-msg-wrap ai';
+  wrap.id = id;
+  wrap.innerHTML = `
+    <div class="copilot-msg-avatar">✨</div>
+    <div class="copilot-msg-content">
+      <div class="copilot-msg-bubble" style="background: rgba(30, 41, 59, 0.5);">
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--saffron-light); font-size: 0.74rem;">
+          <div class="status-dot" style="background: var(--saffron-gold);"></div>
+          <span>Analyse en temps réel de la Médina & des ateliers...</span>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(wrap);
+  scrollCopilotToBottom();
+}
+
+function formatMarkdownForCopilot(text) {
+  if (!text) return '';
+  let formatted = escapeHtml(text);
+
+  // Bold **text**
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic *text*
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Inline code `text`
+  formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+  // Line breaks
+  formatted = formatted.replace(/\n/g, '<br>');
+
+  return formatted;
+}
+
+function escapeJsonForAttr(obj) {
+  return JSON.stringify(obj).replace(/"/g, '&quot;');
+}
+
+function scrollCopilotToBottom() {
+  const container = document.getElementById('copilotMessagesList');
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+// ── Voice Dictation & Speech Synthesis ────────────────────────
+
+function toggleVoiceDictation() {
+  if (!copilotSpeechRecognition) {
+    showToast('⚠️ La reconnaissance vocale n\'est pas supportée par ce navigateur (utilisez Chrome/Edge).', 'warning');
+    return;
+  }
+
+  if (isVoiceDictating) {
+    stopVoiceDictation();
+  } else {
+    try {
+      copilotSpeechRecognition.start();
+    } catch (e) {
+      console.warn('Error starting speech recognition:', e);
+    }
+  }
+}
+
+function stopVoiceDictation() {
+  isVoiceDictating = false;
+  const btn = document.getElementById('copilotMicBtn');
+  if (btn) btn.classList.remove('listening');
+  if (copilotSpeechRecognition) {
+    try { copilotSpeechRecognition.stop(); } catch (e) {}
+  }
+}
+
+function toggleSpeakCopilotMessage(msgId) {
+  if (!window.speechSynthesis) {
+    showToast('Synthèse vocale non supportée sur ce navigateur.', 'warning');
+    return;
+  }
+
+  if (isCopilotSpeaking) {
+    window.speechSynthesis.cancel();
+    isCopilotSpeaking = false;
+    showToast('Lecture audio arrêtée', 'info');
+    return;
+  }
+
+  const msg = copilotMessagesHistory.find(m => m.id === msgId);
+  if (!msg) return;
+
+  const rawText = msg.voiceText || msg.text.replace(/[*`#•]/g, '');
+  const utterance = new SpeechSynthesisUtterance(rawText);
+  utterance.lang = 'fr-FR';
+  utterance.rate = 1.05;
+
+  utterance.onstart = () => { isCopilotSpeaking = true; };
+  utterance.onend = () => { isCopilotSpeaking = false; };
+  utterance.onerror = () => { isCopilotSpeaking = false; };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function copyCopilotMessageText(msgId) {
+  const msg = copilotMessagesHistory.find(m => m.id === msgId);
+  if (msg && navigator.clipboard) {
+    navigator.clipboard.writeText(msg.text);
+    showToast('Texte copié dans le presse-papier', 'success');
+  }
+}
+
+// ── Action Cards Dispatcher ───────────────────────────────────
+
+function executeCopilotAction(type, payload) {
+  console.log('Executing Copilot action:', type, payload);
+
+  switch (type) {
+    case 'workshop_profile':
+      if (payload && payload.artisanId) {
+        openWorkshopModal(payload.artisanId);
+      } else if (payload && payload.filter === 'critical') {
+        openCriticalWorkshopsModal();
+      } else {
+        openAllWorkshopsModal();
+      }
+      break;
+
+    case 'whatsapp_direct':
+      const phone = payload.phone || '212632155430';
+      const text = encodeURIComponent(payload.message || 'Salam Maâlem, je vous contacte depuis Marrakech Craft Conduit.');
+      const whatsappUrl = `https://wa.me/${cleanPhoneForWhatsApp(phone)}?text=${text}`;
+      window.open(whatsappUrl, '_blank');
+      showToast('WhatsApp direct ouvert pour l\'atelier', 'success');
+      break;
+
+    case 'check_stock':
+      toggleCopilot(false);
+      switchTab('catalog');
+      showToast('📦 Onglet Catalogue & Simulateur ouvert', 'info');
+      break;
+
+    case 'pro_forma_quote':
+      toggleCopilot(false);
+      if (payload && payload.artisanId) {
+        injectWorkshopLineToInvoice(payload.artisanId);
+      }
+      switchTab('legal');
+      showToast('💼 Facturation & Devis Pro Forma prêts', 'success');
+      break;
+
+    case 'track_order':
+      toggleCopilot(false);
+      switchTab('agents');
+      calculateRealFreight();
+      showToast('🚢 Calculateur de Fret & Expéditions affiché', 'info');
+      break;
+
+    case 'custom_search':
+      if (payload && payload.query) {
+        const input = document.getElementById('copilotInput');
+        if (input) input.value = payload.query;
+        sendCopilotMessage();
+      }
+      break;
+
+    default:
+      showToast(`Action exécutée : ${type}`, 'info');
+  }
+}
+
+function openWorkshopModal(artisanId) {
+  if (!window.CraftBrainService) return;
+  const w = window.CraftBrainService.findWorkshopById(artisanId);
+  if (!w) return;
+
+  document.getElementById('modalTitle').textContent = `🏛️ ${w.name} — ${w.masterMaalem}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.78rem;">
+      <div style="background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: var(--radius-md); padding: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <div>
+            <h4 style="color: var(--saffron-light); font-size: 0.95rem; margin: 0;">${escapeHtml(w.masterMaalem)}</h4>
+            <div style="color: var(--slate-300); font-size: 0.72rem;">${w.yearsOfMastery} ans d'expérience • ${w.teamSize} artisans compagnons</div>
+          </div>
+          <span class="pill ${w.isCritical ? 'pill-terra' : 'pill-green'}">${w.isCritical ? '⚠️ Charge Élevée' : '✅ Disponible'}</span>
+        </div>
+        <div style="color: var(--slate-300); line-height: 1.5;">
+          📍 <strong>Localisation :</strong> ${w.quarter} (${w.address})<br>
+          🎨 <strong>Métier :</strong> ${w.categoryLabel}<br>
+          ✨ <strong>Spécialités :</strong> ${w.specialties.join(', ')}<br>
+          📦 <strong>Best-Seller :</strong> <span style="color: #FFF; font-weight: 600;">${w.bestSellerProduct}</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+        <div style="background: var(--bg-primary); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 0.68rem; color: var(--slate-400);">PRIX SAMPLE (0 MOQ)</div>
+          <strong style="color: var(--success); font-size: 1.1rem;">$${w.samplePriceUsd} USD</strong>
+        </div>
+        <div style="background: var(--bg-primary); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 0.68rem; color: var(--slate-400);">WHOLESALE CONTAINER</div>
+          <strong style="color: var(--saffron-light); font-size: 1.1rem;">$${w.wholesalePriceUsd} USD <span style="font-size: 0.7rem;">(-35%)</span></strong>
+        </div>
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <strong>Capacité & Délais :</strong> ${w.capacityPerMonth} pièces / mois (Délai actuel : ${w.leadTimeDays} jours)<br>
+        <strong>Stock Immédiat :</strong> ${w.stockLevel} pièces en réserve atelier
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal()">Fermer</button>
+    <button class="btn btn-success" onclick="executeCopilotAction('whatsapp_direct', { phone: '${w.whatsappDirect}', message: 'Salam Maâlem ${w.masterMaalem}, je vous contacte depuis Marrakech Craft Conduit au sujet de ${w.bestSellerProduct}.' })">💬 WhatsApp Direct</button>
+    <button class="btn btn-gold" onclick="closeModal(); executeCopilotAction('pro_forma_quote', { artisanId: '${w.id}' })">💼 Créer Devis Pro Forma</button>
+  `;
+
+  openModal();
+}
+
+function openCriticalWorkshopsModal() {
+  if (!window.CraftBrainService) return;
+  const critical = window.CraftBrainService.getWorkshops().filter(w => w.isCritical);
+
+  document.getElementById('modalTitle').textContent = '🚨 Diagnostics des Ateliers Sous Tension';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <p style="font-size: 0.76rem; color: var(--slate-300);">Voici les ateliers nécessitant une attention immédiate pour éviter les retards d'exportation :</p>
+      ${critical.map(w => `
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.8rem; font-size: 0.76rem;">
+          <strong style="color: #FCA5A5;">${w.name} (${w.masterMaalem})</strong> — ${w.quarter}<br>
+          <div style="margin: 0.3rem 0; color: var(--slate-300);">• Charge : ${w.currentWorkloadPercent}% (Délai : ${w.leadTimeDays}j)<br>• Diagnostic : ${w.criticalReason}</div>
+          <button class="btn btn-sm btn-outline mt-1" onclick="closeModal(); executeCopilotAction('whatsapp_direct', { phone: '${w.whatsappDirect}', message: 'Salam Maâlem ${w.masterMaalem}, nous avons des commandes B2B prioritaires. Pouvons-nous coordonner la production ?' })">💬 WhatsApp d'urgence</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Fermer</button>`;
+  openModal();
+}
+
+function openAllWorkshopsModal() {
+  if (!window.CraftBrainService) return;
+  const workshops = window.CraftBrainService.getWorkshops();
+
+  document.getElementById('modalTitle').textContent = '🏺 Répertoire des Maîtres-Artisans de Marrakech';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 0.8rem; max-height: 450px; overflow-y: auto;">
+      ${workshops.map(w => `
+        <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.8rem; font-size: 0.76rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="color: var(--saffron-light);">${w.masterMaalem}</strong> — ${w.categoryLabel}<br>
+            <span style="font-size: 0.7rem; color: var(--slate-400);">📍 ${w.quarter} • Capacité: ${w.capacityPerMonth} pcs/m</span>
+          </div>
+          <button class="btn btn-sm btn-outline" onclick="closeModal(); openWorkshopModal('${w.id}')">🔍 Fiche</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Fermer</button>`;
+  openModal();
+}
+
+function injectWorkshopLineToInvoice(artisanId) {
+  if (!window.CraftBrainService) return;
+  const w = window.CraftBrainService.findWorkshopById(artisanId);
+  if (!w) return;
+
+  if (typeof invoiceLines !== 'undefined') {
+    invoiceLines.push({
+      id: 'inv_line_' + Date.now(),
+      desc: w.bestSellerProduct,
+      specs: `Artisan : ${w.masterMaalem} (${w.quarter}) • Garantie authenticité`,
+      unitPrice: w.samplePriceUsd,
+      qty: 5,
+      total: w.samplePriceUsd * 5
+    });
+    renderInvoice();
+    logRealActivity('quote', `Ligne atelier ajoutée à la facture pro forma : <strong>${w.bestSellerProduct}</strong>`, 'Facturation');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 
@@ -3108,11 +3657,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tab 5: Facturation
   renderInvoice();
 
+  // Copilot Orchestrator Controller
+  initCopilotController();
+
   // Welcome message
   setTimeout(() => {
     if (sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true' || localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true') {
-      showToast('MARRAKECH CRAFT CONDUIT — Lead Sourcing & Outreach Engine Opérationnel', 'success');
+      showToast('MARRAKECH CRAFT CONDUIT — Copilot IA 360° & Sourcing Engine Prêts (Ctrl + K)', 'success');
     }
   }, 1000);
 });
+
 

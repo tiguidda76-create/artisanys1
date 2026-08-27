@@ -56,6 +56,12 @@
         <div class="status-dot"></div>
         <span>All Systems Operational</span>
       </div>
+      <button class="btn-copilot-header" id="copilotHeaderBtn" onclick="toggleCopilot()" title="Ouvrir l'IA Marrakech Craft Orchestrator (Ctrl + K)">
+        <span class="copilot-sparkle">✨</span>
+        <span class="copilot-btn-text">Copilot IA 360°</span>
+        <span class="copilot-kbd">Ctrl K</span>
+        <span class="status-pulse-live"></span>
+      </button>
       <div class="header-time" id="headerTime">18:32 GMT+1</div>
       <div class="header-security-group">
         <button class="btn-header-icon" onclick="openChangePasswordModal()" title="Change Dashboard Password">🔑</button>
@@ -1020,21 +1026,117 @@
   </main>
 </div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Modal Overlay -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modalTitle">Modal</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- ═══════════ COPILOT FLOATING WIDGET (Bottom Right) ═══════════ -->
+<div class="copilot-floating-widget" id="copilotFloatingWidget" onclick="toggleCopilot()" title="Ouvrir Marrakech Craft AI (Ctrl + K)">
+  <div class="floating-widget-glow"></div>
+  <div class="floating-widget-inner">
+    <div class="floating-widget-icon">✨</div>
+    <div class="floating-widget-content">
+      <div class="floating-widget-title">Craft AI 360°</div>
+      <div class="floating-widget-badge" id="copilotFloatingBadge">6 Ateliers • Live</div>
     </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+  <div class="floating-widget-pulse"></div>
+</div>
+
+<!-- ═══════════ COPILOT OMNIPRESENT CONTAINER (3 Modes) ═══════════ -->
+<div class="copilot-backdrop" id="copilotBackdrop" onclick="handleCopilotBackdropClick(event)">
+  <div class="copilot-window mode-floating" id="copilotWindow">
+    
+    <!-- Copilot Top Header -->
+    <div class="copilot-header">
+      <div class="copilot-header-brand">
+        <div class="copilot-avatar">✨</div>
+        <div>
+          <div class="copilot-title-row">
+            <h3 class="copilot-title">MARRAKECH CRAFT AI</h3>
+            <span class="copilot-version-pill">v2.0 Orchestrator</span>
+          </div>
+          <div class="copilot-subtitle">Assistant 360° Médina • Ateliers • Stocks • Devis • Export</div>
+        </div>
+      </div>
+
+      <!-- Mode & Window Controls -->
+      <div class="copilot-header-actions">
+        <div class="copilot-mode-switch">
+          <button class="copilot-mode-btn active" id="modeBtnFloating" onclick="setCopilotMode('floating')" title="Mode Flottant (Compact)">🪟</button>
+          <button class="copilot-mode-btn" id="modeBtnDrawer" onclick="setCopilotMode('drawer')" title="Mode Tiroir Latéral (Docké à droite)">📑</button>
+          <button class="copilot-mode-btn" id="modeBtnFullscreen" onclick="setCopilotMode('fullscreen')" title="Mode Plein Écran (Command Center)">🖥️</button>
+        </div>
+        <button class="copilot-close-btn" onclick="toggleCopilot(false)" title="Fermer (Échap)">✕</button>
+      </div>
+    </div>
+
+    <!-- Copilot Quick Stats Strip -->
+    <div class="copilot-stats-strip">
+      <div class="copilot-stat-item">
+        <span class="stat-icon">🏺</span>
+        <span class="stat-label">Ateliers :</span>
+        <strong class="stat-val" id="copilotStatWorkshops">6 Connectés</strong>
+      </div>
+      <div class="copilot-stat-item">
+        <span class="stat-icon">📦</span>
+        <span class="stat-label">Stock :</span>
+        <strong class="stat-val" id="copilotStatStock" style="color: var(--success);">8 Réf. Actives</strong>
+      </div>
+      <div class="copilot-stat-item">
+        <span class="stat-icon">⚠️</span>
+        <span class="stat-label">Alertes :</span>
+        <strong class="stat-val" id="copilotStatAlerts" style="color: var(--warning);">2 sous tension</strong>
+      </div>
+      <div class="copilot-stat-item">
+        <span class="stat-icon">💰</span>
+        <span class="stat-label">Pipeline :</span>
+        <strong class="stat-val" id="copilotStatPipeline" style="color: var(--saffron-light);">$57,930 USD</strong>
+      </div>
+    </div>
+
+    <!-- Messages Flow Container -->
+    <div class="copilot-body" id="copilotMessagesList">
+      <!-- Rendu dynamique par JS -->
+    </div>
+
+    <!-- Quick Prompts Suggestions Carousel -->
+    <div class="copilot-quick-prompts" id="copilotQuickPrompts">
+      <span class="quick-prompt-label">💡 Suggestions :</span>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Bilan global 360°')">📊 Bilan global</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Artisans critiques sous tension')">🚨 Artisans critiques</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Bilan des stocks et réappros')">📦 Audit stocks</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Ateliers dans le quartier Sidi Ghanem')">📍 Sidi Ghanem</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Tapis Beni Ourain et Kilims')">🧶 Beni Ourain</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Commandes export et fret DHL')">🚢 Commandes export</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Chiffre d\'affaires et marges MAD/EUR')">💰 Finances MAD/EUR</button>
+      <button class="quick-chip" onclick="submitQuickCopilotPrompt('Préparer devis pro forma ICE')">💼 Devis Pro Forma</button>
+    </div>
+
+    <!-- Input Footer Bar with Speech-to-Text -->
+    <div class="copilot-footer">
+      <div class="copilot-input-bar">
+        <button class="copilot-mic-btn" id="copilotMicBtn" onclick="toggleVoiceDictation()" title="Dicter vocalement votre demande">
+          <span class="mic-icon">🎙️</span>
+          <span class="voice-wave" id="copilotVoiceWave">
+            <span></span><span></span><span></span><span></span>
+          </span>
+        </button>
+        <textarea class="copilot-input" id="copilotInput" placeholder="Posez une question (ex: 'check everything', 'artisans critiques', 'stock zellige')..." rows="1" onkeydown="handleCopilotKeyDown(event)"></textarea>
+        <button class="copilot-send-btn" id="copilotSendBtn" onclick="sendCopilotMessage()" title="Envoyer le message (Entrée)">
+          <span>Envoyer</span>
+          <span class="send-arrow">➔</span>
+        </button>
+      </div>
+      <div class="copilot-footer-meta">
+        <span>Raccourci : <kbd>Ctrl</kbd> + <kbd>K</kbd></span>
+        <span>•</span>
+        <span>Moteur Hybride Déterministe & LLM Local</span>
+        <span>•</span>
+        <span>ICE 1161674000043</span>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<script src="craftBrainService.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

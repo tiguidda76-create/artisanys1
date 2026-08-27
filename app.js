@@ -55,6 +55,7 @@ function getActivePassword() {
 function checkAuthStatus() {
   const gate = document.getElementById('authGate');
   const shell = document.getElementById('appShell');
+  const widget = document.getElementById('copilotFloatingWidget');
   const isRemembered = localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true';
   const isSessionAuth = sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true';
 
@@ -64,9 +65,11 @@ function checkAuthStatus() {
       shell.style.display = 'block';
       shell.style.opacity = '1';
     }
+    if (widget) widget.style.display = 'flex';
   } else {
     if (gate) gate.style.display = 'flex';
     if (shell) shell.style.display = 'none';
+    if (widget) widget.style.display = 'none';
   }
 }
 

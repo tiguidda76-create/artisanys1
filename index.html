@@ -5,44 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Marrakech Craft Conduit — All-in-one autonomous B2B export engine for authentic Moroccan artisan crafts. Lead intelligence, quotation system, and legal/billing hub.">
   <title>MARRAKECH CRAFT CONDUIT — Artisan Export Engine & AI Copilot</title>
-  <link rel="stylesheet" href="styles.css?v=2.0.5">
+  <link rel="stylesheet" href="styles.css?v=3.0.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
 </head>
 <body>
-
-<!-- ═══════════ SECURITY GATE / PASSWORD LOCK SCREEN ═══════════ -->
-<div class="auth-gate" id="authGate">
-  <div class="auth-card" id="authCard">
-    <div class="auth-icon-wrap">🔐</div>
-    <h2 class="auth-title">MARRAKECH CRAFT CONDUIT</h2>
-    <p class="auth-subtitle">Autonomous B2B Artisan Export Engine<br><span style="color: var(--saffron-light); font-weight: 600;">Enterprise Security Gate</span></p>
-
-    <form class="auth-form" id="authForm" onsubmit="handleAuthSubmit(event)">
-      <div class="auth-input-group">
-        <input type="text" class="auth-input" id="authPasswordInput" value="marrakech2026" placeholder="Enter Access Password..." autocomplete="current-password" autofocus>
-        <button type="button" class="auth-toggle-btn" id="authToggleEye" onclick="toggleAuthPasswordVisibility()" title="Show/Hide Password">👁️</button>
-      </div>
-
-      <div class="auth-error-msg" id="authErrorMsg"></div>
-
-      <div class="auth-remember-row">
-        <label class="auth-remember-label">
-          <input type="checkbox" id="authRememberMe" checked>
-          <span>Keep me logged in (30 days)</span>
-        </label>
-        <button type="button" class="auth-hint-btn" onclick="showAuthHint()">Auto-Fill</button>
-      </div>
-
-      <button type="submit" class="auth-submit-btn">✦ DÉVERROUILLER LE DASHBOARD ✦</button>
-      <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 0.6rem; justify-content: center;" onclick="bypassSecurityGate()">🚀 Accès Immédiat Direct</button>
-    </form>
-
-    <div class="auth-security-badge">
-      <span class="dot"></span>
-      <span>256-Bit Encrypted Artisan Protocol | Hassan Tiguidda</span>
-    </div>
-  </div>
-</div>
 
 <div class="app-shell" id="appShell">
   <!-- ═══════════ HEADER ═══════════ -->
@@ -66,11 +32,7 @@
         <span class="status-pulse-live"></span>
       </button>
       <div class="header-time" id="headerTime">18:32 GMT+1</div>
-      <div class="header-security-group">
-        <button class="btn-header-icon" onclick="openChangePasswordModal()" title="Change Dashboard Password">🔑</button>
-        <button class="btn-header-icon" onclick="lockDashboard()" title="Lock Dashboard / Logout">🔒</button>
-      </div>
-      <div class="header-user" onclick="openChangePasswordModal()" title="Manage Account & Password">
+      <div class="header-user" title="Master Artisan Exporter">
         <div class="user-avatar">HT</div>
         <span class="user-name">Hassan Tiguidda</span>
       </div>
@@ -1144,7 +1106,7 @@
   </div>
 </div>
 
-<script src="craftBrainService.js?v=2.0.5"></script>
-<script src="app.js?v=2.0.5"></script>
+<script src="craftBrainService.js?v=3.0.0"></script>
+<script src="app.js?v=3.0.0"></script>
 </body>
 </html>

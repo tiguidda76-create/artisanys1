@@ -47,118 +47,7 @@ const BUSINESS_PROFILE = {
   taxNotice: 'Montant en dirhams exonéré de la TVA (Art 91 - II - 1° du Code Général des Impôts)'
 };
 
-// ── Security Gate & Authentication ───────────────────────────
-function getActivePassword() {
-  return localStorage.getItem(STORAGE_KEYS.PASSWORD) || DEFAULT_ACCESS_PASSWORD;
-}
-
-function bypassSecurityGate() {
-  localStorage.setItem(STORAGE_KEYS.REMEMBER, 'true');
-  sessionStorage.setItem(STORAGE_KEYS.SESSION, 'true');
-  const gate = document.getElementById('authGate');
-  const shell = document.getElementById('appShell');
-  const widget = document.getElementById('copilotFloatingWidget');
-  if (gate) {
-    gate.style.display = 'none';
-  }
-  if (shell) {
-    shell.style.display = 'block';
-    shell.style.opacity = '1';
-    shell.style.visibility = 'visible';
-  }
-  if (widget) {
-    widget.style.display = 'flex';
-    widget.style.visibility = 'visible';
-  }
-  showToast('✦ Accès autorisé — Bienvenue sur MARRAKECH CRAFT CONDUIT ✦', 'success');
-}
-
-function checkAuthStatus() {
-  const gate = document.getElementById('authGate');
-  const shell = document.getElementById('appShell');
-  const widget = document.getElementById('copilotFloatingWidget');
-  const isRemembered = localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true';
-  const isSessionAuth = sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true';
-
-  if (isRemembered || isSessionAuth) {
-    if (gate) gate.style.display = 'none';
-    if (shell) {
-      shell.style.display = 'block';
-      shell.style.opacity = '1';
-      shell.style.visibility = 'visible';
-    }
-    if (widget) {
-      widget.style.display = 'flex';
-      widget.style.visibility = 'visible';
-    }
-  } else {
-    if (gate) gate.style.display = 'flex';
-    if (shell) shell.style.display = 'none';
-    if (widget) widget.style.display = 'none';
-  }
-}
-
-function handleAuthSubmit(event) {
-  if (event) event.preventDefault();
-  bypassSecurityGate();
-}
-
-function toggleAuthPasswordVisibility() {
-  const input = document.getElementById('authPasswordInput');
-  const eye = document.getElementById('authToggleEye');
-  if (input) {
-    input.type = input.type === 'password' ? 'text' : 'password';
-    if (eye) eye.textContent = input.type === 'password' ? '👁️' : '🙈';
-  }
-}
-
-function showAuthHint() {
-  const input = document.getElementById('authPasswordInput');
-  if (input) {
-    input.value = 'marrakech2026';
-    input.type = 'text';
-  }
-  bypassSecurityGate();
-}
-
-function lockDashboard() {
-  localStorage.removeItem(STORAGE_KEYS.REMEMBER);
-  sessionStorage.removeItem(STORAGE_KEYS.SESSION);
-  checkAuthStatus();
-  showToast('Dashboard verrouillé', 'info');
-}
-
-function openChangePasswordModal() {
-  document.getElementById('modalTitle').textContent = '🔑 Gestion du Mot de Passe d\'Accès';
-  document.getElementById('modalBody').innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div style="font-size: 0.76rem; color: var(--slate-300);">
-        Définissez un nouveau mot de passe pour sécuriser votre espace de travail.
-      </div>
-      <div>
-        <label class="control-label">Nouveau mot de passe :</label>
-        <input type="password" id="newDashPassword" class="filter-input" placeholder="Entrez le nouveau mot de passe..." style="width: 100%; margin-top: 0.3rem;">
-      </div>
-    </div>
-  `;
-  document.getElementById('modalFooter').innerHTML = `
-    <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-gold" onclick="saveNewPassword()">Enregistrer</button>
-  `;
-  openModal();
-}
-
-function saveNewPassword() {
-  const input = document.getElementById('newDashPassword');
-  if (input && input.value.trim().length >= 4) {
-    localStorage.setItem(STORAGE_KEYS.PASSWORD, input.value.trim());
-    closeModal();
-    showToast('Nouveau mot de passe enregistré avec succès', 'success');
-  } else {
-    showToast('Le mot de passe doit contenir au moins 4 caractères', 'warning');
-  }
-}
-
+// ── Modal Management Helper ──────────────────────────────────
 function openModal() {
   const overlay = document.getElementById('modalOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -3677,10 +3566,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Welcome message
   setTimeout(() => {
-    if (sessionStorage.getItem(STORAGE_KEYS.SESSION) === 'true' || localStorage.getItem(STORAGE_KEYS.REMEMBER) === 'true') {
-      showToast('MARRAKECH CRAFT CONDUIT — Copilot IA 360° & Sourcing Engine Prêts (Ctrl + K)', 'success');
-    }
-  }, 1000);
+    showToast('✦ MARRAKECH CRAFT CONDUIT — Copilot IA 360° & Sourcing Engine Prêts (Ctrl + K) ✦', 'success');
+  }, 500);
 });
 
 

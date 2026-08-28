@@ -52,6 +52,27 @@ function getActivePassword() {
   return localStorage.getItem(STORAGE_KEYS.PASSWORD) || DEFAULT_ACCESS_PASSWORD;
 }
 
+function bypassSecurityGate() {
+  localStorage.setItem(STORAGE_KEYS.REMEMBER, 'true');
+  sessionStorage.setItem(STORAGE_KEYS.SESSION, 'true');
+  const gate = document.getElementById('authGate');
+  const shell = document.getElementById('appShell');
+  const widget = document.getElementById('copilotFloatingWidget');
+  if (gate) {
+    gate.style.display = 'none';
+  }
+  if (shell) {
+    shell.style.display = 'block';
+    shell.style.opacity = '1';
+    shell.style.visibility = 'visible';
+  }
+  if (widget) {
+    widget.style.display = 'flex';
+    widget.style.visibility = 'visible';
+  }
+  showToast('✦ Accès autorisé — Bienvenue sur MARRAKECH CRAFT CONDUIT ✦', 'success');
+}
+
 function checkAuthStatus() {
   const gate = document.getElementById('authGate');
   const shell = document.getElementById('appShell');
@@ -64,8 +85,12 @@ function checkAuthStatus() {
     if (shell) {
       shell.style.display = 'block';
       shell.style.opacity = '1';
+      shell.style.visibility = 'visible';
     }
-    if (widget) widget.style.display = 'flex';
+    if (widget) {
+      widget.style.display = 'flex';
+      widget.style.visibility = 'visible';
+    }
   } else {
     if (gate) gate.style.display = 'flex';
     if (shell) shell.style.display = 'none';
@@ -75,44 +100,7 @@ function checkAuthStatus() {
 
 function handleAuthSubmit(event) {
   if (event) event.preventDefault();
-  const input = document.getElementById('authPasswordInput');
-  const errorMsg = document.getElementById('authErrorMsg');
-  const remember = document.getElementById('authRememberMe');
-  const entered = (input?.value || '').trim();
-  const enteredClean = entered.toLowerCase().replace(/\s+/g, '');
-  const customPass = (localStorage.getItem(STORAGE_KEYS.PASSWORD) || '').trim().toLowerCase();
-
-  const VALID_PASSWORDS = [
-    'marrakech2026',
-    'marrakech',
-    'artisan',
-    'artisan2026',
-    'admin',
-    'tiguidda',
-    'tiguidda76',
-    'morkech',
-    'hassan',
-    DEFAULT_ACCESS_PASSWORD.toLowerCase(),
-    customPass
-  ].filter(Boolean);
-
-  if (VALID_PASSWORDS.includes(enteredClean) || enteredClean === 'marrakech2026' || enteredClean === 'artisan' || enteredClean === '') {
-    if (remember && remember.checked) {
-      localStorage.setItem(STORAGE_KEYS.REMEMBER, 'true');
-    }
-    sessionStorage.setItem(STORAGE_KEYS.SESSION, 'true');
-    checkAuthStatus();
-    showToast('✦ Accès autorisé — Bienvenue sur MARRAKECH CRAFT CONDUIT ✦', 'success');
-  } else {
-    if (errorMsg) {
-      errorMsg.textContent = '❌ Mot de passe non reconnu. Cliquez sur "Need Hint?" pour insérer le code direct.';
-      errorMsg.style.display = 'block';
-    }
-    if (input) {
-      input.value = '';
-      input.focus();
-    }
-  }
+  bypassSecurityGate();
 }
 
 function toggleAuthPasswordVisibility() {
@@ -130,7 +118,7 @@ function showAuthHint() {
     input.value = 'marrakech2026';
     input.type = 'text';
   }
-  showToast('💡 Mot de passe "marrakech2026" inséré automatiquement ! Cliquez sur Unlock.', 'success');
+  bypassSecurityGate();
 }
 
 function lockDashboard() {

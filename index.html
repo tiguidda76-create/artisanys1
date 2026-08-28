@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Marrakech Craft Conduit — All-in-one autonomous B2B export engine for authentic Moroccan artisan crafts. Lead intelligence, quotation system, and legal/billing hub.">
   <title>MARRAKECH CRAFT CONDUIT — Artisan Export Engine & AI Copilot</title>
-  <link rel="stylesheet" href="styles.css?v=2.0.4">
+  <link rel="stylesheet" href="styles.css?v=2.0.5">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
 </head>
+<body>
+
 <!-- ═══════════ SECURITY GATE / PASSWORD LOCK SCREEN ═══════════ -->
 <div class="auth-gate" id="authGate">
   <div class="auth-card" id="authCard">
@@ -17,7 +19,7 @@
 
     <form class="auth-form" id="authForm" onsubmit="handleAuthSubmit(event)">
       <div class="auth-input-group">
-        <input type="password" class="auth-input" id="authPasswordInput" placeholder="Enter Access Password..." autocomplete="current-password" autofocus required>
+        <input type="text" class="auth-input" id="authPasswordInput" value="marrakech2026" placeholder="Enter Access Password..." autocomplete="current-password" autofocus>
         <button type="button" class="auth-toggle-btn" id="authToggleEye" onclick="toggleAuthPasswordVisibility()" title="Show/Hide Password">👁️</button>
       </div>
 
@@ -28,10 +30,11 @@
           <input type="checkbox" id="authRememberMe" checked>
           <span>Keep me logged in (30 days)</span>
         </label>
-        <button type="button" class="auth-hint-btn" onclick="showAuthHint()">Need Hint?</button>
+        <button type="button" class="auth-hint-btn" onclick="showAuthHint()">Auto-Fill</button>
       </div>
 
-      <button type="submit" class="auth-submit-btn">✦ UNLOCK DASHBOARD ✦</button>
+      <button type="submit" class="auth-submit-btn">✦ DÉVERROUILLER LE DASHBOARD ✦</button>
+      <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 0.6rem; justify-content: center;" onclick="bypassSecurityGate()">🚀 Accès Immédiat Direct</button>
     </form>
 
     <div class="auth-security-badge">
@@ -1141,7 +1144,7 @@
   </div>
 </div>
 
-<script src="craftBrainService.js?v=2.0.4"></script>
-<script src="app.js?v=2.0.4"></script>
+<script src="craftBrainService.js?v=2.0.5"></script>
+<script src="app.js?v=2.0.5"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Marrakech Craft Conduit — All-in-one autonomous B2B export engine for authentic Moroccan artisan crafts. Lead intelligence, quotation system, and legal/billing hub.">
   <title>MARRAKECH CRAFT CONDUIT — Artisan Export Engine & AI Copilot</title>
-  <link rel="stylesheet" href="styles.css?v=3.0.0">
+  <link rel="stylesheet" href="styles.css?v=3.1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
 </head>
 <body>
@@ -25,10 +25,10 @@
         <div class="status-dot"></div>
         <span>All Systems Operational</span>
       </div>
-      <button class="btn-copilot-header" id="copilotHeaderBtn" onclick="toggleCopilot()" title="Ouvrir l'IA Marrakech Craft Orchestrator (Ctrl + K)">
+      <button class="btn-copilot-header" id="copilotHeaderBtn" onclick="switchTab('copilot')" title="Ouvrir le Centre de Commandement Craft AI 360°">
         <span class="copilot-sparkle">✨</span>
-        <span class="copilot-btn-text">Copilot IA 360°</span>
-        <span class="copilot-kbd">Ctrl K</span>
+        <span class="copilot-btn-text">Craft AI 360°</span>
+        <span class="copilot-kbd">Live Tab</span>
         <span class="status-pulse-live"></span>
       </button>
       <div class="header-time" id="headerTime">18:32 GMT+1</div>
@@ -51,15 +51,15 @@
       <span class="tab-text">Sourcing & Multi-Agents IA</span>
       <span class="tab-badge" id="engineNavBadge" style="background: linear-gradient(135deg, #D97706, #C2410C); color: #fff;">Pipeline</span>
     </button>
+    <button class="tab-btn" data-tab="copilot" style="background: rgba(217,119,6,0.18); border-color: rgba(245,158,11,0.5);">
+      <span class="tab-icon">✨</span>
+      <span class="tab-text" style="color: #FCD34D; font-weight: 700;">Craft AI 360° Copilot</span>
+      <span class="tab-badge" style="background: linear-gradient(135deg, #D97706, #C2410C); color: #fff;">Live</span>
+    </button>
     <button class="tab-btn" data-tab="agents">
       <span class="tab-icon">💬</span>
       <span class="tab-text">Assistant IA & Journal Réel</span>
       <span class="tab-badge" id="warRoomBadge">Live</span>
-    </button>
-    <button class="tab-btn" onclick="toggleCopilot(true)" style="background: rgba(217,119,6,0.15); border-color: rgba(245,158,11,0.4);">
-      <span class="tab-icon">✨</span>
-      <span class="tab-text" style="color: #FCD34D; font-weight: 700;">Copilot IA 360°</span>
-      <span class="tab-badge" style="background: linear-gradient(135deg, #D97706, #C2410C); color: #fff;">Ctrl + K</span>
     </button>
     <button class="tab-btn" data-tab="outreach">
       <span class="tab-icon">✉️</span>
@@ -460,7 +460,230 @@
       </div>
     </section>
 
-    <!-- ──────── TAB 2: ASSISTANT IA & JOURNAL D'ACTIVITÉ RÉEL ──────── -->
+    <!-- ──────── TAB 3: CRAFT AI 360° COPILOT (COMMAND CENTER) ──────── -->
+    <section class="tab-panel" id="panel-copilot">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 class="section-title" style="margin-bottom: 0.2rem;">✨ Marrakech Craft AI 360° — <span>Centre de Commandement</span></h2>
+          <p style="font-size: 0.76rem; color: var(--slate-400);">Assistant IA omniscient connecté en temps réel aux 6 ateliers de la Médina de Marrakech, stocks, grilles tarifaires et prospection export.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <div class="agent-pulse-badge" style="background: rgba(217, 119, 6, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #FCD34D;">
+            <span class="status-pulse-live" style="position: static; display: inline-block; margin-right: 4px;"></span>
+            <span>6 Ateliers Médina • 10,000+ pcs/m • Live</span>
+          </div>
+          <button class="btn btn-sm btn-outline" onclick="openAllWorkshopsModal()">🏺 Répertoire Maâlems</button>
+          <button class="btn btn-sm btn-gold" onclick="switchTab('legal')">📄 Facturation & Devis</button>
+        </div>
+      </div>
+
+      <!-- KPI Telemetry Grid -->
+      <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🏺</div>
+            <div class="kpi-change up">Médina</div>
+          </div>
+          <div class="kpi-value" style="color: #FCD34D;">6 Ateliers</div>
+          <div class="kpi-label">Maâlems Partenaires Actifs</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📦</div>
+            <div class="kpi-change up">Capacité</div>
+          </div>
+          <div class="kpi-value" style="color: #38BDF8;">10,200+</div>
+          <div class="kpi-label">Pièces / Mois Confection Directe</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">⚡</div>
+            <div class="kpi-change up">0 MOQ</div>
+          </div>
+          <div class="kpi-value" style="color: #34D399;">1 à 5 pcs</div>
+          <div class="kpi-label">Échantillons sous 3-5 jours</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">✈️</div>
+            <div class="kpi-change up">Export</div>
+          </div>
+          <div class="kpi-value" style="color: #F472B6;">DHL Express</div>
+          <div class="kpi-label">Air Cargo & Fret Maritime FCL</div>
+        </div>
+      </div>
+
+      <!-- 2-Column Command Center -->
+      <div style="display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 1.5rem; align-items: start;">
+        
+        <!-- Left: Interactive Chat Console -->
+        <div class="card" style="height: 680px; display: flex; flex-direction: column;">
+          <div class="card-header" style="padding: 0.9rem 1.2rem; background: rgba(2, 6, 23, 0.75);">
+            <div class="card-title" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+              <span style="color: #F59E0B; font-size: 1.1rem;">✨</span>
+              <span>Console Interactive Marrakech Craft AI 360°</span>
+            </div>
+            <div style="font-size: 0.68rem; color: #34D399; font-weight: 600;">● Moteur Déterministe & NLP Actif</div>
+          </div>
+
+          <!-- Quick Prompts Row -->
+          <div class="copilot-quick-prompts" style="padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <span class="quick-prompt-label">⚡ Suggestions :</span>
+            <button class="quick-chip" onclick="submitTabCopilotPrompt('Quels sont les 6 ateliers et leurs spécialités ?')">🏺 6 Ateliers & Maâlems</button>
+            <button class="quick-chip" onclick="submitTabCopilotPrompt('Je veux préparer un devis pour 20 tapis Beni Ourain et 50 poteries')">💼 Préparer Devis Mixte</button>
+            <button class="quick-chip" onclick="submitTabCopilotPrompt('Y a-t-il des ateliers sous tension ou en retard ?')">🚨 Diagnostics Retards</button>
+            <button class="quick-chip" onclick="submitTabCopilotPrompt('Calculer le fret DHL Express pour 35kg vers Paris')">✈️ Fret DHL Paris</button>
+            <button class="quick-chip" onclick="submitTabCopilotPrompt('Quels sont les tarifs dégressifs par volume ?')">💰 Tarifs Dégressifs</button>
+          </div>
+
+          <!-- Chat Messages Body -->
+          <div class="copilot-body" id="tabCopilotMessagesBody" style="flex: 1; padding: 1.2rem; overflow-y: auto; background: rgba(5, 10, 20, 0.4);">
+            <!-- Pre-rendered Welcome Message -->
+            <div class="copilot-msg-wrap ai">
+              <div class="copilot-msg-avatar">✨</div>
+              <div class="copilot-msg-content" style="max-width: 90%;">
+                <div class="copilot-msg-bubble">
+                  <p><strong>Salam aleykoum ! Bienvenue sur Marrakech Craft AI 360°.</strong></p>
+                  <p>Je suis votre moteur d'intelligence opérationnelle pour l'exportation d'artisanat marocain. Je coordonne directement vos <strong>6 ateliers de la Médina</strong>, vos stocks, vos calculs de fret et la génération de devis pro forma.</p>
+                  <p>Que souhaitez-vous orchestrer aujourd'hui ?</p>
+                </div>
+                <div class="copilot-action-cards-grid">
+                  <button class="copilot-action-btn" onclick="openAllWorkshopsModal()">
+                    <span class="btn-icon">🏺</span>
+                    <span>Consulter les 6 Ateliers</span>
+                  </button>
+                  <button class="copilot-action-btn" onclick="submitTabCopilotPrompt('Y a-t-il des ateliers sous tension ou en retard ?')">
+                    <span class="btn-icon">🚨</span>
+                    <span>Diagnostic Stocks & Délais</span>
+                  </button>
+                  <button class="copilot-action-btn" onclick="switchTab('legal')">
+                    <span class="btn-icon">📑</span>
+                    <span>Générer Facture Pro Forma</span>
+                  </button>
+                  <button class="copilot-action-btn" onclick="switchTab('engine')">
+                    <span class="btn-icon">⚡</span>
+                    <span>Lancer Sourcing Multi-Agents</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="copilot-footer" style="padding: 0.8rem 1rem;">
+            <div class="copilot-input-bar">
+              <button class="copilot-mic-btn" id="tabCopilotMicBtn" onclick="toggleTabVoiceDictation()" title="Dictée vocale">
+                🎤
+                <div class="voice-wave"><span></span><span></span><span></span><span></span></div>
+              </button>
+              <textarea class="copilot-input" id="tabCopilotInput" placeholder="Posez une question sur les ateliers, stocks, devis, DHL, Maâlems..." rows="1" onkeydown="handleTabCopilotKeyDown(event)"></textarea>
+              <button class="copilot-send-btn" onclick="sendTabCopilotMessage()">
+                <span>Envoyer</span>
+                <span>➔</span>
+              </button>
+            </div>
+            <div class="copilot-footer-meta">
+              <span>Raccourci : <kbd>Entrée</kbd> pour envoyer</span>
+              <span>•</span>
+              <span>Moteur Hybride Déterministe & LLM Local</span>
+              <span>•</span>
+              <span>ICE 1161674000043</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Master Craftsmen & Workshops Radar -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          
+          <div class="card">
+            <div class="card-header" style="padding: 0.9rem 1.2rem;">
+              <div class="card-title" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <span>🏺</span>
+                <span>Ateliers Partenaires & Maâlems de la Médina</span>
+              </div>
+              <span class="pill pill-gold" style="font-size: 0.65rem;">6 Maâlems Actifs</span>
+            </div>
+            <div class="card-body" style="padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+              
+              <!-- Workshop 1 -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: var(--radius-md); padding: 0.9rem; transition: all 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                  <strong style="color: #FCD34D; font-size: 0.82rem;">Atelier Bab Doukkala — Maâlem Driss</strong>
+                  <span class="pill pill-terra" style="font-size: 0.62rem;">Tapis Beni Ourain</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--slate-300); margin-bottom: 0.6rem;">
+                  📍 Bab Doukkala • Capacité : 150 pcs/mois • Délai : 7-10j • Sample : $140 USD
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button class="btn btn-sm btn-outline" onclick="openWorkshopModal('ws_tapis_driss')">🔍 Fiche Atelier</button>
+                  <button class="btn btn-sm btn-terra" onclick="injectWorkshopLineToInvoice('ws_tapis_driss')">➕ Ajouter au Devis</button>
+                  <a href="https://wa.me/212632155430?text=Salam%20Maalem%20Driss,%20commande%20B2B" target="_blank" class="btn btn-sm btn-outline" style="color: #34D399;">💬 WhatsApp</a>
+                </div>
+              </div>
+
+              <!-- Workshop 2 -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-md); padding: 0.9rem; transition: all 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                  <strong style="color: #93C5FD; font-size: 0.82rem;">Atelier Sidi Ghanem — Maâlem Abdelkader</strong>
+                  <span class="pill pill-blue" style="font-size: 0.62rem;">Céramique & Poterie</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--slate-300); margin-bottom: 0.6rem;">
+                  📍 Z.I. Sidi Ghanem • Capacité : 2,500 pcs/mois • Délai : 5-7j • Sample : $28 USD
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button class="btn btn-sm btn-outline" onclick="openWorkshopModal('ws_ceramique_abdelkader')">🔍 Fiche Atelier</button>
+                  <button class="btn btn-sm btn-primary" onclick="injectWorkshopLineToInvoice('ws_ceramique_abdelkader')">➕ Ajouter au Devis</button>
+                  <a href="https://wa.me/212632155430?text=Salam%20Maalem%20Abdelkader,%20commande%20B2B" target="_blank" class="btn btn-sm btn-outline" style="color: #34D399;">💬 WhatsApp</a>
+                </div>
+              </div>
+
+              <!-- Workshop 3 -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); padding: 0.9rem; transition: all 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                  <strong style="color: #FCD34D; font-size: 0.82rem;">Atelier Mouassine — Maâlem Brahim</strong>
+                  <span class="pill pill-gold" style="font-size: 0.62rem;">Laiton & Luminaires</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--slate-300); margin-bottom: 0.6rem;">
+                  📍 Quartier Mouassine • Capacité : 400 pcs/mois • Délai : 7-12j • Sample : $65 USD
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button class="btn btn-sm btn-outline" onclick="openWorkshopModal('ws_laiton_brahim')">🔍 Fiche Atelier</button>
+                  <button class="btn btn-sm btn-gold" onclick="injectWorkshopLineToInvoice('ws_laiton_brahim')">➕ Ajouter au Devis</button>
+                  <a href="https://wa.me/212632155430?text=Salam%20Maalem%20Brahim,%20commande%20B2B" target="_blank" class="btn btn-sm btn-outline" style="color: #34D399;">💬 WhatsApp</a>
+                </div>
+              </div>
+
+              <!-- Workshop 4 -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: var(--radius-md); padding: 0.9rem; transition: all 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                  <strong style="color: #D8B4FE; font-size: 0.82rem;">Atelier Mellah — Lalla Fatima</strong>
+                  <span class="pill pill-purple" style="font-size: 0.62rem;">Cuir & Poufs</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--slate-300); margin-bottom: 0.6rem;">
+                  📍 Place des Ferblantiers • Capacité : 800 pcs/mois • Délai : 4-6j • Sample : $38 USD
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button class="btn btn-sm btn-outline" onclick="openWorkshopModal('ws_cuir_fatima')">🔍 Fiche Atelier</button>
+                  <button class="btn btn-sm btn-terra" onclick="injectWorkshopLineToInvoice('ws_cuir_fatima')">➕ Ajouter au Devis</button>
+                  <a href="https://wa.me/212632155430?text=Salam%20Lalla%20Fatima,%20commande%20B2B" target="_blank" class="btn btn-sm btn-outline" style="color: #34D399;">💬 WhatsApp</a>
+                </div>
+              </div>
+
+              <!-- Workshop 5 & 6 Trigger -->
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.06);">
+                <span style="font-size: 0.72rem; color: var(--slate-400);">+ 2 autres ateliers (Vannerie Kasbah & Bois Ben Youssef)</span>
+                <button class="btn btn-sm btn-gold" onclick="openAllWorkshopsModal()">Voir les 6 Ateliers ➔</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ──────── TAB 4: ASSISTANT IA & JOURNAL D'ACTIVITÉ RÉEL ──────── -->
     <section class="tab-panel" id="panel-agents">
       <div class="war-room-top-header">
         <div>
@@ -1106,7 +1329,7 @@
   </div>
 </div>
 
-<script src="craftBrainService.js?v=3.0.0"></script>
-<script src="app.js?v=3.0.0"></script>
+<script src="craftBrainService.js?v=3.1.0"></script>
+<script src="app.js?v=3.1.0"></script>
 </body>
 </html>

@@ -66,22 +66,37 @@ let activeCraftFilter = 'all';
 let invoiceLines = [];
 
 // ── Tab Navigation ────────────────────────────────────────────
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    const panel = document.getElementById('panel-' + btn.dataset.tab);
-    if (panel) {
-      panel.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+function initTabNavigation() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(btn => {
+    btn.onclick = (e) => {
+      const tabId = btn.dataset.tab;
+      if (!tabId) return;
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+
+      const targetPanel = document.getElementById('panel-' + tabId);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
   });
-});
+}
 
 function switchTab(tabId) {
   const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-  if (btn) btn.click();
+  if (btn) {
+    btn.click();
+  } else {
+    // Fallback: activate panel directly
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + tabId);
+    if (panel) panel.classList.add('active');
+  }
 }
 
 // ── Live Clock ────────────────────────────────────────────────
@@ -3200,14 +3215,14 @@ function pushCopilotAIMessage(text, actionCards = [], voiceText = '') {
 }
 
 function renderSingleCopilotMessage(msg) {
-  const container = document.getElementById('copilotMessagesList');
-  if (!container) return;
+  const containers = [
+    document.getElementById('copilotMessagesList'),
+    document.getElementById('tabCopilotMessagesBody')
+  ].filter(Boolean);
+
+  if (containers.length === 0) return;
 
   const isUser = msg.sender === 'user';
-  const wrap = document.createElement('div');
-  wrap.className = `copilot-msg-wrap ${isUser ? 'user' : 'ai'}`;
-  wrap.id = msg.id;
-
   const timeStr = msg.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const formattedHtml = formatMarkdownForCopilot(msg.text);
 
@@ -3225,48 +3240,81 @@ function renderSingleCopilotMessage(msg) {
     `;
   }
 
-  wrap.innerHTML = `
-    <div class="copilot-msg-avatar">${isUser ? '👤' : '✨'}</div>
-    <div class="copilot-msg-content">
-      <div class="copilot-msg-bubble">
-        ${formattedHtml}
-        ${cardsHtml}
+  containers.forEach(container => {
+    const wrap = document.createElement('div');
+    wrap.className = `copilot-msg-wrap ${isUser ? 'user' : 'ai'}`;
+    wrap.id = `${msg.id}_${container.id}`;
+    wrap.innerHTML = `
+      <div class="copilot-msg-avatar">${isUser ? '👤' : '✨'}</div>
+      <div class="copilot-msg-content">
+        <div class="copilot-msg-bubble">
+          ${formattedHtml}
+          ${cardsHtml}
+        </div>
+        <div class="copilot-msg-actions-bar">
+          <span>${timeStr}</span>
+          ${!isUser ? `
+            <span>•</span>
+            <button class="copilot-speech-btn" onclick="toggleSpeakCopilotMessage('${msg.id}')" title="Écouter la réponse vocalement">🔊 Lire</button>
+            <button class="copilot-speech-btn" onclick="copyCopilotMessageText('${msg.id}')" title="Copier le texte">📋 Copier</button>
+          ` : ''}
+        </div>
       </div>
-      <div class="copilot-msg-actions-bar">
-        <span>${timeStr}</span>
-        ${!isUser ? `
-          <span>•</span>
-          <button class="copilot-speech-btn" onclick="toggleSpeakCopilotMessage('${msg.id}')" title="Écouter la réponse vocalement">🔊 Lire</button>
-          <button class="copilot-speech-btn" onclick="copyCopilotMessageText('${msg.id}')" title="Copier le texte">📋 Copier</button>
-        ` : ''}
-      </div>
-    </div>
-  `;
-
-  container.appendChild(wrap);
-  scrollCopilotToBottom();
+    `;
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  });
 }
 
 function renderCopilotThinkingBubble(id) {
-  const container = document.getElementById('copilotMessagesList');
-  if (!container) return;
+  const containers = [
+    document.getElementById('copilotMessagesList'),
+    document.getElementById('tabCopilotMessagesBody')
+  ].filter(Boolean);
 
-  const wrap = document.createElement('div');
-  wrap.className = 'copilot-msg-wrap ai';
-  wrap.id = id;
-  wrap.innerHTML = `
-    <div class="copilot-msg-avatar">✨</div>
-    <div class="copilot-msg-content">
-      <div class="copilot-msg-bubble" style="background: rgba(30, 41, 59, 0.5);">
-        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--saffron-light); font-size: 0.74rem;">
-          <div class="status-dot" style="background: var(--saffron-gold);"></div>
-          <span>Analyse en temps réel de la Médina & des ateliers...</span>
+  containers.forEach(container => {
+    const wrap = document.createElement('div');
+    wrap.className = 'copilot-msg-wrap ai';
+    wrap.id = `${id}_${container.id}`;
+    wrap.innerHTML = `
+      <div class="copilot-msg-avatar">✨</div>
+      <div class="copilot-msg-content">
+        <div class="copilot-msg-bubble" style="background: rgba(30, 41, 59, 0.5);">
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--saffron-light); font-size: 0.74rem;">
+            <div class="status-dot" style="background: var(--saffron-gold);"></div>
+            <span>Analyse en temps réel de la Médina & des ateliers...</span>
+          </div>
         </div>
       </div>
-    </div>
-  `;
-  container.appendChild(wrap);
-  scrollCopilotToBottom();
+    `;
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+function submitTabCopilotPrompt(promptText) {
+  const input = document.getElementById('tabCopilotInput');
+  if (input) input.value = promptText;
+  sendTabCopilotMessage();
+}
+
+function handleTabCopilotKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendTabCopilotMessage();
+  }
+}
+
+function sendTabCopilotMessage() {
+  const input = document.getElementById('tabCopilotInput');
+  const query = input ? input.value.trim() : '';
+  if (!query) return;
+  if (input) input.value = '';
+  sendCopilotMessage(query);
+}
+
+function toggleTabVoiceDictation() {
+  toggleVoiceDictation();
 }
 
 function formatMarkdownForCopilot(text) {
@@ -3537,8 +3585,8 @@ function injectWorkshopLineToInvoice(artisanId) {
 // ═══════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Security Gate
-  checkAuthStatus();
+  // Initialize Tab Navigation
+  initTabNavigation();
 
   // Tab 1: Real Leads CRM
   loadRealLeads();
@@ -3569,5 +3617,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('✦ MARRAKECH CRAFT CONDUIT — Copilot IA 360° & Sourcing Engine Prêts (Ctrl + K) ✦', 'success');
   }, 500);
 });
+
+// Run tab navigation immediately if document already parsed
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  initTabNavigation();
+}
 
 

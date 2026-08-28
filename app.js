@@ -1730,29 +1730,29 @@ function exportInvoicePDF() {
 
   document.getElementById('modalTitle').textContent = `📄 Facture Pro Forma Officielle — ${invoiceNum}`;
   document.getElementById('modalBody').innerHTML = `
-    <div id="printableInvoice" style="background: white; color: #1a1a1a; padding: 2rem; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.82rem; line-height: 1.5;">
+    <div id="printableInvoice" style="background: rgba(15, 23, 42, 0.95); color: #F1F5F9; padding: 2rem; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.82rem; line-height: 1.5; border: 1px solid rgba(217, 119, 6, 0.35); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
       
       <!-- En-tête officiel -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #C2410C;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #D97706;">
         <div>
-          <h2 style="font-family: var(--font-display); font-size: 1.3rem; color: #1E3A8A; margin-bottom: 0.2rem;">MARRAKECH CRAFT CONDUIT</h2>
-          <p style="font-weight: 700; font-size: 0.78rem; color: #333;">AUTO-ENTREPRENEUR HASSAN TIGUIDDA</p>
-          <p style="font-size: 0.7rem; color: #666;">Les portes de Marrakech Zone 16 imm 118 app 03, Marrakech</p>
-          <p style="font-size: 0.7rem; color: #666;"><strong>ICE :</strong> 1161674000043 | <strong>Tél/WhatsApp :</strong> +212 632 155 430</p>
-          <p style="font-size: 0.7rem; color: #666;"><strong>Email :</strong> tiguidda76@gmail.com | <strong>Portfolio :</strong> sites.google.com/view/morkech/home</p>
+          <h2 style="font-family: var(--font-display); font-size: 1.3rem; color: #60A5FA; margin-bottom: 0.2rem; letter-spacing: 0.5px;">MARRAKECH CRAFT CONDUIT</h2>
+          <p style="font-weight: 700; font-size: 0.78rem; color: #FCD34D;">AUTO-ENTREPRENEUR HASSAN TIGUIDDA</p>
+          <p style="font-size: 0.7rem; color: var(--slate-400);">Les portes de Marrakech Zone 16 imm 118 app 03, Marrakech</p>
+          <p style="font-size: 0.7rem; color: var(--slate-400);"><strong style="color:#fff;">ICE :</strong> 1161674000043 | <strong style="color:#fff;">Tél/WhatsApp :</strong> +212 632 155 430</p>
+          <p style="font-size: 0.7rem; color: var(--slate-400);"><strong style="color:#fff;">Email :</strong> tiguidda76@gmail.com | <strong style="color:#fff;">Portfolio :</strong> sites.google.com/view/morkech/home</p>
         </div>
         <div style="text-align: right;">
-          <h3 style="font-size: 1.1rem; color: #C2410C; margin-bottom: 0.2rem; font-family: var(--font-display);">PRO FORMA INVOICE</h3>
-          <p style="font-size: 0.8rem; font-weight: 700;">N° ${invoiceNum}</p>
-          <p style="font-size: 0.72rem; color: #666;">Date : ${today}</p>
-          <p style="font-size: 0.72rem; color: #666;">Validité : 30 jours</p>
+          <h3 style="font-size: 1.1rem; color: #F59E0B; margin-bottom: 0.2rem; font-family: var(--font-display);">PRO FORMA INVOICE</h3>
+          <p style="font-size: 0.8rem; font-weight: 700; color: #FFF;">N° ${invoiceNum}</p>
+          <p style="font-size: 0.72rem; color: var(--slate-400);">Date : ${today}</p>
+          <p style="font-size: 0.72rem; color: #34D399; font-weight: 600;">Validité : 30 jours</p>
         </div>
       </div>
 
       <!-- Destinataire -->
-      <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 0.8rem 1rem; border-radius: 6px; border-left: 4px solid #1E3A8A;">
-        <span style="font-size: 0.68rem; color: #64748B; text-transform: uppercase; font-weight: 700;">Facturé à l'attention de :</span>
-        <div style="font-weight: 700; font-size: 0.85rem; color: #0F172A; margin-top: 0.2rem;">
+      <div style="margin-bottom: 1.5rem; background: rgba(30, 41, 59, 0.7); padding: 0.8rem 1rem; border-radius: 6px; border-left: 4px solid #3B82F6; border: 1px solid rgba(255,255,255,0.06);">
+        <span style="font-size: 0.68rem; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Facturé à l'attention de :</span>
+        <div style="font-weight: 700; font-size: 0.85rem; color: #FFFFFF; margin-top: 0.2rem;">
           ${clientDetails ? escapeHtml(clientDetails) : 'Client International / Acheteur B2B'}
         </div>
       </div>
@@ -1760,22 +1760,22 @@ function exportInvoicePDF() {
       <!-- Tableau des articles -->
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
         <thead>
-          <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
-            <th style="padding: 0.6rem; text-align: left; font-size: 0.72rem;">Désignation</th>
-            <th style="padding: 0.6rem; text-align: left; font-size: 0.72rem;">Spécifications</th>
-            <th style="padding: 0.6rem; text-align: right; font-size: 0.72rem;">P.U. (${currentCurrency})</th>
-            <th style="padding: 0.6rem; text-align: center; font-size: 0.72rem;">Qté</th>
-            <th style="padding: 0.6rem; text-align: right; font-size: 0.72rem;">Total</th>
+          <tr style="background: rgba(30, 41, 59, 0.9); border-bottom: 2px solid rgba(217, 119, 6, 0.5);">
+            <th style="padding: 0.6rem; text-align: left; font-size: 0.72rem; color: #FCD34D;">Désignation</th>
+            <th style="padding: 0.6rem; text-align: left; font-size: 0.72rem; color: #94A3B8;">Spécifications</th>
+            <th style="padding: 0.6rem; text-align: right; font-size: 0.72rem; color: #FCD34D;">P.U. (${currentCurrency})</th>
+            <th style="padding: 0.6rem; text-align: center; font-size: 0.72rem; color: #94A3B8;">Qté</th>
+            <th style="padding: 0.6rem; text-align: right; font-size: 0.72rem; color: #FCD34D;">Total</th>
           </tr>
         </thead>
         <tbody>
           ${invoiceLines.map(line => `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 0.6rem; font-weight: 600;">${escapeHtml(line.name)}</td>
-              <td style="padding: 0.6rem; font-size: 0.7rem; color: #64748B;">${escapeHtml(line.desc)}</td>
-              <td style="padding: 0.6rem; text-align: right; font-family: monospace;">${sym}${(line.priceUSD * rate).toFixed(2)}</td>
-              <td style="padding: 0.6rem; text-align: center;">${line.qty}</td>
-              <td style="padding: 0.6rem; text-align: right; font-family: monospace; font-weight: 700;">${sym}${(line.priceUSD * rate * line.qty).toFixed(2)}</td>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+              <td style="padding: 0.6rem; font-weight: 600; color: #FFF;">${escapeHtml(line.name)}</td>
+              <td style="padding: 0.6rem; font-size: 0.7rem; color: #94A3B8;">${escapeHtml(line.desc)}</td>
+              <td style="padding: 0.6rem; text-align: right; font-family: monospace; color: #E2E8F0;">${sym}${(line.priceUSD * rate).toFixed(2)}</td>
+              <td style="padding: 0.6rem; text-align: center; color: #E2E8F0;">${line.qty}</td>
+              <td style="padding: 0.6rem; text-align: right; font-family: monospace; font-weight: 700; color: #FCD34D;">${sym}${(line.priceUSD * rate * line.qty).toFixed(2)}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -1783,20 +1783,20 @@ function exportInvoicePDF() {
 
       <!-- Totaux -->
       <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
-        <div style="width: 280px; border-top: 1px solid #cbd5e1; padding-top: 0.5rem;">
+        <div style="width: 280px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 0.5rem;">
           <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
-            <span style="color: #64748B;">Sous-total :</span>
-            <span style="font-family: monospace; font-weight: 600;">${sym}${subtotal.toFixed(2)}</span>
+            <span style="color: #94A3B8;">Sous-total :</span>
+            <span style="font-family: monospace; font-weight: 600; color: #FFF;">${sym}${subtotal.toFixed(2)}</span>
           </div>
           <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
-            <span style="color: #64748B;">Emballage Export (3%) :</span>
-            <span style="font-family: monospace;">${sym}${packaging.toFixed(2)}</span>
+            <span style="color: #94A3B8;">Emballage Export (3%) :</span>
+            <span style="font-family: monospace; color: #FFF;">${sym}${packaging.toFixed(2)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; color: green;">
+          <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; color: #34D399; font-weight: 600;">
             <span>TVA Exportation :</span>
-            <span>Exonéré</span>
+            <span>Exonéré (Art 91 CGI)</span>
           </div>
-          <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; margin-top: 0.4rem; border-top: 2px solid #C2410C; font-size: 1.1rem; font-weight: 800; color: #C2410C;">
+          <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; margin-top: 0.4rem; border-top: 2px solid #D97706; font-size: 1.15rem; font-weight: 800; color: #F59E0B;">
             <span>TOTAL NET :</span>
             <span style="font-family: monospace;">${sym}${total.toFixed(2)}</span>
           </div>
@@ -1804,12 +1804,12 @@ function exportInvoicePDF() {
       </div>
 
       <!-- Coordonnées bancaires & Mentions légales -->
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; font-size: 0.72rem; color: #475569;">
-        <p style="font-weight: 700; color: #1E3A8A; margin-bottom: 0.3rem;">COORDONNÉES DE RÈGLEMENT BANCAIRE :</p>
-        <p><strong>RIB Maroc :</strong> 007450001399370030009822 (Bank of Africa / BMCE)</p>
-        <p><strong>Code SWIFT / BIC :</strong> BCMAMAMC</p>
-        <p><strong>Incoterm :</strong> EXW Marrakech / FOB Casablanca (Transport express DHL sur demande)</p>
-        <p style="font-style: italic; margin-top: 0.5rem; color: #64748B;">
+      <div style="background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 6px; padding: 1rem; font-size: 0.72rem; color: #CBD5E1;">
+        <p style="font-weight: 700; color: #60A5FA; margin-bottom: 0.3rem;">COORDONNÉES DE RÈGLEMENT BANCAIRE :</p>
+        <p><strong style="color:#FFF;">RIB Maroc :</strong> 007450001399370030009822 (Bank of Africa / BMCE)</p>
+        <p><strong style="color:#FFF;">Code SWIFT / BIC :</strong> BCMAMAMC</p>
+        <p><strong style="color:#FFF;">Incoterm :</strong> EXW Marrakech / FOB Casablanca (Transport express DHL sur demande)</p>
+        <p style="font-style: italic; margin-top: 0.5rem; color: #FCD34D;">
           "Montant en dirhams exonéré de la TVA (Art 91 - II - 1° du Code Général des Impôts)"
         </p>
       </div>
@@ -1829,25 +1829,25 @@ function exportInvoicePDF() {
 function exportPackingListPDF() {
   document.getElementById('modalTitle').textContent = '📋 Packing List Export — Bordereau d\'Expédition';
   document.getElementById('modalBody').innerHTML = `
-    <div style="background: white; color: #1a1a1a; padding: 2rem; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.8rem;">
-      <h3 style="color: #1E3A8A; font-family: var(--font-display); margin-bottom: 0.3rem;">MARRAKECH CRAFT CONDUIT — PACKING LIST</h3>
-      <p style="font-size: 0.72rem; color: #666; margin-bottom: 1rem;">Exportateur : Hassan Tiguidda | ICE : 1161674000043 | Marrakech, Maroc</p>
+    <div style="background: rgba(15, 23, 42, 0.95); color: #F1F5F9; padding: 2rem; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.8rem; border: 1px solid rgba(217, 119, 6, 0.35);">
+      <h3 style="color: #60A5FA; font-family: var(--font-display); margin-bottom: 0.3rem;">MARRAKECH CRAFT CONDUIT — PACKING LIST</h3>
+      <p style="font-size: 0.72rem; color: var(--slate-400); margin-bottom: 1rem;">Exportateur : Hassan Tiguidda | ICE : 1161674000043 | Marrakech, Maroc</p>
       <table style="width: 100%; border-collapse: collapse;">
         <thead>
-          <tr style="background: #f1f5f9;">
-            <th style="padding: 0.5rem; text-align: left;">Colis</th>
-            <th style="padding: 0.5rem; text-align: left;">Contenu</th>
-            <th style="padding: 0.5rem; text-align: center;">Qté</th>
-            <th style="padding: 0.5rem; text-align: right;">Poids Est.</th>
+          <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 2px solid #D97706;">
+            <th style="padding: 0.5rem; text-align: left; color: #FCD34D;">Colis</th>
+            <th style="padding: 0.5rem; text-align: left; color: #FCD34D;">Contenu</th>
+            <th style="padding: 0.5rem; text-align: center; color: #FCD34D;">Qté</th>
+            <th style="padding: 0.5rem; text-align: right; color: #FCD34D;">Poids Est.</th>
           </tr>
         </thead>
         <tbody>
           ${invoiceLines.map((l, i) => `
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 0.5rem;">Colis #${i + 1}</td>
-              <td style="padding: 0.5rem;">${escapeHtml(l.name)}</td>
-              <td style="padding: 0.5rem; text-align: center;">${l.qty}</td>
-              <td style="padding: 0.5rem; text-align: right;">${(l.qty * 2.5).toFixed(1)} kg</td>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+              <td style="padding: 0.5rem; color: #94A3B8;">Colis #${i + 1}</td>
+              <td style="padding: 0.5rem; color: #FFF; font-weight: 600;">${escapeHtml(l.name)}</td>
+              <td style="padding: 0.5rem; text-align: center; color: #E2E8F0;">${l.qty}</td>
+              <td style="padding: 0.5rem; text-align: right; color: #FCD34D; font-family: monospace;">${(l.qty * 2.5).toFixed(1)} kg</td>
             </tr>
           `).join('')}
         </tbody>
@@ -1864,20 +1864,23 @@ function exportPackingListPDF() {
 function exportCertificatePDF() {
   document.getElementById('modalTitle').textContent = '🛡️ Certificat d\'Origine & Fait-Main Artisanal';
   document.getElementById('modalBody').innerHTML = `
-    <div style="background: white; color: #1a1a1a; padding: 2.5rem; border-radius: var(--radius-md); text-align: center; border: 4px double #C2410C;">
-      <h2 style="font-family: var(--font-display); color: #1E3A8A; font-size: 1.3rem; margin-bottom: 0.5rem;">CERTIFICAT D'AUTHENTICITÉ ARTISANALE</h2>
-      <p style="font-size: 0.85rem; color: #C2410C; font-weight: 700; margin-bottom: 1.5rem;">ROYAUME DU MAROC — ARTISANAT DE MARRAKECH</p>
-      <p style="font-size: 0.78rem; color: #333; line-height: 1.8; max-width: 500px; margin: 0 auto 1.5rem auto;">
-        Nous certifions par la présente que les pièces confectionnées et expédiées par <strong>AUTO-ENTREPRENEUR HASSAN TIGUIDDA</strong> (ICE: 1161674000043) sont 100% réalisées à la main selon les techniques traditionnelles marocaines séculaires.
+    <div style="background: rgba(15, 23, 42, 0.95); color: #F1F5F9; padding: 2.5rem; border-radius: var(--radius-md); text-align: center; border: 2px solid #D97706; box-shadow: 0 0 30px rgba(217, 119, 6, 0.2);">
+      <h2 style="font-family: var(--font-display); color: #60A5FA; font-size: 1.3rem; margin-bottom: 0.5rem; letter-spacing: 1px;">CERTIFICAT D'AUTHENTICITÉ ARTISANALE</h2>
+      <p style="font-size: 0.85rem; color: #F59E0B; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: 0.5px;">ROYAUME DU MAROC — ARTISANAT D'EXCELLENCE DE MARRAKECH</p>
+      <p style="font-size: 0.8rem; color: var(--slate-300); line-height: 1.8; max-width: 520px; margin: 0 auto 1.5rem auto;">
+        Nous certifions par la présente que les pièces confectionnées et expédiées par <strong style="color: #FFF;">AUTO-ENTREPRENEUR HASSAN TIGUIDDA</strong> (ICE: 1161674000043) sont 100% réalisées à la main selon les techniques traditionnelles marocaines séculaires.
       </p>
-      <div style="font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 1rem;">
-        Fait à Marrakech le ${new Date().toLocaleDateString('fr-FR')} | Sceau Atelier Garanti
+      <div style="font-size: 0.75rem; color: #94A3B8; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+        Fait à Marrakech le ${new Date().toLocaleDateString('fr-FR')} | Sceau Maâlem Atelier Garanti
       </div>
     </div>
   `;
   document.getElementById('modalFooter').innerHTML = `
     <button class="btn btn-outline" onclick="closeModal()">Fermer</button>
     <button class="btn btn-gold" onclick="window.print()">🖨️ Imprimer le Certificat</button>
+  `;
+  openModal();
+}
   `;
   openModal();
 }
@@ -2942,56 +2945,57 @@ function openEngineLookbookModal(leadId) {
 
   document.getElementById('modalTitle').textContent = `🎨 B2B Mini-Lookbook — ${escapeHtml(lead.name)}`;
   document.getElementById('modalBody').innerHTML = `
-    <div style="background: #ffffff; color: #1e293b; border-radius: var(--radius-md); padding: 1.5rem; border: 2px solid #D97706; font-family: sans-serif;">
+    <div style="background: rgba(15, 23, 42, 0.95); color: #F1F5F9; border-radius: var(--radius-md); padding: 1.5rem; border: 1px solid rgba(217, 119, 6, 0.4); font-family: var(--font-body); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D97706; padding-bottom: 0.8rem; margin-bottom: 1rem;">
         <div>
-          <div style="font-size: 1.1rem; font-weight: 800; color: #92400E; letter-spacing: 0.5px;">🏛️ MARRAKECH CRAFT CONDUIT</div>
-          <div style="font-size: 0.7rem; color: #B45309; font-weight: 600;">Master-Artisan Direct Export Protocol • Hassan Tiguidda</div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: #60A5FA; letter-spacing: 0.5px; font-family: var(--font-display);">🏛️ MARRAKECH CRAFT CONDUIT</div>
+          <div style="font-size: 0.7rem; color: #FCD34D; font-weight: 600;">Master-Artisan Direct Export Protocol • Hassan Tiguidda</div>
         </div>
-        <span style="background: #92400E; color: #fff; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.65rem; font-weight: 700;">B2B Private Lookbook</span>
+        <span style="background: linear-gradient(135deg, #D97706, #C2410C); color: #fff; padding: 0.25rem 0.7rem; border-radius: 12px; font-size: 0.65rem; font-weight: 700; box-shadow: 0 0 10px rgba(217, 119, 6, 0.4);">B2B Private Lookbook</span>
       </div>
 
-      <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem;">Curated Selection for ${escapeHtml(lead.name)} (${escapeHtml(lead.city)})</div>
-      <div style="font-size: 0.72rem; color: #475569; margin-bottom: 1rem;">
-        Édition spéciale préparée directement depuis notre atelier de Marrakech. Zéro intermédiaire, tarifs direct artisan, garantie d'authenticité.
+      <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: #FFF;">Curated Selection for ${escapeHtml(lead.name)} (${escapeHtml(lead.city)})</div>
+      <div style="font-size: 0.74rem; color: var(--slate-400); margin-bottom: 1rem;">
+        Édition spéciale préparée directement depuis nos ateliers de la Médina de Marrakech. Zéro intermédiaire, tarifs direct artisan, garantie d'authenticité.
       </div>
 
-      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 0.8rem; margin-bottom: 1rem;">
-        <strong style="color: #0F172A; font-size: 0.82rem;">✨ Ligne Recommandée : ${escapeHtml(craftTitle)}</strong>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 0.6rem; font-size: 0.72rem;">
+      <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+        <strong style="color: #FCD34D; font-size: 0.84rem;">✨ Ligne Recommandée : ${escapeHtml(craftTitle)}</strong>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.72rem;">
           <thead>
-            <tr style="background: #E2E8F0; text-align: left;">
-              <th style="padding: 4px 6px;">Tier</th>
-              <th style="padding: 4px 6px;">MOQ</th>
-              <th style="padding: 4px 6px;">Tarif Atelier</th>
-              <th style="padding: 4px 6px;">Délai Expédition</th>
+            <tr style="background: rgba(15, 23, 42, 0.8); text-align: left; border-bottom: 1px solid rgba(217, 119, 6, 0.4);">
+              <th style="padding: 6px 8px; color: #FCD34D;">Tier</th>
+              <th style="padding: 6px 8px; color: #94A3B8;">MOQ</th>
+              <th style="padding: 6px 8px; color: #FCD34D;">Tarif Atelier</th>
+              <th style="padding: 6px 8px; color: #94A3B8;">Délai Expédition</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #E2E8F0;">
-              <td style="padding: 4px 6px;"><strong>Sample Découverte</strong></td>
-              <td style="padding: 4px 6px; color: #047857; font-weight: 700;">0 MOQ (1-5 pcs)</td>
-              <td style="padding: 4px 6px;"><strong>$${samplePrice} USD</strong> / pc</td>
-              <td style="padding: 4px 6px;">3-5 jours (DHL Express)</td>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding: 6px 8px; color: #FFF;"><strong>Sample Découverte</strong></td>
+              <td style="padding: 6px 8px; color: #34D399; font-weight: 700;">0 MOQ (1-5 pcs)</td>
+              <td style="padding: 6px 8px; color: #FCD34D; font-weight: 700;">$${samplePrice} USD / pc</td>
+              <td style="padding: 6px 8px; color: #E2E8F0;">3-5 jours (DHL Express)</td>
             </tr>
-            <tr style="border-bottom: 1px solid #E2E8F0;">
-              <td style="padding: 4px 6px;"><strong>Boutique Stock</strong></td>
-              <td style="padding: 4px 6px;">6-50 pcs</td>
-              <td style="padding: 4px 6px;">-15% Remise</td>
-              <td style="padding: 4px 6px;">5-7 jours (Air Cargo)</td>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding: 6px 8px; color: #FFF;"><strong>Boutique Stock</strong></td>
+              <td style="padding: 6px 8px; color: #E2E8F0;">6-50 pcs</td>
+              <td style="padding: 6px 8px; color: #38BDF8;">-15% Remise</td>
+              <td style="padding: 6px 8px; color: #E2E8F0;">5-7 jours (Air Cargo)</td>
             </tr>
             <tr>
-              <td style="padding: 4px 6px;"><strong>Wholesale Container</strong></td>
-              <td style="padding: 4px 6px; color: #92400E; font-weight: 700;">50+ pcs</td>
-              <td style="padding: 4px 6px;">-35% Remise</td>
-              <td style="padding: 4px 6px;">FCL Port Casablanca</td>
+              <td style="padding: 6px 8px; color: #FFF;"><strong>Import Wholesale (FCL)</strong></td>
+              <td style="padding: 6px 8px; color: #E2E8F0;">50+ pcs</td>
+              <td style="padding: 6px 8px; color: #34D399; font-weight: 700;">-35% Grossiste</td>
+              <td style="padding: 6px 8px; color: #E2E8F0;">FCL Port Casablanca / Tanger Med</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div style="font-size: 0.68rem; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 0.5rem;">
-        Marrakech Craft Conduit — Hassan Tiguidda | ICE: 1161674000043 | WhatsApp: +212 632 155 430
+      <div style="font-size: 0.7rem; color: #94A3B8; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.7rem; display: flex; justify-content: space-between; align-items: center;">
+        <span>Marrakech Craft Conduit — Hassan Tiguidda | ICE: 1161674000043</span>
+        <span style="color: #FCD34D;">WhatsApp : +212 632 155 430</span>
       </div>
     </div>
   `;

@@ -1,13 +1,15 @@
 """
 MARRAKECH CRAFT CONDUIT - Outreach Delivery Service
-Integrates Resend API and SMTP with domain deduplication and delivery audit logging.
+Integrates Gmail SMTP (tiguidda76@gmail.com) and Resend API with domain deduplication and delivery audit logging.
 """
 
 import os
 import sys
 import uuid
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from typing import Dict, Any, Optional
-import resend
 
 # Ensure UTF-8 output on Windows consoles
 if hasattr(sys.stdout, "reconfigure"):
@@ -19,12 +21,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from services.models import BoutiqueLead, OutreachRequest
 from services.db import is_domain_contacted, register_contacted_domain, update_lead_status, get_connection
 
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
-if RESEND_API_KEY:
-    resend.api_key = RESEND_API_KEY
-
-SENDER_FROM = os.environ.get("SENDER_FROM", "Hassan Tiguidda — Marrakech Craft Conduit <onboarding@resend.dev>")
-REPLY_TO = os.environ.get("REPLY_TO", "tiguidda76@gmail.com")
+GMAIL_USER = os.environ.get("GMAIL_USER", "tiguidda76@gmail.com")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "bfgznhusgoyrlpml")
+SENDER_NAME = "Hassan Tiguidda — Marrakech Craft Conduit"
+REPLY_TO = "tiguidda76@gmail.com"
 
 def build_pitch_for_lead(lead: BoutiqueLead, craft_title: str) -> Dict[str, str]:
     country = lead.country.upper()
@@ -34,7 +34,7 @@ def build_pitch_for_lead(lead: BoutiqueLead, craft_title: str) -> Dict[str, str]
         subject = f"Collaboration Directe Artisanat d'Exception — Marrakech × {lead.name}"
         hook = f"Bonjour,\n\nJ'admire particulièrement la sélection élégante et sensible de votre boutique à {lead.city}."
         value_prop = (
-            "En tant que maître-artisan à Marrakech, je vous propose un accès direct d'atelier, "
+            "En tant que maître-artisan et exportateur à Marrakech, je vous propose un accès direct d'atelier, "
             "sans intermédiaire, avec une première commande découverte à 0 MOQ (1 à 5 pièces)."
         )
         cta = "Souhaitez-vous recevoir notre mini-lookbook personnalisé ou tester un échantillon direct d'atelier ?"
@@ -56,34 +56,42 @@ def build_pitch_for_lead(lead: BoutiqueLead, craft_title: str) -> Dict[str, str]
         cta = "Would you be open to previewing our tailored B2B lookbook or receiving an express workshop sample?"
 
     html = f"""
-    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; max-width: 600px; line-height: 1.6;">
-      <p>{hook.replace(chr(10), '<br>')}</p>
-      
-      <div style="background: #FFFBEB; border-left: 4px solid #D97706; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
-        <p style="margin: 0; font-weight: 600; color: #92400E;">✨ {craft_title}</p>
-        <p style="margin: 4px 0 0 0; color: #78350F; font-size: 13px;">{value_prop}</p>
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; max-width: 600px; line-height: 1.6; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+      <div style="background: #12121a; padding: 20px; text-align: center; color: #c49a6c;">
+        <h2 style="margin: 0; font-size: 18px; letter-spacing: 1px;">MARRAKECH CRAFT CONDUIT 🇲🇦</h2>
+        <p style="margin: 4px 0 0 0; font-size: 11px; color: #94a3b8; text-transform: uppercase;">Direct Workshop B2B Export Engine</p>
       </div>
 
-      <p>{cta}</p>
+      <div style="padding: 24px;">
+        <p>{hook.replace(chr(10), '<br>')}</p>
+        
+        <div style="background: #FFFBEB; border-left: 4px solid #D97706; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; font-weight: 600; color: #92400E;">✨ {craft_title}</p>
+          <p style="margin: 4px 0 0 0; color: #78350F; font-size: 13px;">{value_prop}</p>
+        </div>
 
-      {f'<p><a href="https://sites.google.com/view/morkech/home" style="display: inline-block; background: #D97706; color: #ffffff; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: 700;">📂 View B2B Lookbook & Catalog</a></p>' if lead.lookbook_pdf_url else ''}
+        <p>{cta}</p>
 
-      <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 24px 0 16px 0;">
-      
-      <p style="font-size: 12px; color: #64748B; margin: 0;">
-        <strong>Hassan Tiguidda</strong> | Master Artisan & Exporter<br>
-        MARRAKECH CRAFT CONDUIT<br>
-        WhatsApp: <a href="https://wa.me/212632155430" style="color: #D97706;">+212 632 155 430</a> | Email: tiguidda76@gmail.com<br>
-        Marrakech, Morocco
-      </p>
+        <div style="margin: 24px 0; text-align: center;">
+          <a href="https://wa.me/212632155430?text=Hello%20Hassan,%20I%20am%20interested%20in%20your%20Marrakech%20Artisan%20B2B%20Lookbook." style="background: #059669; color: #ffffff; text-decoration: none; padding: 12px 24px; font-size: 13px; font-weight: bold; border-radius: 8px; display: inline-block;">
+            💬 WhatsApp Direct (+212 632 155 430)
+          </a>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b;">
+        <strong>AUTO-ENTREPRENEUR HASSAN TIGUIDDA</strong> • ICE: 1161674000043<br>
+        Master Artisan & B2B Exporter • Marrakech, Morocco<br>
+        Email: <a href="mailto:tiguidda76@gmail.com" style="color: #c49a6c;">tiguidda76@gmail.com</a>
+      </div>
     </div>
     """
 
     return {"subject": subject, "body_html": html}
 
-def send_outreach_email(lead: BoutiqueLead, craft_title: str = "Authentic Moroccan Crafts", dry_run: bool = True) -> Dict[str, Any]:
+def send_outreach_email(lead: BoutiqueLead, craft_title: str = "Authentic Moroccan Crafts", dry_run: bool = False) -> Dict[str, Any]:
     """
-    Sends personalized wholesale pitch via Resend API with domain deduplication check.
+    Sends personalized wholesale pitch via Gmail SMTP with domain deduplication check.
     """
     domain = lead.domain or (lead.website.replace("https://", "").replace("http://", "").split("/")[0] if lead.website else "")
     
@@ -104,48 +112,55 @@ def send_outreach_email(lead: BoutiqueLead, craft_title: str = "Authentic Morocc
         }
 
     pitch = build_pitch_for_lead(lead, craft_title)
-    msg_id = f"resend_sim_{uuid.uuid4().hex[:12]}"
+    msg_id = f"gmail_{uuid.uuid4().hex[:12]}@gmail.com"
     delivery_status = "sent"
 
-    if not dry_run and RESEND_API_KEY:
+    if not dry_run and GMAIL_USER and GMAIL_APP_PASSWORD:
         try:
-            params = {
-                "from": SENDER_FROM,
-                "to": [lead.email],
-                "reply_to": REPLY_TO,
-                "subject": pitch["subject"],
-                "html": pitch["body_html"]
-            }
-            res = resend.Emails.send(params)
-            msg_id = res.get("id", msg_id)
-            delivery_status = "delivered"
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = pitch["subject"]
+            msg["From"] = f"{SENDER_NAME} <{GMAIL_USER}>"
+            msg["To"] = lead.email
+            msg["Reply-To"] = REPLY_TO
+            
+            html_part = MIMEText(pitch["body_html"], "html", "utf-8")
+            msg.attach(html_part)
+
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
+                server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+                server.sendmail(GMAIL_USER, [lead.email], msg.as_string())
+            
+            delivery_status = "delivered_smtp"
         except Exception as e:
-            print(f"[!] Resend API error for {lead.email}: {e}")
+            print(f"[!] Gmail SMTP error for {lead.email}: {e}")
             delivery_status = "simulated_success"
     else:
         delivery_status = "simulated_success"
 
     # Log to DB
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO outreach_logs (
-            id, lead_id, recipient_email, subject, body_html,
-            lookbook_attached, provider, provider_message_id, delivery_status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        f"outreach_{uuid.uuid4().hex[:8]}",
-        lead.id,
-        lead.email,
-        pitch["subject"],
-        pitch["body_html"],
-        bool(lead.lookbook_pdf_url),
-        "resend",
-        msg_id,
-        delivery_status
-    ))
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO outreach_logs (
+                id, lead_id, recipient_email, subject, body_html,
+                lookbook_attached, provider, provider_message_id, delivery_status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            f"outreach_{uuid.uuid4().hex[:8]}",
+            lead.id,
+            lead.email,
+            pitch["subject"],
+            pitch["body_html"],
+            bool(lead.lookbook_pdf_url),
+            "gmail_smtp",
+            msg_id,
+            delivery_status
+        ))
+        conn.commit()
+        conn.close()
+    except Exception as db_err:
+        print(f"[!] Outreach log DB note: {db_err}")
 
     # Register deduplication
     register_contacted_domain(domain, lead.id)

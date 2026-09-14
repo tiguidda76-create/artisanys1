@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catalogue B2B Officiel — 365 pièces artisanales authentiques façonnées à la main dans les ateliers de la Médina de Marrakech. Vente directe grossiste, 0 MOQ et expédition mondiale.">
+  <title>MARRAKECH CRAFT CONDUIT — Catalogue B2B d'Atelier (365 Articles)</title>
+  <link rel="stylesheet" href="styles.css?v=3.2.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <style>
+    /* Standalone Showroom Overrides */
+    body {
+      background-color: var(--bg-primary, #0f0d0b);
+      color: var(--slate-200, #e2e8f0);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .showroom-header {
+      background: rgba(18, 15, 12, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(217, 119, 6, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .showroom-hero {
+      background: radial-gradient(circle at 50% 20%, rgba(217, 119, 6, 0.15) 0%, rgba(15, 13, 11, 0) 70%), linear-gradient(180deg, #16120e 0%, #0f0d0b 100%);
+      padding: 3rem 1.5rem 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .showroom-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+    .currency-selector {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2px;
+    }
+    .curr-chip {
+      background: transparent;
+      border: none;
+      color: var(--slate-400);
+      padding: 0.3rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .curr-chip.active {
+      background: linear-gradient(135deg, #D97706, #B45309);
+      color: #fff;
+    }
+    .cart-drawer-toggle {
+      background: linear-gradient(135deg, #D97706, #C2410C);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 0.45rem 1rem;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+      transition: transform 0.2s;
+    }
+    .cart-drawer-toggle:hover {
+      transform: translateY(-2px);
+    }
+    .cart-badge {
+      background: #fff;
+      color: #B45309;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 0.1rem 0.4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ STICKY HEADER ═══════════ -->
+  <header class="showroom-header">
+    <div style="display: flex; align-items: center; gap: 0.8rem;">
+      <span style="font-size: 1.8rem;">🏛️</span>
+      <div>
+        <h1 style="font-family: var(--font-display); font-size: 1.1rem; color: #fff; margin: 0; letter-spacing: 0.04em;">
+          MARRAKECH CRAFT CONDUIT
+        </h1>
+        <div style="font-size: 0.68rem; color: var(--saffron-light); font-weight: 600;">
+          Atelier d'Artisanat & Export B2B Direct • Marrakech Médina
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+      <!-- Currency Switcher -->
+      <div class="currency-selector">
+        <button class="curr-chip active" onclick="setCurrency('USD')">$ USD</button>
+        <button class="curr-chip" onclick="setCurrency('EUR')">€ EUR</button>
+        <button class="curr-chip" onclick="setCurrency('MAD')">DH MAD</button>
+      </div>
+
+      <!-- WhatsApp Direct Contact -->
+      <a href="https://wa.me/212632155430?text=Salam%20Hassan%20!%20Je%20consulte%20votre%20catalogue%20en%20ligne%20et%20souhaite%20des%20informations%20B2B." target="_blank" class="btn btn-sm btn-success" style="font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.35rem;">
+        <span>💬</span> WhatsApp Direct
+      </a>
+
+      <!-- Quotation / Cart Trigger -->
+      <button class="cart-drawer-toggle" onclick="openShowroomCartModal()">
+        <span>🛒 Mon Devis</span>
+        <span class="cart-badge" id="headerCartCount">0</span>
+      </button>
+
+      <!-- Back to Full Suite Link -->
+      <a href="index.html" class="btn btn-sm btn-outline" style="font-size: 0.72rem; text-decoration: none;" title="Accéder à la plateforme complète de pilotage">
+        ⚙️ Espace Pro
+      </a>
+    </div>
+  </header>
+
+  <!-- ═══════════ HERO BANNER ═══════════ -->
+  <section class="showroom-hero">
+    <div style="max-width: 860px; margin: 0 auto;">
+      <span class="pill pill-gold" style="font-size: 0.72rem; margin-bottom: 0.8rem;">✦ COLLECTION D'ATELIER 2026 ✦</span>
+      <h2 style="font-family: var(--font-display); font-size: 2.1rem; color: #ffffff; margin-bottom: 0.8rem; line-height: 1.25;">
+        Catalogue Grossiste — <span style="background: linear-gradient(135deg, #F59E0B, #D97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">365 Créations Authentiques</span>
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--slate-300); line-height: 1.6; margin-bottom: 1.5rem;">
+        Directement façonnées à la main par nos maîtres artisans dans les souks et ateliers de Marrakech. Commandes tests d'échantillons avec <strong>0 MOQ</strong>, remises de volume jusqu'à <strong>35%</strong> et expédition mondiale sécurisée par <strong>DHL Express, FedEx</strong> ou <strong>Conteneurs Maritimes FCL</strong>.
+      </p>
+
+      <!-- Key Value Badges -->
+      <div style="display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap;">
+        <span class="pill pill-green">✓ 0 MOQ sur Échantillons (1-5 pcs)</span>
+        <span class="pill pill-gold">✓ -15% Boutique (6-50 pcs)</span>
+        <span class="pill pill-gold">✓ -35% Grossiste (50+ pcs)</span>
+        <span class="pill pill-blue">✓ Sceau d'Authenticité Certifié</span>
+        <span class="pill pill-slate">✓ Exonération TVA Art 91-II-1° CGI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ MAIN CATALOG CONTENT ═══════════ -->
+  <main class="showroom-container">
+
+    <!-- Filter & Search Toolbar -->
+    <div class="catalog-toolbar" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: space-between; align-items: center;">
+      <div style="flex: 1; min-width: 260px; position: relative;">
+        <input type="text" id="catalogSearchInput" class="filter-input" placeholder="🔍 Rechercher par référence (ex: PAN-E1, BELT-ARES, POUF-K10), matière..." oninput="handleSearch(this.value)" style="width: 100%; font-size: 0.82rem; padding: 0.6rem 0.8rem 0.6rem 2.2rem; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: #fff;">
+        <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔎</span>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <select id="catalogSortSelect" class="filter-select" onchange="handleSort(this.value)" style="font-size: 0.76rem; padding: 0.55rem 0.8rem; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--slate-200);">
+          <option value="default">✦ Sélection d'atelier</option>
+          <option value="price-asc">Prix croissant (Grossiste)</option>
+          <option value="price-desc">Prix décroissant (Grossiste)</option>
+          <option value="name-asc">Nom (A ➔ Z)</option>
+          <option value="bestseller">Best-Sellers en tête</option>
+        </select>
+        <div style="font-size: 0.74rem; color: var(--slate-400); padding: 0.5rem 0.8rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-md);">
+          <span id="catalogVisibleCount" style="color: var(--saffron-light); font-weight: 700;">365</span> articles visibles
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Chips (13 Authentic Categories) -->
+    <div class="catalog-cat-pills-wrap" style="overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; -webkit-overflow-scrolling: touch;">
+      <div class="catalog-cat-pills" id="catalogCatPills" style="display: flex; gap: 0.45rem; width: max-content;">
+        <button class="cat-pill active" data-cat="all" onclick="setCategory('all')">🌟 Tous les Articles <span class="pill-badge">365</span></button>
+        <button class="cat-pill" data-cat="paniers" onclick="setCategory('paniers')">🧺 Paniers & Cabas <span class="pill-badge">37</span></button>
+        <button class="cat-pill" data-cat="poufs" onclick="setCategory('poufs')">👝 Poufs en Cuir <span class="pill-badge">8</span></button>
+        <button class="cat-pill" data-cat="belts" onclick="setCategory('belts')">🎗️ Ceintures Cuir <span class="pill-badge">52</span></button>
+        <button class="cat-pill" data-cat="lanterns" onclick="setCategory('lanterns')">🪔 Luminaires & Raphia <span class="pill-badge">74</span></button>
+        <button class="cat-pill" data-cat="ceramics" onclick="setCategory('ceramics')">🏺 Céramiques Tamegroute <span class="pill-badge">36</span></button>
+        <button class="cat-pill" data-cat="wooden" onclick="setCategory('wooden')">🪵 Loupe de Thuya <span class="pill-badge">16</span></button>
+        <button class="cat-pill" data-cat="trays" onclick="setCategory('trays')">🍽️ Plateaux & Laiton <span class="pill-badge">24</span></button>
+        <button class="cat-pill" data-cat="mirrors" onclick="setCategory('mirrors')">🪞 Miroirs Décoratifs <span class="pill-badge">16</span></button>
+        <button class="cat-pill" data-cat="furniture" onclick="setCategory('furniture')">🪑 Mobilier d'Artisan <span class="pill-badge">13</span></button>
+        <button class="cat-pill" data-cat="plants" onclick="setCategory('plants')">🌿 Cache-Pots Suspendus <span class="pill-badge">9</span></button>
+        <button class="cat-pill" data-cat="carpets" onclick="setCategory('carpets')">🧶 Tapis Berbères <span class="pill-badge">2</span></button>
+        <button class="cat-pill" data-cat="baskets" onclick="setCategory('baskets')">🧺 Corbeilles & Rangement <span class="pill-badge">54</span></button>
+        <button class="cat-pill" data-cat="homeware" onclick="setCategory('homeware')">✨ Arts de la Table <span class="pill-badge">24</span></button>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="real-catalog-grid" id="showroomGrid">
+      <!-- Injected by script -->
+    </div>
+
+    <!-- Load More Button -->
+    <div id="showroomLoadMore" style="text-align: center; margin: 2rem 0; display: none;">
+      <button class="btn btn-outline btn-lg" onclick="loadMoreArticles()" style="min-width: 260px; border-color: var(--saffron-gold); color: var(--saffron-light); font-weight: 700;">
+        ⬇️ Afficher plus d'articles...
+      </button>
+    </div>
+
+    <!-- Tiered Conditions Footer Banner -->
+    <div class="glass-card mt-3" style="border: 1px solid rgba(217, 119, 6, 0.3);">
+      <div class="card-header">
+        <div class="card-title">⚖️ Conditions Grossiste & Expédition Internationale</div>
+      </div>
+      <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--saffron-light); margin-bottom: 0.5rem;">✦ Barème de Remise Dégressive :</h4>
+            <ul style="font-size: 0.76rem; color: var(--slate-300); line-height: 1.6; list-style: none; padding: 0;">
+              <li>• <strong>1 à 5 pcs (0 MOQ)</strong> : Tarif de base atelier pour commandes d'échantillons</li>
+              <li>• <strong>6 à 50 pcs</strong> : <span style="color: #10B981; font-weight: 700;">-15% de remise</span> automatique sur devis</li>
+              <li>• <strong>50+ pcs</strong> : <span style="color: #F59E0B; font-weight: 700;">-35% de remise</span> grand export & conteneurs</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--saffron-light); margin-bottom: 0.5rem;">✦ Fret & Formalités Export :</h4>
+            <ul style="font-size: 0.76rem; color: var(--slate-300); line-height: 1.6; list-style: none; padding: 0;">
+              <li>• <strong>Air Express</strong> : DHL Express / FedEx (3 à 5 jours porte-à-porte)</li>
+              <li>• <strong>Maritime</strong> : Groupage LCL ou Conteneur 20'/40' (Casablanca / Tanger Med)</li>
+              <li>• <strong>Douanes</strong> : Certificat d'Origine EUR.1 officiel fourni</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--saffron-light); margin-bottom: 0.5rem;">✦ Contact Direct Atelier :</h4>
+            <p style="font-size: 0.76rem; color: var(--slate-300); line-height: 1.6;">
+              <strong>Hassan Tiguidda</strong> — Maître Artisan & Directeur Export<br>
+              📱 WhatsApp : <a href="https://wa.me/212632155430" style="color: #10B981; font-weight: 700;">+212 632 155 430</a><br>
+              ✉️ Email : <a href="mailto:tiguidda76@gmail.com" style="color: var(--saffron-light);">tiguidda76@gmail.com</a><br>
+              ICE : 1161674000043 • Marrakech, Maroc
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════ QUICK VIEW MODAL ═══════════ -->
+  <div class="modal-overlay" id="showroomQuickViewModal" style="display: none; z-index: 650;">
+    <div class="modal" style="max-width: 860px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(16, 185, 129, 0.1));">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <h3 class="modal-title" id="qvTitle" style="color: #fff; font-size: 1.1rem; font-weight: 700;">Détail Article</h3>
+            <span class="pill pill-gold" id="qvBadge">Best-Seller</span>
+            <span class="pill pill-slate" id="qvSku" style="font-family: var(--font-mono);">SKU</span>
+          </div>
+          <p style="font-size: 0.72rem; color: var(--slate-300); margin: 0.2rem 0 0 0;" id="qvCraft">Spécifications</p>
+        </div>
+        <button class="modal-close" onclick="closeQuickView()" title="Fermer (Échap)">✕</button>
+      </div>
+      <div class="modal-body" id="qvBody" style="padding: 1.25rem;"></div>
+      <div class="modal-footer" id="qvFooter" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SHOWROOM CART / QUOTATION DRAWER MODAL ═══════════ -->
+  <div class="modal-overlay" id="showroomCartModal" style="display: none; z-index: 700;">
+    <div class="modal" style="max-width: 720px; width: 95%; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(16, 185, 129, 0.15));">
+        <div>
+          <h3 class="modal-title" style="color: #fff; font-size: 1.1rem; font-weight: 700;">🛒 Votre Devis Pro Forma d'Atelier</h3>
+          <p style="font-size: 0.72rem; color: var(--slate-300); margin: 0.2rem 0 0 0;">Sélectionnez vos quantités et transmettez votre demande en 1-clic.</p>
+        </div>
+        <button class="modal-close" onclick="closeShowroomCartModal()" title="Fermer">✕</button>
+      </div>
+      <div class="modal-body" id="showroomCartBody" style="padding: 1.25rem;">
+        <!-- Injected by script -->
+      </div>
+      <div class="modal-footer" id="showroomCartFooter" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+        <!-- Injected by script -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="catalogData.js?v=3.2.0"></script>
+  <script>
+    let currentCurrency = 'USD';
+    const EXCHANGE_RATES = { USD: 1, EUR: 0.92, MAD: 10.1 };
+    const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', MAD: 'DH ' };
+
+    let currentCategory = 'all';
+    let currentSearch = '';
+    let currentSort = 'default';
+    let displayLimit = 36;
+    let showroomCart = [];
+
+    function setCurrency(curr) {
+      currentCurrency = curr;
+      document.querySelectorAll('.curr-chip').forEach(b => {
+        b.classList.toggle('active', b.textContent.includes(curr));
+      });
+      renderCatalog();
+      renderCart();
+    }
+
+    function setCategory(catKey) {
+      currentCategory = catKey;
+      displayLimit = 36;
+      document.querySelectorAll('.cat-pill').forEach(b => {
+        b.classList.toggle('active', b.dataset.cat === catKey);
+      });
+      renderCatalog();
+    }
+
+    function handleSearch(q) {
+      currentSearch = (q || '').toLowerCase().trim();
+      displayLimit = 36;
+      renderCatalog();
+    }
+
+    function handleSort(val) {
+      currentSort = val || 'default';
+      renderCatalog();
+    }
+
+    function loadMoreArticles() {
+      displayLimit += 36;
+      renderCatalog();
+    }
+
+    function getArticles() {
+      return (typeof window !== 'undefined' && window.REAL_ARTICLES) ? window.REAL_ARTICLES : [];
+    }
+
+    function renderCatalog() {
+      const container = document.getElementById('showroomGrid');
+      if (!container) return;
+      const articles = getArticles();
+
+      if (articles.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">Chargement des articles...</div>`;
+        return;
+      }
+
+      let filtered = articles.filter(art => {
+        if (currentCategory !== 'all' && art.category !== currentCategory) return false;
+        if (currentSearch) {
+          const t = `${art.name} ${art.sku} ${art.categoryLabel} ${art.material} ${art.craft}`.toLowerCase();
+          if (!t.includes(currentSearch)) return false;
+        }
+        return true;
+      });
+
+      if (currentSort === 'price-asc') filtered.sort((a, b) => a.priceUSD - b.priceUSD);
+      else if (currentSort === 'price-desc') filtered.sort((a, b) => b.priceUSD - a.priceUSD);
+      else if (currentSort === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
+      else if (currentSort === 'bestseller') filtered.sort((a, b) => a.badge === 'Best-Seller' ? -1 : 1);
+
+      document.getElementById('catalogVisibleCount').textContent = filtered.length;
+
+      const loadMoreBtn = document.getElementById('showroomLoadMore');
+      if (filtered.length > displayLimit) {
+        loadMoreBtn.style.display = 'block';
+        loadMoreBtn.querySelector('button').textContent = `⬇️ Afficher 36 articles de plus... (${filtered.length - displayLimit} restants)`;
+      } else {
+        loadMoreBtn.style.display = 'none';
+      }
+
+      const rate = EXCHANGE_RATES[currentCurrency] || 1;
+      const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+
+      const slice = filtered.slice(0, displayLimit);
+
+      container.innerHTML = slice.map(art => {
+        const wholesale = Math.round(art.priceUSD * rate);
+        const retail = Math.round(art.retailUSD * rate);
+
+        let bClass = 'badge-authentique';
+        if (art.badge === 'Best-Seller') bClass = 'badge-best-seller';
+        else if (art.badge === '0 MOQ') bClass = 'badge-0-moq';
+        else if (art.badge === 'Atelier Direct') bClass = 'badge-atelier';
+        else if (art.badge === 'Luxe B2B') bClass = 'badge-luxe';
+
+        return `
+          <div class="real-catalog-card" data-id="${art.id}">
+            <div class="real-catalog-thumb" onclick="openQuickView('${art.id}')">
+              <img src="${art.image}" alt="${escapeHtml(art.name)}" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\'><rect fill=\\'%231a1512\\' width=\\'300\\' height=\\'200\\'/><text fill=\\'%23d97706\\' x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\'>${art.sku}</text></svg>'">
+              <span class="real-catalog-badge ${bClass}">${art.badge}</span>
+              <span class="real-catalog-sku">${art.sku}</span>
+              <button class="real-catalog-overlay-btn" title="Aperçu rapide">👁️</button>
+            </div>
+            <div class="real-catalog-body">
+              <div class="real-catalog-craft">
+                <span>${art.categoryIcon}</span>
+                <span>${escapeHtml(art.craft)}</span>
+              </div>
+              <h4 class="real-catalog-title" title="${escapeHtml(art.name)}">${escapeHtml(art.name)}</h4>
+              <p class="real-catalog-material">${escapeHtml(art.material)}</p>
+
+              <div class="real-catalog-pricing">
+                <div class="real-catalog-price-row">
+                  <span class="real-price-label">Prix Grossiste</span>
+                  <span class="real-price-val">${sym}${wholesale} <span style="font-size: 0.65rem; color: var(--slate-400); font-weight: 400;">HT</span></span>
+                </div>
+                <div class="real-retail-row">
+                  <span>Revente Conseillée</span>
+                  <span><strong style="color: #cbd5e1;">~${sym}${retail}</strong> <span class="real-margin-pill">x2.8</span></span>
+                </div>
+              </div>
+
+              <div class="real-meta-row">
+                <span>⏳ ${art.leadTime}</span>
+                <span>📦 ${art.moq}</span>
+              </div>
+
+              <div class="real-catalog-actions">
+                <button class="btn btn-gold btn-sm" style="flex: 1.2; font-weight: 700;" onclick="addToCart('${art.id}')">
+                  + Devis
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="openQuickView('${art.id}')">
+                  👁️
+                </button>
+                <button class="btn btn-success btn-sm" onclick="shareWhatsApp('${art.id}')">
+                  💬
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openQuickView(id) {
+      const art = getArticles().find(a => a.id === id || a.sku === id);
+      if (!art) return;
+
+      const rate = EXCHANGE_RATES[currentCurrency] || 1;
+      const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+
+      document.getElementById('qvTitle').textContent = art.name;
+      document.getElementById('qvBadge').textContent = art.badge;
+      document.getElementById('qvSku').textContent = 'Réf: ' + art.sku;
+      document.getElementById('qvCraft').textContent = `${art.categoryIcon} ${art.craft} • ${art.categoryLabel}`;
+
+      const p1 = Math.round(art.priceUSD * rate);
+      const p2 = Math.round(art.priceUSD * 0.85 * rate);
+      const p3 = Math.round(art.priceUSD * 0.65 * rate);
+      const r1 = Math.round(art.retailUSD * rate);
+
+      document.getElementById('qvBody').innerHTML = `
+        <div class="qv-grid">
+          <div>
+            <div class="qv-image-wrap">
+              <img src="${art.image}" alt="${escapeHtml(art.name)}">
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.72rem; color: var(--slate-400); text-align: center;">
+              Certificat Fait-Main • Atelier Médina de Marrakech
+            </div>
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-display); font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">${escapeHtml(art.name)}</h3>
+            <p style="font-size: 0.78rem; color: var(--slate-300); line-height: 1.5; margin-bottom: 0.8rem;">${escapeHtml(art.desc)}</p>
+
+            <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem;">
+              <div style="font-size: 0.7rem; color: var(--slate-400);">✦ Matières premières nobles :</div>
+              <div style="font-size: 0.8rem; color: #fff; font-weight: 600;">${escapeHtml(art.material)}</div>
+              <div style="display: flex; gap: 1rem; margin-top: 0.4rem; font-size: 0.72rem; color: var(--slate-400);">
+                <span>⏳ Délais : <strong style="color:#fff;">${art.leadTime}</strong></span>
+                <span>📦 MOQ : <strong style="color:#fff;">${art.moq}</strong></span>
+              </div>
+            </div>
+
+            <h4 style="font-size: 0.78rem; color: var(--saffron-light); font-weight: 700; margin-bottom: 0.3rem;">⚖️ Grille de Tarifs Dégressifs Direct Atelier :</h4>
+            <table class="qv-tiers-table">
+              <thead><tr><th>Palier Volume</th><th>Remise</th><th>Prix Unitaire</th><th>Marge Revente</th></tr></thead>
+              <tbody>
+                <tr><td><strong>1-5 pcs (0 MOQ)</strong></td><td>0%</td><td><strong style="color:#fff;">${sym}${p1}</strong></td><td><span class="real-margin-pill">x2.8 (~${sym}${r1})</span></td></tr>
+                <tr style="background: rgba(217, 119, 6, 0.1);"><td><strong>6-50 pcs (Boutique)</strong></td><td><span class="pill pill-green">-15%</span></td><td><strong style="color:var(--saffron-light);">${sym}${p2}</strong></td><td><span class="real-margin-pill">x3.3 Forte</span></td></tr>
+                <tr><td><strong>50+ pcs (FCL)</strong></td><td><span class="pill pill-gold">-35%</span></td><td><strong style="color:#10B981;">${sym}${p3}</strong></td><td><span class="real-margin-pill">x4.3 Super Marge</span></td></tr>
+              </tbody>
+            </table>
+
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 1.2rem;">
+              <label style="font-size: 0.75rem; color: var(--slate-300); font-weight: 600;">Quantité :</label>
+              <input type="number" id="qvQty" value="5" min="1" max="500" style="width: 70px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: #fff; padding: 0.35rem; border-radius: 6px; text-align: center; font-weight: 700;">
+              <button class="btn btn-gold" onclick="addToCart('${art.id}', document.getElementById('qvQty').value); closeQuickView();" style="flex: 1; font-weight: 700;">
+                🛒 Ajouter au Devis
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('qvFooter').innerHTML = `
+        <button class="btn btn-success" onclick="shareWhatsApp('${art.id}')">💬 Discuter sur WhatsApp</button>
+        <button class="btn btn-outline" onclick="closeQuickView()">Fermer</button>
+      `;
+
+      document.getElementById('showroomQuickViewModal').style.display = 'flex';
+    }
+
+    function closeQuickView() {
+      document.getElementById('showroomQuickViewModal').style.display = 'none';
+    }
+
+    function addToCart(id, qty = 1) {
+      const art = getArticles().find(a => a.id === id || a.sku === id);
+      if (!art) return;
+      const count = Math.max(1, parseInt(qty) || 1);
+      const existing = showroomCart.find(i => i.id === art.id);
+      if (existing) {
+        existing.qty += count;
+      } else {
+        showroomCart.push({ id: art.id, sku: art.sku, name: art.name, priceUSD: art.priceUSD, qty: count, image: art.image });
+      }
+      updateCartBadge();
+      alert(`✅ ${art.sku} (${count} pcs) ajouté à votre devis !`);
+    }
+
+    function updateCartBadge() {
+      const total = showroomCart.reduce((sum, i) => sum + i.qty, 0);
+      document.getElementById('headerCartCount').textContent = total;
+    }
+
+    function openShowroomCartModal() {
+      renderCart();
+      document.getElementById('showroomCartModal').style.display = 'flex';
+    }
+
+    function closeShowroomCartModal() {
+      document.getElementById('showroomCartModal').style.display = 'none';
+    }
+
+    function renderCart() {
+      const body = document.getElementById('showroomCartBody');
+      const footer = document.getElementById('showroomCartFooter');
+      if (!body) return;
+
+      if (showroomCart.length === 0) {
+        body.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛒</div>
+            <h4 style="color: #fff;">Votre devis est actuellement vide</h4>
+            <p style="font-size: 0.78rem; color: var(--slate-400);">Parcourez le catalogue et ajoutez les articles souhaités.</p>
+          </div>
+        `;
+        if (footer) footer.innerHTML = `<button class="btn btn-outline" onclick="closeShowroomCartModal()">Fermer</button>`;
+        return;
+      }
+
+      const rate = EXCHANGE_RATES[currentCurrency] || 1;
+      const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+
+      let totalVal = 0;
+      let totalQty = 0;
+
+      const linesHtml = showroomCart.map((item, idx) => {
+        let discount = 0;
+        if (item.qty >= 50) discount = 0.35;
+        else if (item.qty >= 6) discount = 0.15;
+
+        const unit = item.priceUSD * (1 - discount) * rate;
+        const sub = unit * item.qty;
+        totalVal += sub;
+        totalQty += item.qty;
+
+        return `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex: 1;">
+              <img src="${item.image}" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px;">
+              <div>
+                <strong style="color: #fff; font-size: 0.8rem;">${escapeHtml(item.name)}</strong>
+                <div style="font-size: 0.65rem; color: var(--saffron-light); font-family: var(--font-mono);">${item.sku}</div>
+              </div>
+            </div>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono);">
+              ${sym}${unit.toFixed(2)}
+              ${discount > 0 ? `<span class="pill pill-green" style="font-size: 0.55rem;">-${discount*100}%</span>` : ''}
+            </div>
+            <div>
+              <input type="number" min="1" max="1000" value="${item.qty}" onchange="updateCartItemQty(${idx}, this.value)" style="width: 55px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: #fff; border-radius: 4px; text-align: center; padding: 0.2rem;">
+            </div>
+            <div style="font-weight: 700; color: #10B981; font-family: var(--font-mono); font-size: 0.85rem; min-width: 70px; text-align: right;">
+              ${sym}${sub.toFixed(2)}
+            </div>
+            <button onclick="removeCartItem(${idx})" style="background: none; border: none; color: #EF4444; cursor: pointer; font-size: 0.9rem;">✕</button>
+          </div>
+        `;
+      }).join('');
+
+      body.innerHTML = `
+        <div style="margin-bottom: 1rem;">${linesHtml}</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.8rem; border-top: 2px solid var(--saffron-gold);">
+          <strong style="color: #fff; font-size: 0.95rem;">TOTAL ESTIMATION ATELIER :</strong>
+          <strong style="color: #10B981; font-size: 1.25rem; font-family: var(--font-mono);">${sym}${totalVal.toFixed(2)}</strong>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--slate-400); margin-top: 0.4rem;">
+          💡 Remises volume intégrées automatiquement (-15% pour 6-50 pcs, -35% pour 50+ pcs).
+        </div>
+      `;
+
+      footer.innerHTML = `
+        <button class="btn btn-outline" onclick="showroomCart=[]; updateCartBadge(); renderCart();">Vider</button>
+        <button class="btn btn-success" onclick="sendCartViaWhatsApp()" style="font-weight: 700;">
+          💬 Envoyer ce Devis sur WhatsApp
+        </button>
+      `;
+    }
+
+    function updateCartItemQty(idx, val) {
+      if (showroomCart[idx]) {
+        showroomCart[idx].qty = Math.max(1, parseInt(val) || 1);
+        updateCartBadge();
+        renderCart();
+      }
+    }
+
+    function removeCartItem(idx) {
+      showroomCart.splice(idx, 1);
+      updateCartBadge();
+      renderCart();
+    }
+
+    function sendCartViaWhatsApp() {
+      if (showroomCart.length === 0) return;
+      const rate = EXCHANGE_RATES[currentCurrency] || 1;
+      const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+      let total = 0;
+
+      let msg = `Salam Hassan ! ✨\nJe souhaite passer une commande / cotation pro forma pour les articles suivants :\n\n`;
+      showroomCart.forEach(i => {
+        let discount = 0;
+        if (i.qty >= 50) discount = 0.35;
+        else if (i.qty >= 6) discount = 0.15;
+        const unit = i.priceUSD * (1 - discount) * rate;
+        const sub = unit * i.qty;
+        total += sub;
+        msg += `• [${i.sku}] ${i.name} — Qté: ${i.qty} x ${sym}${unit.toFixed(2)} = ${sym}${sub.toFixed(2)}\n`;
+      });
+      msg += `\n✦ Total estimé : ${sym}${total.toFixed(2)} (${currentCurrency})\n\nPouvez-vous me confirmer la disponibilité atelier et les frais d'expédition ? Merci !`;
+
+      window.open('https://wa.me/212632155430?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    function shareWhatsApp(id) {
+      const art = getArticles().find(a => a.id === id || a.sku === id);
+      if (!art) return;
+      const text = `Salam Hassan ! ✨\nJe souhaite un devis pour cet article : ${art.name} (Réf: ${art.sku}). Tarif atelier et délais svp.`;
+      window.open('https://wa.me/212632155430?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCatalog();
+    });
+  </script>
+</body>
+</html>

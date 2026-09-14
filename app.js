@@ -978,7 +978,8 @@ function launchRealEmailClient(leadId) {
     return;
   }
 
-  const mailtoUrl = `mailto:${encodeURIComponent(lead.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // RFC 2368: Do NOT percent-encode email address
+  const mailtoUrl = `mailto:${lead.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href = mailtoUrl;
 
   lead.status = 'Contacté';
@@ -1947,46 +1948,55 @@ function selectScanMarket(marketKey, el) {
 
 async function launchLiveMassScan() {
   const container = document.getElementById('scanLiveContainer');
-  const craftFocus = document.getElementById('scanCraftFocus').value;
+  const craftFocus = document.getElementById('scanCraftFocus')?.value || 'all';
   if (!container) return;
 
   container.innerHTML = `
-    <div class="scan-progress-wrap">
-      <div class="scan-pulse-icon">🔍</div>
-      <h4 style="color: var(--saffron-light); font-size: 0.95rem; margin-bottom: 0.3rem;">Agent IA en cours de scan web & répertoires...</h4>
-      <p id="scanProgressStatusText" style="font-size: 0.74rem; color: var(--slate-300);">Connexion aux répertoires de boutiques design (${activeScanMarket})...</p>
+    <div class="scan-progress-wrap" style="text-align: center; padding: 1.5rem 1rem;">
+      <div class="scan-pulse-icon" style="font-size: 2rem;">🔍</div>
+      <h4 style="color: var(--saffron-light); font-size: 0.95rem; margin: 0.4rem 0 0.2rem;">Agent IA Google Places (New) en cours d'exploration...</h4>
+      <p id="scanProgressStatusText" style="font-size: 0.74rem; color: var(--slate-300);">Connexion aux répertoires de boutiques design & concept stores (${activeScanMarket})...</p>
     </div>
   `;
 
   const statusText = document.getElementById('scanProgressStatusText');
 
-  await new Promise(r => setTimeout(r, 600));
-  if (statusText) statusText.textContent = `Scraping des boutiques et concept stores spécialisés dans le design et l'artisanat...`;
-
-  await new Promise(r => setTimeout(r, 700));
-  if (statusText) statusText.textContent = `Extraction des coordonnées réelles (Emails pro, Téléphones WhatsApp, Quartiers)...`;
-
-  await new Promise(r => setTimeout(r, 600));
-  if (statusText) statusText.textContent = `Vérification du score de compatibilité avec l'artisanat marocain...`;
-
-  await new Promise(r => setTimeout(r, 500));
-
-  // Retrieve matching stores
   let candidateStores = [];
-  if (activeScanMarket === 'ALL') {
-    Object.values(REAL_DISCOVERY_DATABASE).forEach(arr => candidateStores.push(...arr));
-  } else {
-    candidateStores = REAL_DISCOVERY_DATABASE[activeScanMarket] || REAL_DISCOVERY_DATABASE.FR;
+  try {
+    if (statusText) statusText.textContent = `Interrogation Google Places API (New) pour ${activeScanMarket} [${craftFocus}]...`;
+    
+    // Call live backend API /api/hunter
+    const res = await fetch(`/api/hunter?market=${encodeURIComponent(activeScanMarket)}&craft=${encodeURIComponent(craftFocus)}&count=50`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.leads) && data.leads.length > 0) {
+        candidateStores = data.leads;
+        if (statusText) statusText.textContent = `Succès : ${data.qualifiedCount || candidateStores.length} boutiques qualifiées via Google Places API (New) !`;
+      }
+    }
+  } catch (err) {
+    console.warn('API /api/hunter call failed, falling back to local real directory:', err);
   }
 
-  if (craftFocus !== 'all') {
-    const filtered = candidateStores.filter(s => s.craft === craftFocus);
-    if (filtered.length > 0) candidateStores = filtered;
+  // Fallback if API returned 0 leads or threw
+  if (!candidateStores || candidateStores.length === 0) {
+    if (statusText) statusText.textContent = `Extraction des répertoires certifiés (${activeScanMarket})...`;
+    await new Promise(r => setTimeout(r, 400));
+    if (activeScanMarket === 'ALL') {
+      Object.values(REAL_DISCOVERY_DATABASE).forEach(arr => candidateStores.push(...arr));
+    } else {
+      candidateStores = REAL_DISCOVERY_DATABASE[activeScanMarket] || REAL_DISCOVERY_DATABASE.FR;
+    }
+
+    if (craftFocus !== 'all') {
+      const filtered = candidateStores.filter(s => s.craft === craftFocus);
+      if (filtered.length > 0) candidateStores = filtered;
+    }
   }
 
-  lastScannedLeads = candidateStores.map(s => ({
+  lastScannedLeads = candidateStores.map((s, idx) => ({
     ...s,
-    id: 'scanned_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+    id: s.id || ('scanned_' + Date.now() + '_' + idx),
     status: 'Nouveau',
     createdAt: new Date().toISOString()
   }));
@@ -1996,12 +2006,15 @@ async function launchLiveMassScan() {
 
   container.innerHTML = `
     <div style="margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
         <div>
-          <h4 style="color: #fff; font-size: 0.9rem;">🎉 ${lastScannedLeads.length} Vrais Magasins Découverts & Qualifiés</h4>
+          <h4 style="color: #fff; font-size: 0.92rem;">🎉 ${lastScannedLeads.length} Vrais Magasins Découverts & Qualifiés</h4>
           <span style="font-size: 0.7rem; color: var(--success);">✦ 100% Vérifiés avec Emails et Téléphones réels • Volume Est. $${totalVol.toLocaleString()}</span>
         </div>
-        <button class="btn btn-sm btn-primary" onclick="importScannedLeadsToCRM(true)">📥 Tout Importer dans mon CRM</button>
+        <div style="display: flex; gap: 0.4rem;">
+          <button class="btn btn-sm btn-primary" onclick="importScannedLeadsToCRM(true)">📥 Tout Importer dans CRM</button>
+          <button class="btn btn-sm btn-success" onclick="openArtisanSequencer('scanned')" style="font-weight: 700;">⚡ Séquenceur 1-Clic</button>
+        </div>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 280px; overflow-y: auto;">
@@ -2022,9 +2035,9 @@ async function launchLiveMassScan() {
         `).join('')}
       </div>
 
-      <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+      <div style="display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap;">
         <button class="btn btn-primary" style="flex: 1;" onclick="importScannedLeadsToCRM(true)">📥 Importer les ${lastScannedLeads.length} Magasins dans mon CRM</button>
-        <button class="btn btn-success" style="flex: 1;" onclick="launchMassOutreachQueueFromScan()">🚀 Ouvrir la File d'Envoi Mass Outreach</button>
+        <button class="btn btn-success" style="flex: 1;" onclick="openArtisanSequencer('scanned')">⚡ Lancer le Séquenceur WhatsApp & Email (1-Clic)</button>
       </div>
     </div>
   `;
@@ -2078,6 +2091,10 @@ function launchMassOutreachQueueFromScan() {
         Chaque message est rédigé et pré-formaté dans la langue de l'acheteur (Français, Anglais ou Espagnol). Cliquez pour expédier directement par Email ou WhatsApp.
       </div>
 
+      <button class="btn btn-success" style="font-weight: 700; width: 100%; padding: 0.7rem;" onclick="closeModal(); openArtisanSequencer('scanned');">
+        ⚡ Lancer le Séquenceur Continu WhatsApp & Email (1-Clic) ➔
+      </button>
+
       <div style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 380px; overflow-y: auto;">
         ${leadsToQueue.map(lead => {
           const lang = lead.country === 'ES' ? 'es' : (lead.country === 'FR' || lead.country === 'BE' || lead.country === 'CH') ? 'fr' : 'en';
@@ -2108,7 +2125,8 @@ function launchMassOutreachQueueFromScan() {
 
 function quickSendEmailFromQueue(storeName, email, contactName, city, craft, lang) {
   const pitch = generatePitchContent(storeName, contactName, city, craft, lang, 'sample');
-  const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(pitch.subject)}&body=${encodeURIComponent(pitch.body)}`;
+  // RFC 2368: unencoded email address
+  const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(pitch.subject)}&body=${encodeURIComponent(pitch.body)}`;
   window.location.href = mailtoUrl;
 
   const leadInCRM = realLeads.find(l => l.name === storeName);
@@ -3013,15 +3031,37 @@ async function sendCopilotMessage(customText = null) {
   renderCopilotThinkingBubble(thinkingId);
 
   try {
-    // 3. Process via CraftBrainService
-    if (!window.CraftBrainService) {
-      throw new Error('CraftBrainService non disponible');
+    let response = null;
+
+    // Try live backend Gemini Copilot API route first
+    try {
+      const apiRes = await fetch('/api/copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: query })
+      });
+      if (apiRes.ok) {
+        const data = await apiRes.json();
+        if (data && data.reply) {
+          response = {
+            text: data.reply,
+            actionCards: data.actionCards || [],
+            voiceText: data.reply
+          };
+        }
+      }
+    } catch (apiErr) {
+      console.warn('Live Copilot API route unavailable, using local CraftBrainService:', apiErr);
     }
 
-    // Small delay for natural conversational feel
-    await new Promise(r => setTimeout(r, 450));
+    // Fallback to local CraftBrainService if API route returned null or failed
+    if (!response && window.CraftBrainService) {
+      response = await window.CraftBrainService.processQuery(query);
+    }
 
-    const response = await window.CraftBrainService.processQuery(query);
+    if (!response) {
+      throw new Error('Aucun moteur de réponse disponible');
+    }
 
     // Remove thinking bubble
     const thinkingEl = document.getElementById(thinkingId);
@@ -3470,6 +3510,304 @@ document.addEventListener('DOMContentLoaded', () => {
 // Run tab navigation immediately if document already parsed
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
   initTabNavigation();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 1-CLICK WHATSAPP & EMAIL SEQUENCER (CONTINUOUS WORKFLOW)
+// ═══════════════════════════════════════════════════════════
+
+let sequencerQueue = [];
+let currentSequencerIndex = 0;
+let sequencerStats = { sentWhatsApp: 0, sentEmail: 0, skipped: 0 };
+
+function openArtisanSequencer(targetType = 'crm') {
+  if (targetType === 'scanned' && lastScannedLeads && lastScannedLeads.length > 0) {
+    sequencerQueue = [...lastScannedLeads];
+  } else if (targetType === 'selected' && selectedLeadIds && selectedLeadIds.size > 0) {
+    sequencerQueue = realLeads.filter(l => selectedLeadIds.has(l.id));
+  } else if (realLeads && realLeads.length > 0) {
+    const uncontacted = realLeads.filter(l => l.status !== 'Contacté' && l.status !== 'Devis envoyé');
+    sequencerQueue = uncontacted.length > 0 ? uncontacted : [...realLeads];
+  } else {
+    showToast('Aucun prospect disponible. Lancez d\'abord un Mass Scan IA !', 'warning');
+    return;
+  }
+
+  if (sequencerQueue.length === 0) {
+    showToast('Aucun prospect dans la file d\'attente du séquenceur.', 'warning');
+    return;
+  }
+
+  currentSequencerIndex = 0;
+  sequencerStats = { sentWhatsApp: 0, sentEmail: 0, skipped: 0 };
+
+  const modal = document.getElementById('sequencerModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+  }
+  renderSequencerModal();
+}
+
+function closeArtisanSequencer() {
+  const modal = document.getElementById('sequencerModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+  }
+  renderLeadsTable();
+  updateRealKPIs();
+}
+
+function renderSequencerModal() {
+  const modalBody = document.getElementById('sequencerModalBody');
+  const modalFooter = document.getElementById('sequencerModalFooter');
+  const counterEl = document.getElementById('sequencerCounter');
+
+  if (!modalBody || !modalFooter) return;
+
+  if (currentSequencerIndex >= sequencerQueue.length) {
+    if (counterEl) counterEl.textContent = `Terminé (${sequencerQueue.length}/${sequencerQueue.length})`;
+    modalBody.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 1rem;">
+        <div style="font-size: 3rem; margin-bottom: 0.8rem;">🎉</div>
+        <h3 style="color: #fff; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Séquence Complétée avec Succès !</h3>
+        <p style="color: var(--slate-300); font-size: 0.84rem; max-width: 480px; margin: 0 auto 1.5rem;">
+          Vous avez passé en revue <strong>${sequencerQueue.length}</strong> prospects ciblés. Tous les statuts CRM et historiques ont été automatiquement synchronisés.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; max-width: 460px; margin: 0 auto 1.8rem;">
+          <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 0.9rem;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--success);">${sequencerStats.sentWhatsApp}</div>
+            <div style="font-size: 0.72rem; color: var(--slate-300); margin-top: 0.2rem;">WhatsApp Envoyés</div>
+          </div>
+          <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-md); padding: 0.9rem;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: #93C5FD;">${sequencerStats.sentEmail}</div>
+            <div style="font-size: 0.72rem; color: var(--slate-300); margin-top: 0.2rem;">Emails Envoyés</div>
+          </div>
+          <div style="background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: var(--radius-md); padding: 0.9rem;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--slate-400);">${sequencerStats.skipped}</div>
+            <div style="font-size: 0.72rem; color: var(--slate-400); margin-top: 0.2rem;">Passés</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.8rem; justify-content: center;">
+          <button class="btn btn-outline" onclick="closeArtisanSequencer()">Fermer et Retourner au CRM</button>
+          <button class="btn btn-gold" onclick="openArtisanSequencer('crm')">🔄 Relancer une Séquence</button>
+        </div>
+      </div>
+    `;
+    modalFooter.innerHTML = `<button class="btn btn-outline" onclick="closeArtisanSequencer()">Terminer</button>`;
+    return;
+  }
+
+  const lead = sequencerQueue[currentSequencerIndex];
+  if (counterEl) counterEl.textContent = `Lead ${currentSequencerIndex + 1} / ${sequencerQueue.length}`;
+
+  const lang = lead.country === 'ES' ? 'es' : (lead.country === 'FR' || lead.country === 'BE' || lead.country === 'CH') ? 'fr' : 'en';
+  const pitch = generatePitchContent(lead.name, lead.contactName, lead.city, lead.craft || 'ceramics', lang, 'sample');
+  const cleanPhone = cleanPhoneForWhatsApp(lead.phone);
+  const progressPercent = Math.round(((currentSequencerIndex + 1) / sequencerQueue.length) * 100);
+
+  modalBody.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      
+      <!-- Progress Bar -->
+      <div style="width: 100%; height: 6px; background: var(--bg-card); border-radius: 999px; overflow: hidden;">
+        <div style="width: ${progressPercent}%; height: 100%; background: linear-gradient(90deg, #D97706, #10B981); transition: width 0.3s ease;"></div>
+      </div>
+
+      <!-- Lead Details Card -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.8rem;">
+        <div style="flex: 1; min-width: 260px;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; flex-wrap: wrap;">
+            <span style="font-size: 1.2rem;">${getCountryFlag(lead.country)}</span>
+            <strong style="color: #fff; font-size: 1.1rem;">${escapeHtml(lead.name)}</strong>
+            <span class="pill pill-gold" style="font-size: 0.65rem;">${getCraftLabel(lead.craft)}</span>
+            <span class="pill ${lead.status === 'Contacté' ? 'pill-green' : 'pill-outline'}" style="font-size: 0.65rem;">${lead.status || 'Nouveau'}</span>
+          </div>
+
+          <div style="font-size: 0.76rem; color: var(--slate-300); display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.4rem;">
+            <span>📍 <strong>${escapeHtml(lead.city || '')}</strong> ${lead.address ? '• ' + escapeHtml(lead.address) : ''}</span>
+            <span>👤 Responsable: <strong>${escapeHtml(lead.contactName || 'Responsable Achat')}</strong></span>
+            <span>💰 Volume Est.: <strong style="color: var(--saffron-light);">${escapeHtml(lead.volume || '—')}</strong></span>
+          </div>
+
+          <div style="font-size: 0.74rem; color: var(--slate-400); margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+            <span>✉️ <a href="mailto:${lead.email}" style="color: #93C5FD; text-decoration: underline;">${escapeHtml(lead.email || 'Email non renseigné')}</a></span>
+            <span>📱 <span style="color: #6EE7B7;">${escapeHtml(lead.phone || 'Tel non renseigné')}</span></span>
+            ${lead.website ? `<span>🌐 <a href="${lead.website.startsWith('http') ? lead.website : 'https://' + lead.website}" target="_blank" style="color: var(--saffron-light); text-decoration: underline;">Site Web</a></span>` : ''}
+          </div>
+
+          ${lead.notes ? `<div style="font-size: 0.7rem; color: var(--slate-400); margin-top: 0.4rem; font-style: italic;">💡 ${escapeHtml(lead.notes)}</div>` : ''}
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <label style="font-size: 0.72rem; color: var(--slate-400);">Langue :</label>
+            <select id="seqPitchLang" class="control-select" style="padding: 0.25rem 0.5rem; font-size: 0.72rem;" onchange="updateSequencerPitchText()">
+              <option value="fr" ${lang === 'fr' ? 'selected' : ''}>🇫🇷 Français</option>
+              <option value="en" ${lang === 'en' ? 'selected' : ''}>🇬🇧 English</option>
+              <option value="es" ${lang === 'es' ? 'selected' : ''}>🇪🇸 Español</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pitch Customizer -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <label style="font-size: 0.74rem; font-weight: 700; color: var(--slate-300);">Objet & Message Pré-Rédigé (Zéro MOQ & Direct Atelier) :</label>
+          <button class="btn btn-sm btn-outline" style="font-size: 0.68rem; padding: 0.2rem 0.5rem;" onclick="copySequencerPitch()">📋 Copier Texte</button>
+        </div>
+        <input type="text" id="seqPitchSubject" class="filter-input" style="width: 100%; margin-bottom: 0.5rem; font-size: 0.76rem;" value="${escapeHtml(pitch.subject)}">
+        <textarea id="seqPitchBody" rows="7" class="filter-input" style="width: 100%; font-family: var(--font-body); font-size: 0.76rem; line-height: 1.45; resize: vertical;">${pitch.body}</textarea>
+      </div>
+
+      <!-- Direct Multi-Channel Actions Bar -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem;">
+        <button class="btn btn-success" style="font-weight: 700; padding: 0.7rem 1rem; justify-content: center; display: flex; align-items: center; gap: 0.4rem;" onclick="sendAndAdvanceWhatsAppSequencer()">
+          <span>💬 Envoyer WhatsApp & Suivant</span>
+          <span style="font-size: 1rem;">➔</span>
+        </button>
+
+        <button class="btn btn-primary" style="font-weight: 700; padding: 0.7rem 1rem; justify-content: center; display: flex; align-items: center; gap: 0.4rem;" onclick="sendAndAdvanceEmailSequencer()">
+          <span>✉️ Ouvrir Email & Suivant</span>
+          <span style="font-size: 1rem;">➔</span>
+        </button>
+
+        <button class="btn btn-outline" style="font-size: 0.74rem; justify-content: center;" onclick="openSequencerGmailCompose()">
+          <span>🌐 Ouvrir Gmail Compose</span>
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  modalFooter.innerHTML = `
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <button class="btn btn-sm btn-outline" onclick="prevSequencerLead()" ${currentSequencerIndex === 0 ? 'disabled' : ''}>⬅️ Précédent</button>
+      <button class="btn btn-sm btn-outline" onclick="skipSequencerLead()" title="Passer ce lead sans changer de statut">⏭️ Passer</button>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <span style="font-size: 0.72rem; color: var(--slate-400);">Progression : ${progressPercent}%</span>
+      <button class="btn btn-sm btn-outline" onclick="closeArtisanSequencer()">Fermer</button>
+    </div>
+  `;
+}
+
+function updateSequencerPitchText() {
+  const lead = sequencerQueue[currentSequencerIndex];
+  if (!lead) return;
+  const lang = document.getElementById('seqPitchLang')?.value || 'fr';
+  const pitch = generatePitchContent(lead.name, lead.contactName, lead.city, lead.craft || 'ceramics', lang, 'sample');
+  const subjInput = document.getElementById('seqPitchSubject');
+  const bodyInput = document.getElementById('seqPitchBody');
+  if (subjInput) subjInput.value = pitch.subject;
+  if (bodyInput) bodyInput.value = pitch.body;
+}
+
+function copySequencerPitch() {
+  const body = document.getElementById('seqPitchBody')?.value || '';
+  navigator.clipboard.writeText(body).then(() => {
+    showToast('Pitch copié dans le presse-papier !', 'success');
+  });
+}
+
+function sendAndAdvanceWhatsAppSequencer() {
+  const lead = sequencerQueue[currentSequencerIndex];
+  if (!lead) return;
+
+  const body = document.getElementById('seqPitchBody')?.value || '';
+  const cleanPhone = cleanPhoneForWhatsApp(lead.phone);
+
+  if (cleanPhone) {
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(body)}`;
+    window.open(waUrl, '_blank');
+  } else {
+    showToast('Numéro de téléphone non renseigné ou invalide', 'warning');
+  }
+
+  // Update Status in CRM
+  lead.status = 'Contacté';
+  const leadInCRM = realLeads.find(l => l.name === lead.name || (lead.email && l.email === lead.email));
+  if (leadInCRM) {
+    leadInCRM.status = 'Contacté';
+  } else {
+    realLeads.unshift({ ...lead, status: 'Contacté' });
+  }
+  saveRealLeads();
+  logRealActivity('whatsapp', `WhatsApp expédié via Séquenceur : <strong>${lead.name}</strong> (${lead.city || ''})`, 'Séquenceur 1-Clic');
+
+  sequencerStats.sentWhatsApp++;
+  showToast(`WhatsApp ouvert pour ${lead.name} ! Avancement...`, 'success');
+
+  currentSequencerIndex++;
+  renderSequencerModal();
+}
+
+function sendAndAdvanceEmailSequencer() {
+  const lead = sequencerQueue[currentSequencerIndex];
+  if (!lead) return;
+
+  const subject = document.getElementById('seqPitchSubject')?.value || '';
+  const body = document.getElementById('seqPitchBody')?.value || '';
+
+  if (lead.email) {
+    // RFC 2368: unencoded email address
+    const mailtoUrl = `mailto:${lead.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  } else {
+    showToast('Adresse email non renseignée pour ce prospect', 'warning');
+  }
+
+  // Update Status in CRM
+  lead.status = 'Contacté';
+  const leadInCRM = realLeads.find(l => l.name === lead.name || (lead.email && l.email === lead.email));
+  if (leadInCRM) {
+    leadInCRM.status = 'Contacté';
+  } else {
+    realLeads.unshift({ ...lead, status: 'Contacté' });
+  }
+  saveRealLeads();
+  logRealActivity('email', `Email expédié via Séquenceur : <strong>${lead.name}</strong> (${lead.email || ''})`, 'Séquenceur 1-Clic');
+
+  sequencerStats.sentEmail++;
+  showToast(`Client email ouvert pour ${lead.name} ! Avancement...`, 'success');
+
+  currentSequencerIndex++;
+  renderSequencerModal();
+}
+
+function openSequencerGmailCompose() {
+  const lead = sequencerQueue[currentSequencerIndex];
+  if (!lead) return;
+
+  const subject = document.getElementById('seqPitchSubject')?.value || '';
+  const body = document.getElementById('seqPitchBody')?.value || '';
+  const email = lead.email || '';
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+
+  lead.status = 'Contacté';
+  const leadInCRM = realLeads.find(l => l.name === lead.name || (lead.email && l.email === lead.email));
+  if (leadInCRM) leadInCRM.status = 'Contacté';
+  saveRealLeads();
+  logRealActivity('email', `Gmail Compose ouvert pour : <strong>${lead.name}</strong>`, 'Séquenceur');
+}
+
+function skipSequencerLead() {
+  sequencerStats.skipped++;
+  currentSequencerIndex++;
+  renderSequencerModal();
+}
+
+function prevSequencerLead() {
+  if (currentSequencerIndex > 0) {
+    currentSequencerIndex--;
+    renderSequencerModal();
+  }
 }
 
 

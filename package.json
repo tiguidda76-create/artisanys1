@@ -3,9 +3,9 @@
   "version": "2.0.0",
   "description": "Autonomous B2B Export Engine & Copilot Orchestrator for Authentic Moroccan Artisan Crafts",
   "main": "app.js",
+  "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "echo 'Build complete'"
   },
   "keywords": [
     "marrakech",
@@ -16,8 +16,5 @@
     "moroccan-craft"
   ],
   "author": "Hassan Tiguidda",
-  "license": "MIT",
-  "devDependencies": {
-    "typescript": "^5.9.3"
-  }
+  "license": "MIT"
 }

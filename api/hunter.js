@@ -3,8 +3,8 @@ import { CONFIG } from "../lib/config.js";
 export const dynamic = "force-dynamic";
 
 export default async function handler(req, res) {
-  // Support à la fois Vercel Node (req, res) et standard web Request
-  if (req.method && req.method !== "POST") {
+  // Support à la fois GET et POST, Vercel Node (req, res) et standard web Request
+  if (req.method && req.method !== "POST" && req.method !== "GET") {
     if (res && res.status) return res.status(405).json({ error: "Méthode non autorisée" });
     return new Response(JSON.stringify({ error: "Méthode non autorisée" }), { status: 405 });
   }
@@ -19,13 +19,19 @@ export default async function handler(req, res) {
     }
     body = body || {};
 
-    const {
-      market = "FR",
-      craft = "all",
-      city = "",
-      minReviews = 2,
-      excludedPlaceIds = []
-    } = body;
+    let queryParams = {};
+    if (req.query) {
+      queryParams = req.query;
+    } else if (req.url && req.url.includes("?")) {
+      const sp = new URL(req.url, "http://localhost").searchParams;
+      queryParams = Object.fromEntries(sp.entries());
+    }
+
+    const market = body.market || queryParams.market || "FR";
+    const craft = body.craft || queryParams.craft || "all";
+    const city = body.city || queryParams.city || "";
+    const minReviews = Number(body.minReviews || queryParams.minReviews || 2);
+    const excludedPlaceIds = body.excludedPlaceIds || [];
 
     const apiKey = CONFIG.GOOGLE_PLACES_API_KEY;
 

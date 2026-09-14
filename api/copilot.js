@@ -18,10 +18,15 @@ export default async function handler(req, res) {
     }
     body = body || {};
 
-    const { messages = [], context = {} } = body;
+    let messages = body.messages || [];
+    if (messages.length === 0 && body.message) {
+      messages = [{ role: "user", content: String(body.message) }];
+    }
+
+    const context = body.context || {};
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      const errRes = { error: "Un historique de messages est requis" };
+      const errRes = { error: "Un message ou historique de messages est requis" };
       if (res && res.status) return res.status(400).json(errRes);
       return new Response(JSON.stringify(errRes), { status: 400 });
     }

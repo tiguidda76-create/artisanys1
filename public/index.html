@@ -68,7 +68,7 @@
     <button class="tab-btn" data-tab="catalog">
       <span class="tab-icon">📦</span>
       <span class="tab-text">Catalogue & Tarifs</span>
-      <span class="tab-badge">6</span>
+      <span class="tab-badge" id="catalogNavBadge" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff;">365</span>
     </button>
     <button class="tab-btn" data-tab="legal">
       <span class="tab-icon">📑</span>
@@ -913,173 +913,252 @@
 
     <!-- ──────── TAB 4: PRODUCT CATALOG ──────── -->
     <section class="tab-panel" id="panel-catalog">
-      <h2 class="section-title">📦 Product Catalog & <span>Volume Pricing Matrix</span></h2>
-
-      <!-- Category Tabs -->
-      <div class="category-tabs" id="categoryTabs">
-        <button class="cat-tab active" data-cat="rugs" onclick="switchCategory(this)">🧶 Rugs & Kilims</button>
-        <button class="cat-tab" data-cat="ceramics" onclick="switchCategory(this)">🏺 Ceramic Tableware</button>
-        <button class="cat-tab" data-cat="brass" onclick="switchCategory(this)">🪔 Brass Lamps</button>
-        <button class="cat-tab" data-cat="leather" onclick="switchCategory(this)">👝 Leather Poufs & Bags</button>
-        <button class="cat-tab" data-cat="wicker" onclick="switchCategory(this)">🧺 Palm Wicker</button>
-        <button class="cat-tab" data-cat="wood" onclick="switchCategory(this)">🪵 Cedar Woodwork</button>
+      <!-- ✦ Hero Header & Action Bar ✦ -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 class="section-title" style="margin-bottom: 0.2rem;">📦 Catalogue B2B d'Atelier — <span>365 Pièces Fait-Main Réelles</span></h2>
+          <p style="font-size: 0.76rem; color: var(--slate-400); max-width: 820px;">
+            Collection exclusive façonnée à la main dans nos ateliers de la Médina de Marrakech. Photos réelles certifiées de vos créations, prix grossiste dégressifs jusqu'à 35%, 0 MOQ sur échantillon, devis pro forma instantané et expédition mondiale sécurisée (DHL Express, FedEx & Conteneurs FCL).
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <button class="btn btn-sm btn-gold" onclick="switchTab('legal')" style="font-weight: 700;">
+            🛒 Pro Forma (<span id="catalogProFormaCount">0</span>)
+          </button>
+          <button class="btn btn-sm btn-success" onclick="shareFullCatalogWhatsApp()" style="font-weight: 700;">
+            💬 Partager Catalogue WhatsApp
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="scrollToSimulator()" title="Accéder au simulateur de remises">
+            📐 Simulateur Volume
+          </button>
+        </div>
       </div>
 
-      <!-- Pricing Tiers -->
+      <!-- ✦ Highlights Metric Cards ✦ -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.8rem 1rem;">
+          <div style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase;">Total Articles Réels</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: var(--font-mono);">365 <span style="font-size: 0.75rem; color: var(--saffron-light);">Pièces</span></div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.8rem 1rem;">
+          <div style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase;">Ateliers & Métiers</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: var(--font-mono);">13 <span style="font-size: 0.75rem; color: #10B981;">Filières d'Art</span></div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.8rem 1rem;">
+          <div style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase;">Condition Commande Test</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #38BDF8; font-family: var(--font-mono);">0 MOQ <span style="font-size: 0.75rem; color: var(--slate-300);">(1-5 pcs)</span></div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.8rem 1rem;">
+          <div style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase;">Remise Grossiste Max</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #F59E0B; font-family: var(--font-mono);">-35% <span style="font-size: 0.75rem; color: var(--slate-300);">(50+ pcs)</span></div>
+        </div>
+      </div>
+
+      <!-- ✦ Search, Filter & Sort Toolbar ✦ -->
+      <div class="catalog-toolbar" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: space-between; align-items: center;">
+        <div style="flex: 1; min-width: 260px; position: relative;">
+          <input type="text" id="catalogSearchInput" class="filter-input" placeholder="🔍 Rechercher par réf (ex: PAN-E1, BELT-ARES, POUF-K10), nom, matière..." oninput="handleCatalogSearch(this.value)" style="width: 100%; font-size: 0.82rem; padding: 0.6rem 0.8rem 0.6rem 2.2rem; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: #fff;">
+          <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; opacity: 0.5;">🔎</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <select id="catalogSortSelect" class="filter-select" onchange="handleCatalogSort(this.value)" style="font-size: 0.76rem; padding: 0.55rem 0.8rem; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--slate-200);">
+            <option value="default">✦ Tri : Par sélection atelier</option>
+            <option value="price-asc">Prix croissant (Wholesale)</option>
+            <option value="price-desc">Prix décroissant (Wholesale)</option>
+            <option value="name-asc">Nom (A ➔ Z)</option>
+            <option value="bestseller">Best-Sellers d'abord</option>
+          </select>
+          <div id="catalogActiveCountBadge" style="font-size: 0.72rem; color: var(--slate-400); padding: 0.5rem 0.8rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-md);">
+            <span id="catalogVisibleCount" style="color: var(--saffron-light); font-weight: 700;">365</span> articles visibles
+          </div>
+        </div>
+      </div>
+
+      <!-- ✦ Category Filter Chips (13 Authentic Categories) ✦ -->
+      <div class="catalog-cat-pills-wrap" style="overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; -webkit-overflow-scrolling: touch;">
+        <div class="catalog-cat-pills" id="catalogCatPills" style="display: flex; gap: 0.45rem; width: max-content;">
+          <button class="cat-pill active" data-cat="all" onclick="filterCatalogCategory('all')">
+            🌟 Tous les Articles <span class="pill-badge">365</span>
+          </button>
+          <button class="cat-pill" data-cat="paniers" onclick="filterCatalogCategory('paniers')">
+            🧺 Paniers & Cabas <span class="pill-badge">37</span>
+          </button>
+          <button class="cat-pill" data-cat="poufs" onclick="filterCatalogCategory('poufs')">
+            👝 Poufs en Cuir <span class="pill-badge">8</span>
+          </button>
+          <button class="cat-pill" data-cat="belts" onclick="filterCatalogCategory('belts')">
+            🎗️ Ceintures en Cuir <span class="pill-badge">52</span>
+          </button>
+          <button class="cat-pill" data-cat="lanterns" onclick="filterCatalogCategory('lanterns')">
+            🪔 Luminaires & Raphia <span class="pill-badge">74</span>
+          </button>
+          <button class="cat-pill" data-cat="ceramics" onclick="filterCatalogCategory('ceramics')">
+            🏺 Céramiques Tamegroute <span class="pill-badge">36</span>
+          </button>
+          <button class="cat-pill" data-cat="wooden" onclick="filterCatalogCategory('wooden')">
+            🪵 Loupe de Thuya <span class="pill-badge">16</span>
+          </button>
+          <button class="cat-pill" data-cat="trays" onclick="filterCatalogCategory('trays')">
+            🍽️ Plateaux & Laiton <span class="pill-badge">24</span>
+          </button>
+          <button class="cat-pill" data-cat="mirrors" onclick="filterCatalogCategory('mirrors')">
+            🪞 Miroirs Décoratifs <span class="pill-badge">16</span>
+          </button>
+          <button class="cat-pill" data-cat="furniture" onclick="filterCatalogCategory('furniture')">
+            🪑 Mobilier d'Artisan <span class="pill-badge">13</span>
+          </button>
+          <button class="cat-pill" data-cat="plants" onclick="filterCatalogCategory('plants')">
+            🌿 Cache-Pots & Végétal <span class="pill-badge">9</span>
+          </button>
+          <button class="cat-pill" data-cat="carpets" onclick="filterCatalogCategory('carpets')">
+            🧶 Tapis Berbères <span class="pill-badge">2</span>
+          </button>
+          <button class="cat-pill" data-cat="baskets" onclick="filterCatalogCategory('baskets')">
+            🧺 Corbeilles & Rangement <span class="pill-badge">54</span>
+          </button>
+          <button class="cat-pill" data-cat="homeware" onclick="filterCatalogCategory('homeware')">
+            ✨ Arts de la Table & Déco <span class="pill-badge">24</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ✦ Real Products Grid ✦ -->
+      <div class="real-catalog-grid" id="realCatalogGrid">
+        <!-- Rendu dynamique par app.js -->
+      </div>
+
+      <!-- ✦ Load More Button (if more than display limit) ✦ -->
+      <div id="catalogLoadMoreContainer" style="text-align: center; margin: 2rem 0; display: none;">
+        <button class="btn btn-outline btn-lg" onclick="loadMoreCatalogArticles()" style="min-width: 240px; border-color: var(--saffron-gold); color: var(--saffron-light);">
+          ⬇️ Afficher 36 articles de plus...
+        </button>
+      </div>
+
+      <!-- ✦ Pricing Tiers Summary Cards ✦ -->
+      <h3 class="section-title mt-3">⚖️ Grille de Tarifs Dégressifs & <span>Conditions Export</span></h3>
       <div class="pricing-tiers">
         <div class="tier-card zellige-accent">
-          <div class="tier-name">Sample / Concept Tier</div>
-          <div class="tier-range">0 MOQ — 1 to 5 units</div>
-          <div class="tier-desc">Ideal for small online curators and independent physical boutiques. Fast air dispatch via DHL/FedEx.</div>
+          <div class="tier-name">Commande Test / Échantillon</div>
+          <div class="tier-range">0 MOQ — 1 à 5 pièces</div>
+          <div class="tier-desc">Idéal pour les boutiques physiques et e-shops souhaitant valider la qualité de tissage, patine et finitions réelles.</div>
           <ul class="tier-features">
-            <li>Zero minimum order requirement</li>
-            <li>Individual piece selection</li>
-            <li>Express air freight (3-5 days)</li>
-            <li>Full authenticity certification</li>
-            <li>Photography-ready packaging</li>
+            <li>Aucun minimum d'achat imposé</li>
+            <li>Sélection libre de références assorties</li>
+            <li>Envoi aérien prioritaire DHL/FedEx (3-5 jours)</li>
+            <li>Certificat officiel fait-main joint au colis</li>
+            <li>Emballage individuel prêt pour le rayon</li>
           </ul>
           <div class="tier-price">
-            <div class="tier-price-label">Starting from</div>
-            <div class="tier-price-val" id="tierPrice1">$85 <span class="tier-price-unit">/ piece</span></div>
+            <div class="tier-price-label">Tarif de base</div>
+            <div class="tier-price-val">Tarif Atelier Net <span class="tier-price-unit">0% remise</span></div>
           </div>
         </div>
 
         <div class="tier-card featured zellige-accent">
-          <div class="tier-name">Boutique Stock Tier</div>
-          <div class="tier-range">6 to 50 units — 15% Discount</div>
-          <div class="tier-desc">Curated store displays, mixed assortment packs. Perfect for physical concept stores and established online retailers.</div>
+          <div class="tier-name">Approvisionnement Boutique</div>
+          <div class="tier-range">6 à 50 pièces — 15% Remise Dégressive</div>
+          <div class="tier-desc">Le palier favori des concept stores européens et nord-américains pour approvisionner un rayon complet.</div>
           <ul class="tier-features">
-            <li>15% volume discount</li>
-            <li>Mixed craft assortment packs</li>
-            <li>Custom color/size options</li>
-            <li>Branded hang tags available</li>
-            <li>Sea or air freight options</li>
+            <li>15% de remise immédiate sur facture</li>
+            <li>Mix possible entre 13 catégories artisanales</li>
+            <li>Personnalisation dimensions et anses offerte</li>
+            <li>Étiquettes de marque / code-barres personnalisés</li>
+            <li>Choix expédition Air Express ou Maritime LCL</li>
           </ul>
           <div class="tier-price">
-            <div class="tier-price-label">Starting from</div>
-            <div class="tier-price-val" id="tierPrice2">$72 <span class="tier-price-unit">/ piece</span></div>
+            <div class="tier-price-label">Économie directe</div>
+            <div class="tier-price-val">-15% <span class="tier-price-unit">d'Atelier</span></div>
           </div>
         </div>
 
         <div class="tier-card zellige-accent">
-          <div class="tier-name">Wholesale Container Tier</div>
-          <div class="tier-range">Bulk — 50+ units — 35% Discount</div>
-          <div class="tier-desc">Direct importer rates, custom branded tags/stamps, ocean freight optimization via Casablanca or Tanger Med ports.</div>
+          <div class="tier-name">Grossiste & Conteneur Maritime</div>
+          <div class="tier-range">50+ pièces — 35% Remise Volume</div>
+          <div class="tier-desc">Tarifs direct fabricant pour importateurs, chaînes d'hôtellerie de luxe, décorateurs et grossistes d'intérieur.</div>
           <ul class="tier-features">
-            <li>35% wholesale discount</li>
-            <li>Custom branded tags & stamps</li>
-            <li>Full container load (FCL) options</li>
-            <li>Dedicated production coordinator</li>
-            <li>Ocean freight from Casablanca/Tanger Med</li>
+            <li>35% de remise maximale d'exportation</li>
+            <li>Marquage au fer chaud & packaging sur-mesure</li>
+            <li>Optimisation conteneur complet FCL (20'/40')</li>
+            <li>Accompagnement douanier & certificat EUR.1</li>
+            <li>Chargement départ Casablanca ou Tanger Med</li>
           </ul>
           <div class="tier-price">
-            <div class="tier-price-label">Starting from</div>
-            <div class="tier-price-val" id="tierPrice3">$55 <span class="tier-price-unit">/ piece</span></div>
+            <div class="tier-price-label">Tarif conteneur</div>
+            <div class="tier-price-val">-35% <span class="tier-price-unit">Volume B2B</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Interactive Pricing Simulator -->
-      <div class="glass-card">
+      <!-- ✦ Interactive Volume Pricing Simulator ✦ -->
+      <div class="glass-card" id="pricingSimulatorSection">
         <div class="card-header">
-          <div class="card-title">📐 Interactive Volume Pricing Simulator</div>
+          <div class="card-title">📐 Simulateur de Devis & Remises Dégressives Directes</div>
           <div class="btn-group">
-            <button class="btn btn-sm btn-outline" onclick="resetSimulator()">↻ Reset</button>
-            <button class="btn btn-sm btn-gold" onclick="showToast('Quote exported as PDF', 'success')">📄 Export Quote</button>
+            <button class="btn btn-sm btn-outline" onclick="resetSimulator()">↻ Réinitialiser</button>
+            <button class="btn btn-sm btn-gold" onclick="transferSimulatorToInvoice()">📄 Injecter dans la Facture Pro Forma</button>
           </div>
         </div>
         <div class="card-body">
           <div class="sim-row header">
-            <div>Product</div>
-            <div>Unit Price (USD)</div>
-            <div>Quantity</div>
-            <div>Subtotal</div>
+            <div>Article Artisanal Sélectionné</div>
+            <div>Prix Atelier Unitaire</div>
+            <div>Quantité Prévue</div>
+            <div>Sous-total Remisé</div>
           </div>
           <div id="simRows">
-            <!-- Populated by JS -->
+            <!-- Rendu dynamique par app.js -->
           </div>
           <div class="sim-row" style="border-top: 2px solid var(--saffron-gold); margin-top: 0.5rem; padding-top: 0.8rem;">
-            <div class="sim-product" style="color: var(--saffron-light);">TOTAL ESTIMATE</div>
+            <div class="sim-product" style="color: var(--saffron-light); font-weight: 700;">ESTIMATION TOTALE ATELIER (HORS FRET)</div>
             <div></div>
             <div id="simTotalQty" style="font-weight:700; color: white;">0</div>
-            <div id="simTotal" class="sim-total" style="font-size: 1.1rem;">$0.00</div>
+            <div id="simTotal" class="sim-total" style="font-size: 1.1rem; color: #10B981; font-weight: 800;">$0.00</div>
           </div>
-          <div style="margin-top: 0.6rem; font-size: 0.68rem; color: var(--slate-600);">
-            💡 Discount auto-applied: 15% for 6-50 units, 35% for 50+ units per line item.
+          <div style="margin-top: 0.6rem; font-size: 0.68rem; color: var(--slate-400); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <span>💡 Remises calculées automatiquement : 0% (1-5 pcs), 15% (6-50 pcs), 35% (50+ pcs) par référence.</span>
+            <span style="color: var(--saffron-light);">✦ Exonération TVA Art 91-II-1° CGI Maroc (Vente Export)</span>
           </div>
         </div>
       </div>
 
-      <!-- Packaging & Certification -->
-        <!-- Interactive Pricing Simulator -->
-        <div class="glass-card">
-          <div class="card-header">
-            <div class="card-title">📐 Simulateur de Devis & Remises Dégressives</div>
-            <div class="btn-group">
-              <button class="btn btn-sm btn-outline" onclick="resetSimulator()">↻ Réinitialiser</button>
-              <button class="btn btn-sm btn-gold" onclick="transferSimulatorToInvoice()">📄 Injecter dans la Facture Pro Forma</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-row header">
-              <div>Produit Artisanal</div>
-              <div>Prix Unitaire (USD)</div>
-              <div>Quantité</div>
-              <div>Sous-total</div>
-            </div>
-            <div id="simRows">
-              <!-- Rendu par JS -->
-            </div>
-            <div class="sim-row" style="border-top: 2px solid var(--saffron-gold); margin-top: 0.5rem; padding-top: 0.8rem;">
-              <div class="sim-product" style="color: var(--saffron-light);">ESTIMATION TOTALE ATELIER</div>
-              <div></div>
-              <div id="simTotalQty" style="font-weight:700; color: white;">0</div>
-              <div id="simTotal" class="sim-total" style="font-size: 1.1rem;">$0.00</div>
-            </div>
-            <div style="margin-top: 0.6rem; font-size: 0.68rem; color: var(--slate-400);">
-              💡 Remises automatiques intégrées : 0 MOQ pour 1-5 pcs, 15% pour 6-50 pcs, 35% pour 50+ pcs par ligne d'article.
-            </div>
-          </div>
+      <!-- ✦ Packaging & Official Export Certifications ✦ -->
+      <div class="glass-card mt-2">
+        <div class="card-header">
+          <div class="card-title">📦 Normes d'Emballage & Certifications d'Origine Export</div>
         </div>
-
-        <!-- Packaging & Certification -->
-        <div class="glass-card mt-2">
-          <div class="card-header">
-            <div class="card-title">📦 Normes d'Emballage & Certification Export</div>
-          </div>
-          <div class="card-body">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-              <div>
-                <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🛡️ Certifications Officielles</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                  <span class="pill pill-gold">✦ Sceau d'Authenticité Fait-Main Marocain</span>
-                  <span class="pill pill-green">✦ Commerce Équitable & Direct Artisans</span>
-                  <span class="pill pill-blue">✦ Certificat d'Origine pour Douane</span>
-                  <span class="pill pill-terra">✦ Contrôle Qualité Export Validé</span>
-                </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🛡️ Certifications Officielles</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="pill pill-gold">✦ Sceau d'Authenticité Fait-Main Marocain</span>
+                <span class="pill pill-green">✦ Commerce Équitable & Direct Artisans</span>
+                <span class="pill pill-blue">✦ Certificat d'Origine EUR.1 pour Douanes</span>
+                <span class="pill pill-terra">✦ Contrôle Qualité Export Avant Emballage</span>
               </div>
-              <div>
-                <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">📦 Emballage Sécurisé Export</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                  <span class="pill pill-slate">✦ Cartons renforcés double cannelure</span>
-                  <span class="pill pill-slate">✦ Calage écologique en papier kraft</span>
-                  <span class="pill pill-slate">✦ Palettisation & filmage résistant (FCL)</span>
-                  <span class="pill pill-slate">✦ Conditionnement prêt pour rayon magasin</span>
-                </div>
+            </div>
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">📦 Emballage Sécurisé Export</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="pill pill-slate">✦ Cartons renforcés triple cannelure haute densité</span>
+                <span class="pill pill-slate">✦ Calage écologique en papier kraft & bulles bio</span>
+                <span class="pill pill-slate">✦ Caisses bois sur-mesure pour céramiques et miroirs</span>
+                <span class="pill pill-slate">✦ Palettisation cerclée & filmage étanche (FCL)</span>
               </div>
-              <div>
-                <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🚢 Modes d'Expédition</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                  <span class="ship-tag ship-air">✈️ DHL Express Porte-à-Porte (3-5 jours)</span>
-                  <span class="ship-tag ship-air">✈️ FedEx International Priority (4-7 jours)</span>
-                  <span class="ship-tag ship-sea">🚢 Groupage Maritime LCL (20-30 jours)</span>
-                  <span class="ship-tag ship-sea">🚢 Conteneur Maritime FCL (Casablanca/Tanger)</span>
-                </div>
+            </div>
+            <div>
+              <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--slate-300); margin-bottom: 0.5rem;">🚢 Expéditions Internationales</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <span class="ship-tag ship-air">✈️ DHL Express Porte-à-Porte (3-5 jours monde)</span>
+                <span class="ship-tag ship-air">✈️ FedEx International Priority (4-7 jours)</span>
+                <span class="ship-tag ship-sea">🚢 Groupage Maritime LCL (20-25 jours)</span>
+                <span class="ship-tag ship-sea">🚢 Conteneur Maritime Complet FCL (Casablanca/Tanger)</span>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- ──────── TAB 5: FACTURATION & LEGAL ──────── -->
       <section class="tab-panel" id="panel-legal">
@@ -1366,6 +1445,30 @@
   </div>
 </div>
 
+<!-- ═══════════ PRODUCT QUICK-VIEW MODAL ═══════════ -->
+<div class="modal-overlay" id="productQuickViewModal" style="display: none; z-index: 650;">
+  <div class="modal" style="max-width: 860px; width: 95%; max-height: 90vh; overflow-y: auto;">
+    <div class="modal-header" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(16, 185, 129, 0.1));">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <h3 class="modal-title" id="qvProductTitle" style="color: #fff; font-size: 1.1rem; font-weight: 700;">Détail Article d'Atelier</h3>
+          <span class="pill pill-gold" id="qvProductBadge" style="font-size: 0.7rem;">Best-Seller</span>
+          <span class="pill pill-slate" id="qvProductSKU" style="font-size: 0.7rem; font-family: var(--font-mono);">SKU</span>
+        </div>
+        <p style="font-size: 0.72rem; color: var(--slate-300); margin: 0.2rem 0 0 0;" id="qvProductCraft">Métier d'Art & Spécifications</p>
+      </div>
+      <button class="modal-close" onclick="closeProductQuickView()" title="Fermer (Échap)">✕</button>
+    </div>
+    <div class="modal-body" id="qvModalBody" style="padding: 1.25rem;">
+      <!-- Content dynamically rendered -->
+    </div>
+    <div class="modal-footer" id="qvModalFooter" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+      <!-- Footer actions dynamically rendered -->
+    </div>
+  </div>
+</div>
+
+<script src="catalogData.js?v=3.2.0"></script>
 <script src="craftBrainService.js?v=3.2.0"></script>
 <script src="app.js?v=3.2.0"></script>
 </body>

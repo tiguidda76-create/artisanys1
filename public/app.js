@@ -1293,36 +1293,61 @@ function renderLookbook() {
   const container = document.getElementById('lookbookGrid');
   if (!container) return;
 
-  const items = [
-    { title: 'Tapis Beni Ourain & Azilal', craft: 'Tissage Noué Main', desc: '100% pure laine vierge naturelle des montagnes de l\'Atlas. Motifs géométriques berbères ancestraux.', tag: '0 MOQ', price: 'Dès $140' },
-    { title: 'Poterie & Céramiques de Tamegroute', craft: 'Émail Minéral Rustique', desc: 'Façonnées dans la vallée du Draa avec émail vert émeraude et ocre cuit au four traditionnel à bois.', tag: 'Best-Seller', price: 'Dès $18' },
-    { title: 'Luminaires en Laiton Ciselé', craft: 'Laiton Massif Martelé', desc: 'Suspensions et appliques ajourées à la main par les maîtres dinandiers des souks de Marrakech.', tag: 'Luxe B2B', price: 'Dès $65' },
-    { title: 'Poufs & Maroquinerie en Cuir', craft: 'Cuir Naturel Tanné', desc: 'Poufs ronds et carrés en cuir véritable teinté aux pigments végétaux. Finitions coutures soignées.', tag: 'Prêt Export', price: 'Dès $28' },
-    { title: 'Vannerie en Feuille de Palmier', craft: 'Doum & Tressage Naturel', desc: 'Paniers de rangement, cabas et suspensions bohèmes tressés à la main par les artisanes du Sud.', tag: 'Éco-Responsable', price: 'Dès $12' },
-    { title: 'Ébénisterie en Loupe de Thuya', craft: 'Bois Précieux d\'Essaouira', desc: 'Boîtes, plateaux et objets sculptés dans la racine de thuya polie au parfum boisé naturel unique.', tag: 'Exclusif', price: 'Dès $22' }
-  ];
+  const realArticles = getCatalogArticles();
+  const rate = EXCHANGE_RATES[currentCurrency] || 1;
+  const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
 
-  container.innerHTML = items.map(item => `
-    <div class="lookbook-card" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.2rem; display: flex; flex-direction: column; justify-content: space-between;">
-      <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-          <span class="pill pill-gold" style="font-size: 0.65rem;">${item.tag}</span>
-          <strong style="color: var(--success); font-family: var(--font-mono); font-size: 0.85rem;">${item.price}</strong>
+  // Select top showcase pieces across categories
+  let displayItems = [];
+  if (realArticles.length > 0) {
+    const heroSkus = ['PAN-E1', 'POUF-K7', 'BELT-ACACIA', 'LANT-01', 'CERA-01', 'WOOD-01', 'TRAY-01', 'MIRR-01'];
+    displayItems = heroSkus.map(s => realArticles.find(a => a.sku.startsWith(s))).filter(Boolean);
+    if (displayItems.length < 6) {
+      displayItems = realArticles.slice(0, 6);
+    }
+  }
+
+  if (displayItems.length === 0) {
+    displayItems = [
+      { id: 'h1', sku: 'PAN-E1', name: 'Panier Cabas Berbère Doum', craft: 'Vannerie Doum Tressée', material: 'Palmier doum naturel & cuir riveté', priceUSD: 18, image: 'catalog/paniers/E1.jpg', badge: 'Best-Seller', desc: 'Panier cabas traditionnel tressé main par les femmes artisanes du Sud marocain.' },
+      { id: 'h2', sku: 'POUF-K7', name: 'Pouf Cuir Marocain Cousu Main', craft: 'Maroquinerie & Tannerie', material: 'Cuir pleine fleur tannage végétal', priceUSD: 34, image: 'catalog/poufs/K7.jpg', badge: '0 MOQ', desc: 'Pouf oriental traditionnel en cuir véritable teinté aux pigments naturels.' },
+      { id: 'h3', sku: 'BELT-ACACIA', name: 'Ceinture Cuir Acacia Pleine Fleur', craft: 'Sellerie Artisanale', material: 'Cuir d\'artisan & boucle laiton massif', priceUSD: 19, image: 'catalog/belts/acacia-1.jpg', badge: 'Atelier Direct', desc: 'Ceinture faite main dans nos ateliers de cuir de Marrakech.' },
+      { id: 'h4', sku: 'LANT-01', name: 'Suspension Raphia Médina', craft: 'Tressage Raphia & Fer', material: 'Fibre de raphia & armature fer forgé', priceUSD: 39, image: 'catalog/lanterns/1 (1).jpg', badge: 'Luxe B2B', desc: 'Lustre bohème naturel ajouré pour une lumière tamisée chaleureuse.' },
+      { id: 'h5', sku: 'CERA-01', name: 'Céramique de Tamegroute Émail Vert', craft: 'Poterie Rustique du Draa', material: 'Argile chamottée & émail minéral vert', priceUSD: 25, image: 'catalog/ceramics/1 (1).jpg', badge: 'Authentique', desc: 'Poterie ancestrale cuite au four à bois de palme dans le désert.' },
+      { id: 'h6', sku: 'WOOD-01', name: 'Boîte en Loupe de Thuya Précieux', craft: 'Ébénisterie d\'Essaouira', material: 'Racine de loupe de thuya polie', priceUSD: 24, image: 'catalog/wooden/1 (1).jpg', badge: 'Exclusif', desc: 'Bois rare poli à la main exhalant un parfum naturel d\'ambre et de cèdre.' }
+    ];
+  }
+
+  container.innerHTML = displayItems.map(item => {
+    const wholesalePrice = Math.round(item.priceUSD * rate);
+    return `
+      <div class="lookbook-card" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-card);">
+        <div style="height: 190px; overflow: hidden; position: relative; background: #0c0a09; cursor: pointer;" onclick="openProductQuickView('${item.id || item.sku}')">
+          <img src="${item.image}" alt="${escapeHtml(item.name)}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+          <span class="pill pill-gold" style="position: absolute; top: 10px; left: 10px; font-size: 0.62rem; font-weight: 700;">${item.badge}</span>
+          <span style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.75); color: #FCD34D; font-family: var(--font-mono); font-size: 0.62rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">${item.sku}</span>
         </div>
-        <h4 style="font-family: var(--font-display); font-size: 1rem; color: #fff; margin-bottom: 0.3rem;">${item.title}</h4>
-        <div style="font-size: 0.7rem; color: var(--saffron-light); margin-bottom: 0.5rem;">✦ ${item.craft}</div>
-        <p style="font-size: 0.74rem; color: var(--slate-300); line-height: 1.5;">${item.desc}</p>
+        <div style="padding: 1.1rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
+              <span style="font-size: 0.68rem; color: var(--saffron-light); font-weight: 600;">✦ ${escapeHtml(item.craft)}</span>
+              <strong style="color: #10B981; font-family: var(--font-mono); font-size: 0.95rem;">${sym}${wholesalePrice}</strong>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 0.95rem; color: #fff; margin-bottom: 0.4rem; line-height: 1.35;">${escapeHtml(item.name)}</h4>
+            <p style="font-size: 0.72rem; color: var(--slate-300); line-height: 1.45; margin-bottom: 0.8rem;">${escapeHtml(item.desc)}</p>
+          </div>
+          <div style="margin-top: 0.8rem; display: flex; gap: 0.4rem;">
+            <button class="btn btn-sm btn-outline" style="flex: 1;" onclick="openProductQuickView('${item.id || item.sku}')">👁️ Fiche & Zoom</button>
+            <button class="btn btn-sm btn-gold" onclick="quickAddRealProductToInvoice('${item.id || item.sku}')">+ Devis Pro Forma</button>
+          </div>
+        </div>
       </div>
-      <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-        <button class="btn btn-sm btn-outline" style="flex: 1;" onclick="openLookbookShareModal('${item.title}')">📁 Partager Pièce</button>
-        <button class="btn btn-sm btn-gold" onclick="quickAddProductToInvoice('${item.title}', '${item.craft}')">+ Devis</button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function openLookbookShareModal(pieceName = '') {
-  const text = `Salam ! ✨ Découvrez notre collection d'artisanat marocain authentique direct atelier de Marrakech (${pieceName || 'Tapis, Céramiques, Laiton & Cuir'}).\n\nConsultez notre portfolio et galerie en ligne :\n👉 https://sites.google.com/view/morkech/home\n\nTarifs d'atelier 0 MOQ et livraison internationale DHL Express.\n\nMARRAKECH CRAFT CONDUIT | Hassan Tiguidda\n📱 WhatsApp : +212 632 155 430 | ✉️ tiguidda76@gmail.com`;
+  const text = `Salam ! ✨ Découvrez notre collection d'artisanat marocain authentique direct atelier de Marrakech (${pieceName || 'Tapis, Céramiques, Laiton, Cuir & Vannerie'}).\n\nConsultez notre catalogue interactif complet :\n👉 https://artisanys1.vercel.app/\n\nTarifs d'atelier dégressifs, 0 MOQ sur échantillons et expédition internationale sécurisée.\n\nMARRAKECH CRAFT CONDUIT | Hassan Tiguidda\n📱 WhatsApp : +212 632 155 430 | ✉️ tiguidda76@gmail.com`;
 
   document.getElementById('modalTitle').textContent = '📁 Partager le Lookbook Digital';
   document.getElementById('modalBody').innerHTML = `
@@ -1342,36 +1367,349 @@ function openLookbookShareModal(pieceName = '') {
 }
 
 // ═══════════════════════════════════════════════════════════
-// TAB 4: PRODUCT CATALOG & SIMULATOR
+// TAB 4: PRODUCT CATALOG (365 ARTICLES) & SIMULATOR
 // ═══════════════════════════════════════════════════════════
 
-const CATALOG_PRODUCTS = [
-  { id: 'p1', name: 'Tapis Berbère Beni Ourain (200×300cm)', category: 'rugs', priceUSD: 290, desc: '100% pure laine vierge nouée main' },
-  { id: 'p2', name: 'Tapis Vintage Kilim Berbère (150×250cm)', category: 'rugs', priceUSD: 165, desc: 'Tissage plat traditionnel en laine et coton' },
-  { id: 'p3', name: 'Vase Céramique Tamegroute (Grand Modèle)', category: 'ceramics', priceUSD: 42, desc: 'Émail vert émeraude cuit au feu de bois' },
-  { id: 'p4', name: 'Service d\'Assiettes Peintes de Safi (6 pcs)', category: 'ceramics', priceUSD: 75, desc: 'Motifs floraux traditionnels bleu/noir' },
-  { id: 'p5', name: 'Suspension Dôme Laiton Martelé (Ø 50cm)', category: 'brass', priceUSD: 110, desc: 'Ciselure arabesque ajourée à la main' },
-  { id: 'p6', name: 'Pouf Cuir Marocain Cousu Main (Ø 50cm)', category: 'leather', priceUSD: 32, desc: 'Cuir véritable tanné naturellement à Marrakech' },
-  { id: 'p7', name: 'Panier Cabas Vannerie Palmier Doum', category: 'wicker', priceUSD: 14, desc: 'Anses en cuir véritable riveté' },
-  { id: 'p8', name: 'Boîte en Loupe de Thuya Parfumée', category: 'wood', priceUSD: 26, desc: 'Incrustation de nacre et bois précieux' }
-];
+let currentCatalogCategory = 'all';
+let currentCatalogSearch = '';
+let currentCatalogSort = 'default';
+let catalogDisplayLimit = 36;
+let simulatorQuantities = {};
 
-let simulatorQuantities = { p1: 2, p3: 4, p5: 1, p6: 4 };
+function getCatalogArticles() {
+  if (typeof window !== 'undefined' && window.REAL_ARTICLES && Array.isArray(window.REAL_ARTICLES) && window.REAL_ARTICLES.length > 0) {
+    return window.REAL_ARTICLES;
+  }
+  return [];
+}
 
-function switchCategory(btn) {
-  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+function filterCatalogCategory(catKey) {
+  currentCatalogCategory = catKey;
+  catalogDisplayLimit = 36;
+  document.querySelectorAll('.cat-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === catKey);
+  });
+  renderRealCatalog();
+}
+
+function handleCatalogSearch(query) {
+  currentCatalogSearch = (query || '').toLowerCase().trim();
+  catalogDisplayLimit = 36;
+  renderRealCatalog();
+}
+
+function handleCatalogSort(sortVal) {
+  currentCatalogSort = sortVal || 'default';
+  renderRealCatalog();
+}
+
+function loadMoreCatalogArticles() {
+  catalogDisplayLimit += 36;
+  renderRealCatalog();
+}
+
+function scrollToSimulator() {
+  const el = document.getElementById('pricingSimulatorSection');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderRealCatalog() {
+  const container = document.getElementById('realCatalogGrid');
+  if (!container) return;
+
+  const allArticles = getCatalogArticles();
+  if (allArticles.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 12px; border: 1px dashed var(--border-subtle);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📦</div>
+        <h4 style="color: #fff; margin-bottom: 0.3rem;">Chargement des 365 articles d'atelier...</h4>
+        <p style="font-size: 0.78rem; color: var(--slate-400);">Synchronisation des données en cours.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Filter
+  let filtered = allArticles.filter(art => {
+    if (currentCatalogCategory !== 'all' && art.category !== currentCatalogCategory) {
+      return false;
+    }
+    if (currentCatalogSearch) {
+      const matchText = `${art.name} ${art.sku} ${art.categoryLabel} ${art.material} ${art.craft} ${art.desc}`.toLowerCase();
+      if (!matchText.includes(currentCatalogSearch)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  // Sort
+  if (currentCatalogSort === 'price-asc') {
+    filtered.sort((a, b) => a.priceUSD - b.priceUSD);
+  } else if (currentCatalogSort === 'price-desc') {
+    filtered.sort((a, b) => b.priceUSD - a.priceUSD);
+  } else if (currentCatalogSort === 'name-asc') {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (currentCatalogSort === 'bestseller') {
+    filtered.sort((a, b) => (a.badge === 'Best-Seller' ? -1 : 1));
+  }
+
+  // Update counters
+  const visibleCountEl = document.getElementById('catalogVisibleCount');
+  if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+
+  const loadMoreContainer = document.getElementById('catalogLoadMoreContainer');
+  const sliceToDisplay = filtered.slice(0, catalogDisplayLimit);
+
+  if (loadMoreContainer) {
+    if (filtered.length > catalogDisplayLimit) {
+      loadMoreContainer.style.display = 'block';
+      const remaining = filtered.length - catalogDisplayLimit;
+      loadMoreContainer.innerHTML = `
+        <button class="btn btn-outline btn-lg" onclick="loadMoreCatalogArticles()" style="min-width: 260px; border-color: var(--saffron-gold); color: var(--saffron-light); font-weight: 700;">
+          ⬇️ Afficher 36 articles de plus... (${remaining} restants)
+        </button>
+      `;
+    } else {
+      loadMoreContainer.style.display = 'none';
+    }
+  }
+
+  const rate = EXCHANGE_RATES[currentCurrency] || 1;
+  const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+
+  container.innerHTML = sliceToDisplay.map(art => {
+    const wholesalePrice = Math.round(art.priceUSD * rate);
+    const retailPrice = Math.round(art.retailUSD * rate);
+
+    let badgeClass = 'badge-authentique';
+    if (art.badge === 'Best-Seller') badgeClass = 'badge-best-seller';
+    else if (art.badge === '0 MOQ') badgeClass = 'badge-0-moq';
+    else if (art.badge === 'Atelier Direct') badgeClass = 'badge-atelier';
+    else if (art.badge === 'Luxe B2B') badgeClass = 'badge-luxe';
+
+    return `
+      <div class="real-catalog-card" data-id="${art.id}">
+        <div class="real-catalog-thumb" onclick="openProductQuickView('${art.id}')" title="Cliquer pour zoom et fiche technique">
+          <img src="${art.image}" alt="${escapeHtml(art.name)}" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\' viewBox=\\'0 0 300 200\\'><rect fill=\\'%231a1512\\' width=\\'300\\' height=\\'200\\'/><text fill=\\'%23d97706\\' x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'16\\'>${art.categoryIcon} ${art.sku}</text></svg>'">
+          <span class="real-catalog-badge ${badgeClass}">${art.badge}</span>
+          <span class="real-catalog-sku">${art.sku}</span>
+          <button class="real-catalog-overlay-btn" title="Aperçu rapide">👁️</button>
+        </div>
+        <div class="real-catalog-body">
+          <div class="real-catalog-craft">
+            <span>${art.categoryIcon}</span>
+            <span>${escapeHtml(art.craft)}</span>
+          </div>
+          <h4 class="real-catalog-title" title="${escapeHtml(art.name)}">${escapeHtml(art.name)}</h4>
+          <p class="real-catalog-material" title="${escapeHtml(art.material)}">${escapeHtml(art.material)}</p>
+
+          <div class="real-catalog-pricing">
+            <div class="real-catalog-price-row">
+              <span class="real-price-label">Prix Grossiste Atelier</span>
+              <span class="real-price-val">${sym}${wholesalePrice} <span style="font-size: 0.65rem; color: var(--slate-400); font-weight: 400;">HT</span></span>
+            </div>
+            <div class="real-retail-row">
+              <span>Revente Boutique estimée</span>
+              <span style="display: flex; align-items: center; gap: 0.35rem;">
+                <strong style="color: #cbd5e1;">~${sym}${retailPrice}</strong>
+                <span class="real-margin-pill">Marge x2.8</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="real-meta-row">
+            <span>⏳ Délais : ${art.leadTime}</span>
+            <span>📦 MOQ : ${art.moq}</span>
+          </div>
+
+          <div class="real-catalog-actions">
+            <button class="btn btn-gold btn-sm" style="flex: 1.2; font-weight: 700;" onclick="quickAddRealProductToInvoice('${art.id}')" title="Ajouter à la Facture Pro Forma">
+              + Pro Forma
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="openProductQuickView('${art.id}')" title="Fiche détaillée">
+              👁️
+            </button>
+            <button class="btn btn-success btn-sm" onclick="shareProductWhatsApp('${art.id}')" title="Devis direct WhatsApp">
+              💬
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openProductQuickView(articleId) {
+  const allArticles = getCatalogArticles();
+  const art = allArticles.find(a => a.id === articleId || a.sku === articleId);
+  if (!art) return;
+
+  const rate = EXCHANGE_RATES[currentCurrency] || 1;
+  const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
+
+  const modal = document.getElementById('productQuickViewModal');
+  const titleEl = document.getElementById('qvProductTitle');
+  const badgeEl = document.getElementById('qvProductBadge');
+  const skuEl = document.getElementById('qvProductSKU');
+  const craftEl = document.getElementById('qvProductCraft');
+  const bodyEl = document.getElementById('qvModalBody');
+  const footerEl = document.getElementById('qvModalFooter');
+
+  if (titleEl) titleEl.textContent = art.name;
+  if (badgeEl) badgeEl.textContent = art.badge;
+  if (skuEl) skuEl.textContent = 'Réf: ' + art.sku;
+  if (craftEl) craftEl.textContent = `${art.categoryIcon} ${art.craft} • ${art.categoryLabel}`;
+
+  const basePrice = Math.round(art.priceUSD * rate);
+  const tier2Price = Math.round(art.priceUSD * 0.85 * rate);
+  const tier3Price = Math.round(art.priceUSD * 0.65 * rate);
+  const retailPrice = Math.round(art.retailUSD * rate);
+
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <div class="qv-grid">
+        <div>
+          <div class="qv-image-wrap">
+            <img src="${art.image}" alt="${escapeHtml(art.name)}" style="max-height: 380px; width: 100%; object-fit: cover; border-radius: 8px;">
+          </div>
+          <div style="margin-top: 0.6rem; display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--slate-400);">
+            <span>Authenticité Fait-Main Garantie</span>
+            <span style="color: var(--saffron-light);">Atelier Marrakech Médina</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">${escapeHtml(art.name)}</h3>
+          <p style="font-size: 0.78rem; color: var(--slate-300); line-height: 1.5; margin-bottom: 0.8rem;">${escapeHtml(art.desc)}</p>
+
+          <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem;">
+            <div style="font-size: 0.7rem; color: var(--slate-400); margin-bottom: 0.25rem;">✦ Composition & Matière première :</div>
+            <div style="font-size: 0.78rem; color: #fff; font-weight: 600;">${escapeHtml(art.material)}</div>
+            <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.72rem; color: var(--slate-400);">
+              <span>⏳ Délais confection : <strong style="color: #fff;">${art.leadTime}</strong></span>
+              <span>📦 MOQ conseillé : <strong style="color: #fff;">${art.moq}</strong></span>
+            </div>
+          </div>
+
+          <h4 style="font-size: 0.78rem; color: var(--saffron-light); font-weight: 700; margin-bottom: 0.3rem;">⚖️ Barème Dégressif Atelier & Remises Volume :</h4>
+          <table class="qv-tiers-table">
+            <thead>
+              <tr>
+                <th>Palier Volume</th>
+                <th>Remise</th>
+                <th>Prix Unitaire</th>
+                <th>Marge Revente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1 à 5 pcs (0 MOQ)</strong></td>
+                <td><span class="pill pill-slate">0%</span></td>
+                <td><strong style="color: #fff;">${sym}${basePrice}</strong></td>
+                <td><span class="real-margin-pill">x2.8 (~${sym}${retailPrice})</span></td>
+              </tr>
+              <tr style="background: rgba(217, 119, 6, 0.1);">
+                <td><strong>6 à 50 pcs (Boutique)</strong></td>
+                <td><span class="pill pill-green">-15%</span></td>
+                <td><strong style="color: var(--saffron-light);">${sym}${tier2Price}</strong></td>
+                <td><span class="real-margin-pill">x3.3 Marge Forte</span></td>
+              </tr>
+              <tr>
+                <td><strong>50+ pcs (Grossiste/FCL)</strong></td>
+                <td><span class="pill pill-gold">-35%</span></td>
+                <td><strong style="color: #10B981;">${sym}${tier3Price}</strong></td>
+                <td><span class="real-margin-pill">x4.3 Super Marge</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 1.2rem;">
+            <label style="font-size: 0.75rem; color: var(--slate-300); font-weight: 600;">Quantité souhaitée :</label>
+            <input type="number" id="qvQtyInput" value="5" min="1" max="1000" style="width: 70px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: #fff; padding: 0.35rem 0.5rem; border-radius: 6px; text-align: center; font-weight: 700; font-family: var(--font-mono);">
+            <button class="btn btn-gold" onclick="quickAddProductFromQuickView('${art.id}')" style="font-weight: 700; flex: 1;">
+              🛒 Ajouter à la Facture Pro Forma
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (footerEl) {
+    footerEl.innerHTML = `
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-success" onclick="shareProductWhatsApp('${art.id}')">
+          💬 Discuter de cette pièce sur WhatsApp
+        </button>
+      </div>
+      <button class="btn btn-outline" onclick="closeProductQuickView()">Fermer</button>
+    `;
+  }
+
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeProductQuickView() {
+  const modal = document.getElementById('productQuickViewModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function quickAddProductFromQuickView(articleId) {
+  const qtyInput = document.getElementById('qvQtyInput');
+  const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+  quickAddRealProductToInvoice(articleId, qty);
+  closeProductQuickView();
+}
+
+function quickAddRealProductToInvoice(articleId, customQty = 1) {
+  const allArticles = getCatalogArticles();
+  const art = allArticles.find(a => a.id === articleId || a.sku === articleId);
+  if (!art) return;
+
+  const qty = Math.max(1, parseInt(customQty) || 1);
+  let discount = 0;
+  if (qty >= 50) discount = 0.35;
+  else if (qty >= 6) discount = 0.15;
+
+  const priceUSD = Math.round(art.priceUSD * (1 - discount));
+
+  invoiceLines.push({
+    id: 'line_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    name: art.name,
+    desc: `Réf: ${art.sku} • Matière: ${art.material} • Technique: ${art.craft}${discount > 0 ? ` (Remise atelier -${discount * 100}% appliquée)` : ''}`,
+    priceUSD: priceUSD,
+    qty: qty
+  });
+
+  renderInvoice();
+  updateCatalogProFormaBadge();
+  showToast(`✅ ${art.sku} (${qty} pcs) ajouté à la Facture Pro Forma`, 'success');
+}
+
+function updateCatalogProFormaBadge() {
+  const badge = document.getElementById('catalogProFormaCount');
+  if (badge) badge.textContent = invoiceLines.length;
+}
+
+function shareProductWhatsApp(articleId) {
+  const allArticles = getCatalogArticles();
+  const art = allArticles.find(a => a.id === articleId || a.sku === articleId);
+  if (!art) return;
+
+  const text = `Salam Hassan ! ✨\n\nJe souhaite obtenir une cotation pro forma pour cet article de votre catalogue :\n• Référence : ${art.sku}\n• Modèle : ${art.name}\n• Technique : ${art.craft}\n• Matière : ${art.material}\n• Prix indicatif : $${art.priceUSD} USD (avec remises dégressives jusqu'à 35% sur volume)\n\nPouvez-vous m'indiquer vos disponibilités de confection et les frais de port pour une expédition ?\n\nMerci !`;
+
+  window.open('https://wa.me/212632155430?text=' + encodeURIComponent(text), '_blank');
+}
+
+function shareFullCatalogWhatsApp() {
+  const text = `Salam ! ✨\n\nDécouvrez le Catalogue B2B Officiel de MARRAKECH CRAFT CONDUIT :\n365 créations faites-main en direct de nos ateliers de la Médina de Marrakech.\n\n✦ 13 Filières d'Art Authentiques :\n🧺 Paniers & Cabas en Palmier Doum (37 réf)\n👝 Poufs en Cuir Tanné Végétal (8 réf)\n🎗️ Ceintures en Cuir Pleine Fleur (52 réf)\n🪔 Suspensions & Luminaires en Raphia (74 réf)\n🏺 Céramiques de Tamegroute Émail Vert (36 réf)\n🪵 Ébénisterie en Loupe de Thuya d'Essaouira (16 réf)\n🍽️ Plateaux en Laiton Ciselé Martelé (24 réf)\n🪞 Miroirs Décoratifs Médina (16 réf)\n🪑 Mobilier d'Artisan (13 réf)\n🌿 Cache-Pots Suspendus (9 réf)\n🧶 Tapis Berbères Beni Ourain (2 réf)\n🧺 Corbeilles & Rangement (54 réf)\n✨ Arts de la Table & Décoration (24 réf)\n\n✦ Vos Avantages B2B :\n• 0 MOQ sur commandes tests d'échantillons (1-5 pcs)\n• Remises dégressives directes (-15% pour 6-50 pcs, -35% pour 50+ pcs)\n• Expédition express sécurisée DHL/FedEx & FCL Conteneur\n• Facturation pro forma conforme export\n\nConsultez le catalogue interactif complet :\n👉 https://artisanys1.vercel.app/\n\nMARRAKECH CRAFT CONDUIT | Hassan Tiguidda\n📱 WhatsApp : +212 632 155 430 | ✉️ tiguidda76@gmail.com`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
 }
 
 function updateTierPrices() {
-  const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
-  const rate = EXCHANGE_RATES[currentCurrency] || 1;
-  const t1 = document.getElementById('tierPrice1');
-  const t2 = document.getElementById('tierPrice2');
-  const t3 = document.getElementById('tierPrice3');
-  if (t1) t1.innerHTML = `${sym}${Math.round(85 * rate)} <span class="tier-price-unit">/ pièce</span>`;
-  if (t2) t2.innerHTML = `${sym}${Math.round(72 * rate)} <span class="tier-price-unit">/ pièce</span>`;
-  if (t3) t3.innerHTML = `${sym}${Math.round(55 * rate)} <span class="tier-price-unit">/ pièce</span>`;
+  // Kept for backward compatibility
 }
 
 function renderSimulator() {
@@ -1380,10 +1718,45 @@ function renderSimulator() {
   const rate = EXCHANGE_RATES[currentCurrency] || 1;
   const sym = CURRENCY_SYMBOLS[currentCurrency] || '$';
 
+  const allArticles = getCatalogArticles();
+  
+  // Pick 8 representative articles from the real catalog
+  let defaultSimArticles = [];
+  if (allArticles.length > 0) {
+    defaultSimArticles = [
+      allArticles.find(a => a.sku.startsWith('PAN-E1')) || allArticles[0],
+      allArticles.find(a => a.sku.startsWith('POUF-K7')) || allArticles[1],
+      allArticles.find(a => a.sku.startsWith('BELT-ACACIA')) || allArticles[2],
+      allArticles.find(a => a.sku.startsWith('LANT-01')) || allArticles[3],
+      allArticles.find(a => a.sku.startsWith('CERA-01')) || allArticles[4],
+      allArticles.find(a => a.sku.startsWith('WOOD-01')) || allArticles[5],
+      allArticles.find(a => a.sku.startsWith('TRAY-01')) || allArticles[6],
+      allArticles.find(a => a.sku.startsWith('MIRR-01')) || allArticles[7]
+    ].filter(Boolean);
+  }
+
+  if (defaultSimArticles.length === 0) {
+    defaultSimArticles = [
+      { id: 'p1', sku: 'PAN-E1', name: 'Panier Berbère Doum Tressé Main', craft: 'Vannerie Doum', priceUSD: 18 },
+      { id: 'p2', sku: 'POUF-K7', name: 'Pouf Cuir Marocain Cousu Main', craft: 'Maroquinerie', priceUSD: 34 },
+      { id: 'p3', sku: 'BELT-ACACIA', name: 'Ceinture Cuir Acacia Pleine Fleur', craft: 'Sellerie', priceUSD: 19 },
+      { id: 'p4', sku: 'LANT-01', name: 'Suspension Raphia Médina', craft: 'Luminaires', priceUSD: 39 },
+      { id: 'p5', sku: 'CERA-01', name: 'Céramique de Tamegroute Émail Vert', craft: 'Poterie', priceUSD: 25 },
+      { id: 'p6', sku: 'WOOD-01', name: 'Boîte en Loupe de Thuya Précieux', craft: 'Ébénisterie', priceUSD: 24 }
+    ];
+  }
+
+  // Initialize quantities if empty
+  if (Object.keys(simulatorQuantities).length === 0) {
+    if (defaultSimArticles[0]) simulatorQuantities[defaultSimArticles[0].id] = 2;
+    if (defaultSimArticles[1]) simulatorQuantities[defaultSimArticles[1].id] = 4;
+    if (defaultSimArticles[2]) simulatorQuantities[defaultSimArticles[2].id] = 10;
+  }
+
   let totalQty = 0;
   let totalPrice = 0;
 
-  container.innerHTML = CATALOG_PRODUCTS.map(prod => {
+  container.innerHTML = defaultSimArticles.map(prod => {
     const qty = simulatorQuantities[prod.id] || 0;
     let discount = 0;
     if (qty >= 50) discount = 0.35;
@@ -1399,14 +1772,14 @@ function renderSimulator() {
       <div class="sim-row">
         <div>
           <strong style="color: #fff;">${escapeHtml(prod.name)}</strong>
-          <div style="font-size: 0.65rem; color: var(--slate-400);">${escapeHtml(prod.desc)}</div>
+          <div style="font-size: 0.65rem; color: var(--slate-400);">Réf: ${prod.sku || prod.id} • ${escapeHtml(prod.craft || '')}</div>
         </div>
         <div style="font-family: var(--font-mono); font-size: 0.8rem;">
           ${sym}${unitPrice.toFixed(2)}
           ${discount > 0 ? `<span class="pill pill-green" style="font-size: 0.55rem; padding: 0.1rem 0.3rem;">-${discount * 100}%</span>` : ''}
         </div>
         <div>
-          <input type="number" min="0" max="500" value="${qty}" oninput="updateSimQty('${prod.id}', this.value)" style="width: 60px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: #fff; padding: 0.2rem 0.4rem; border-radius: 4px; text-align: center;">
+          <input type="number" min="0" max="500" value="${qty}" oninput="updateSimQty('${prod.id}', this.value)" style="width: 60px; background: var(--bg-primary); border: 1px solid var(--border-subtle); color: #fff; padding: 0.2rem 0.4rem; border-radius: 4px; text-align: center; font-weight: 700;">
         </div>
         <div style="font-family: var(--font-mono); font-weight: 600; color: var(--saffron-light); font-size: 0.82rem;">
           ${sym}${subtotal.toFixed(2)}
@@ -1427,23 +1800,26 @@ function updateSimQty(prodId, val) {
 }
 
 function resetSimulator() {
-  simulatorQuantities = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0, p6: 0, p7: 0, p8: 0 };
+  simulatorQuantities = {};
   renderSimulator();
   showToast('Simulateur réinitialisé', 'info');
 }
 
 function transferSimulatorToInvoice() {
+  const allArticles = getCatalogArticles();
   const items = [];
-  CATALOG_PRODUCTS.forEach(p => {
-    const qty = simulatorQuantities[p.id] || 0;
+
+  Object.keys(simulatorQuantities).forEach(id => {
+    const qty = simulatorQuantities[id] || 0;
     if (qty > 0) {
+      const p = allArticles.find(a => a.id === id || a.sku === id) || { id, name: 'Article ' + id, priceUSD: 25 };
       let discount = 0;
       if (qty >= 50) discount = 0.35;
       else if (qty >= 6) discount = 0.15;
       items.push({
         id: 'line_' + Date.now() + '_' + p.id,
         name: p.name,
-        desc: p.desc + (discount > 0 ? ` (Remise -${discount * 100}% appliquée)` : ''),
+        desc: `Réf: ${p.sku || p.id} • ${p.desc || p.material || ''}${discount > 0 ? ` (Remise -${discount * 100}% appliquée)` : ''}`,
         priceUSD: p.priceUSD * (1 - discount),
         qty: qty
       });
@@ -1457,6 +1833,7 @@ function transferSimulatorToInvoice() {
 
   invoiceLines = items;
   renderInvoice();
+  updateCatalogProFormaBadge();
   switchTab('legal');
   showToast(`✅ ${items.length} articles injectés dans la facture Pro Forma`, 'success');
 }
@@ -1470,6 +1847,7 @@ function quickAddProductToInvoice(name, craft) {
     qty: 1
   });
   renderInvoice();
+  updateCatalogProFormaBadge();
   switchTab('legal');
   showToast(`Article "${name}" ajouté à la facture`, 'success');
 }
@@ -1483,7 +1861,9 @@ function switchCurrency(curr) {
   document.querySelectorAll('.curr-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.curr === curr);
   });
+  renderRealCatalog();
   renderSimulator();
+  renderLookbook();
   updateTierPrices();
   renderInvoice();
 }
@@ -3492,8 +3872,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLookbook();
 
   // Tab 4: Product Catalog & Simulator
+  renderRealCatalog();
   renderSimulator();
   updateTierPrices();
+  updateCatalogProFormaBadge();
 
   // Tab 5: Facturation
   renderInvoice();
